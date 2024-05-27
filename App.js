@@ -19,6 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Toast, { ToastConfig } from "react-native-toast-message";
 import { showToast, toastConfig } from "./component/Toast";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SymptomCheckScreen from "./screens/SymptomCheckScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
