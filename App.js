@@ -19,6 +19,9 @@ import { Ionicons } from "@expo/vector-icons";
 import Toast, { ToastConfig } from "react-native-toast-message";
 import { showToast, toastConfig } from "./component/Toast";
 import { SafeAreaView } from "react-native-safe-area-context";
+import MainVoiceScreen from "./screens/MainVoiceScreen";
+import DetailVoiceScreen from "./screens/DetailVoiceScreen";
+import VoiceModifyScreen from "./screens/VoiceModifyScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -79,6 +82,16 @@ const RecordModifyHeaderRight = () => {
     </TouchableOpacity>
   );
 };
+
+// 보이스 헤더정의
+const VoiceHeaderLeft = (navigation) => (
+  <TouchableOpacity
+    style={{ paddingLeft: 7 }}
+    onPress={() => navigation.popToTop()}
+  >
+    <Ionicons name="chevron-back" size={22} color="grey" />
+  </TouchableOpacity>
+);
 
 export default function App() {
   return (
@@ -166,6 +179,23 @@ export default function App() {
                 ),
                 headerRight: () => RecordModifyHeaderRight(),
               })}
+            />
+            <Stack.Screen
+              name="MainVoice"
+              component={MainVoiceScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="DetailVoice"
+              component={DetailVoiceScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="VoiceModify"
+              component={VoiceModifyScreen}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         </NavigationContainer>

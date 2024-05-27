@@ -19,6 +19,7 @@ function HomeScreen({ navigation }) {
         title="기록 전체보기"
         onPress={() => navigation.push("RecordHistory")}
       />
+      <Button title="음성기록" onPress={() => navigation.push("MainVoice")} />
     </View>
   );
 }
@@ -51,9 +52,19 @@ export default function MainPracticeScreen() {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 60,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingBottom: 10,
+          paddingTop: 5,
+        },
+        tabBarActiveTintColor: "green",
+      }}
     >
-      {/* 여기 HomeScreen만 언니가 만든 홈화면 이름으로 바꾸면 될듯? */}
+      {/* 여기 component에 HomeScreen만 언니가 만든 홈화면 이름으로 바꾸면 될듯? */}
       <Tab.Screen
         name="Home"
         component={HomeScreen}

@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   input: {
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderRadius: 7,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: "lightgrey",
     textAlignVertical: "top",
