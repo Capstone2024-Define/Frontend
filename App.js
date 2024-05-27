@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MainVoiceScreen from "./screens/MainVoiceScreen";
 import DetailVoiceScreen from "./screens/DetailVoiceScreen";
 import VoiceModifyScreen from "./screens/VoiceModifyScreen";
+import SymptomCheckScreen from "./screens/SymptomCheckScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
