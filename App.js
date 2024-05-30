@@ -23,7 +23,9 @@ import MainVoiceScreen from "./screens/MainVoiceScreen";
 import DetailVoiceScreen from "./screens/DetailVoiceScreen";
 import VoiceModifyScreen from "./screens/VoiceModifyScreen";
 import SymptomCheckScreen from "./screens/SymptomCheckScreen";
+import SymptomInfoScreen from "./screens/SymptomInfoScreen";
 import GalleryTest from "./screens/GalleryTest";
+import VoiceRecordScreen from "./screens/VoiceRecordScreen"; // 추가된 부분
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -80,7 +82,6 @@ export default function App() {
               options={({ navigation }) => ({
                 title: "증상체크",
                 headerBackVisible: false,
-
                 headerShadowVisible: false,
                 headerStyle: styles.header,
                 headerTitleAlign: "center",
@@ -158,6 +159,16 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="GalleryTest" component={GalleryTest} />
+            <Stack.Screen
+              name="SymptomInfo"
+              component={SymptomInfoScreen}
+              options={{ title: "증상 단계" }}
+            />
+            <Stack.Screen
+              name="VoiceRecord" // 추가된 부분
+              component={VoiceRecordScreen} // 추가된 부분
+              options={{ title: "음성기록" }} // 추가된 부분
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>
