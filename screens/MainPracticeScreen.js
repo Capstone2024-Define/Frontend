@@ -92,6 +92,7 @@ function InfoScreen() {
         title="기록보기"
         onPress={() => navigation.push("RecordHistory")}
       />
+      <Button title="증상단계" onPress={() => navigation.push("SymptomInfo")} />
     </View>
   );
 }
