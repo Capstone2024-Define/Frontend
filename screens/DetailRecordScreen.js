@@ -1,16 +1,116 @@
-import { View, Dimensions, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Linking,
+  Image,
+} from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { useState, useEffect } from "react";
+import Header from "../component/Header";
+import * as ImagePicker from "expo-image-picker";
+import { showToast } from "../component/Toast";
 
-// Dimensions로 화면 크기 가져오기
-const SCREEN_WIDTH = Dimensions.get("window").width;
+// 상세 기록 DB
+// 날짜(date), 유저아이디(user_id)
+// 가정기록(detail_home), 학교기록(detail_school), 병원기록(detail_hospital)
+
+// 사진 DB
+// 날짜(date), 유저아이디(user_id)
+// 인덱스(index, 0~9), 사진(image)
 
 export default function DetailRecordScreen({ navigation }) {
+  // 상세 기록 state
+  const [homeText, setHomeText] = useState("");
+  const [schoolText, setSchoolText] = useState("");
+  const [hospitalText, setHospitalText] = useState("");
+
+  // 갤러리 권한
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+
+  // 이미지 저장
+  const [images, setImages] = useState([]);
+  const [id, setId] = useState(1);
+
+  // 이미지 업로드
+  const uploadImage = async () => {
+    // 권한 확인 코드
+    if (!status?.granted) {
+      const permission = await requestPermission();
+      if (!permission.granted) {
+        // 권한 계속 거부된 경우 설정으로 안내
+        Alert.alert(
+          "권한 필요",
+          "갤러리 접근을 허용해야합니다. 설정에서 권한을 허용해주세요.",
+          [
+            { text: "취소", style: "cancel" },
+            { text: "설정으로 이동", onPress: () => Linking.openSettings() },
+          ]
+        );
+        return;
+      }
+    }
+
+    // 이미지 업로드 기능
+    if (images.length < 10) {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        quality: 1,
+        aspect: [1, 1],
+      });
+      if (result.cancelled) {
+        return null; // 이미지 업로드 취소한 경우
+      }
+
+      // 이미지 업로드 결과
+      const selectedUri = result.assets.map((asset) => asset.uri);
+
+      // 이미지 객체 배열에 추가
+      const newImage = selectedUri.map((uri) => ({
+        id: id,
+        uri: uri,
+      }));
+      setImages(images.concat(newImage));
+      setId(id + 1);
+    } else {
+      showToast("이미지는 최대 10장입니다");
+    }
+  };
+
+  // 이미지 삭제
+  const deleteImage = (key) => {
+    setImages(images.filter((image) => image.id !== key));
+    console.log(images);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.progress} />
+      <Header
+        left="이전"
+        title="상세기록"
+        right="완료"
+        onLeftPress={() => {
+          navigation.pop();
+        }}
+        onRightPress={() => {
+          navigation.push("DoneRecord");
 
+          // DB에 저장
+          console.log(homeText);
+          console.log(schoolText);
+          console.log(hospitalText);
+          for (let i = 0; i < images.length; i++) {
+            console.log(i, images[i].uri);
+          }
+        }}
+        line={false}
+      />
+      <View style={styles.progress} />
       <ScrollView style={styles.scroll}>
         <View style={styles.subContainer}>
           <Text style={styles.guideText}>
@@ -26,72 +126,29 @@ export default function DetailRecordScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.photoScroll}
           >
-            <TouchableOpacity activeOpacity={0.7}>
+            <TouchableOpacity activeOpacity={0.5} onPress={uploadImage}>
               <View style={styles.photo}>
                 <Feather name="camera" size={20} color="black" />
-                <Text style={{ fontSize: 12 }}>0/10</Text>
+                <Text style={{ fontSize: 12 }}>{images.length}/10</Text>
               </View>
             </TouchableOpacity>
-            <>
-              <View style={styles.photo}></View>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View style={styles.deleteButton}>
-                  <Ionicons
-                    name="close"
-                    size={SCREEN_WIDTH / 25}
-                    color="black"
-                  />
-                </View>
-              </TouchableOpacity>
-            </>
-            <>
-              <View style={styles.photo}></View>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View style={styles.deleteButton}>
-                  <Ionicons
-                    name="close"
-                    size={SCREEN_WIDTH / 25}
-                    color="black"
-                  />
-                </View>
-              </TouchableOpacity>
-            </>
-            <>
-              <View style={styles.photo}></View>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View style={styles.deleteButton}>
-                  <Ionicons
-                    name="close"
-                    size={SCREEN_WIDTH / 25}
-                    color="black"
-                  />
-                </View>
-              </TouchableOpacity>
-            </>
-            <>
-              <View style={styles.photo}></View>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View style={styles.deleteButton}>
-                  <Ionicons
-                    name="close"
-                    size={SCREEN_WIDTH / 25}
-                    color="black"
-                  />
-                </View>
-              </TouchableOpacity>
-            </>
-            <>
-              <View style={styles.photo}></View>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View style={styles.deleteButton}>
-                  <Ionicons
-                    name="close"
-                    size={SCREEN_WIDTH / 25}
-                    color="black"
-                  />
-                </View>
-              </TouchableOpacity>
-            </>
+            {images.map((image) => (
+              <View key={image.id}>
+                <Image
+                  source={{ uri: image.uri }}
+                  style={styles.photo}
+                  resizeMode="cover"
+                />
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => deleteImage(image.id)}
+                >
+                  <View style={styles.deleteButton}>
+                    <Ionicons name="close" size={15} color="black" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))}
           </ScrollView>
         </View>
         <View style={styles.subContainer}>
@@ -99,23 +156,26 @@ export default function DetailRecordScreen({ navigation }) {
           <TextInput
             placeholder="가정에서 우리 아이가 어땠는지 작성해주세요"
             style={styles.input}
-            returnKeyType="done"
             multiline
             numberOfLines={4}
+            onChangeText={setHomeText}
+            returnKeyType="done"
           ></TextInput>
           <Text style={styles.inputGuideText}>학교에서 우리 아이는</Text>
           <TextInput
             placeholder="학교에서 우리 아이가 어땠는지 작성해주세요"
             style={styles.input}
-            returnKeyType="done"
             multiline
             numberOfLines={4}
+            onChangeText={setSchoolText}
+            returnKeyType="done"
           ></TextInput>
           <Text style={styles.inputGuideText}>병원에서 우리 아이는</Text>
           <TextInput
             placeholder="병원에서 우리 아이가 어땠는지 작성해주세요"
             style={styles.input}
             returnKeyType="done"
+            onChangeText={setHospitalText}
             multiline
             numberOfLines={4}
           ></TextInput>
@@ -131,9 +191,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-
   progress: {
-    width: SCREEN_WIDTH,
+    width: "100%",
     height: 6,
     backgroundColor: "lightgrey",
   },
@@ -156,8 +215,8 @@ const styles = StyleSheet.create({
   },
   photoScroll: { marginTop: 30 },
   photo: {
-    width: SCREEN_WIDTH / 6,
-    height: SCREEN_WIDTH / 6,
+    width: 60,
+    height: 60,
     borderRadius: 8,
     backgroundColor: "lightgrey",
     alignItems: "center",
@@ -166,12 +225,12 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     position: "absolute",
-    top: -7, // 이미지의 상단에서 10포인트 떨어진 위치
+    top: -65, // 이미지의 상단에서 10포인트 떨어진 위치
     right: 3, // 이미지의 오른쪽에서 10포인트 떨어진 위치
     backgroundColor: "white",
     borderRadius: 20,
-    width: SCREEN_WIDTH / 17,
-    height: SCREEN_WIDTH / 17,
+    width: 20,
+    height: 20,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",

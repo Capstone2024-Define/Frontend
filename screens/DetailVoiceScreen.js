@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -16,18 +17,19 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const Modal2 = ({ visible, onClose }) => {
+  // 어두운 배경 눌러도 모달창 닫히게 Pressable
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
-      <View style={styles.modalBackground}>
-        <View style={styles.modal2}>
+      <Pressable style={styles.modalBackground} onPress={onClose}>
+        <Pressable style={styles.modal2}>
           <TouchableOpacity activeOpacity={0.5}>
             <Text style={styles.modal2Text}>이날 하루 기록 보기</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.5}>
             <Text style={styles.modal2Text}>삭제하기</Text>
           </TouchableOpacity>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };

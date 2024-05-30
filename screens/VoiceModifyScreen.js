@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { TextInput } from "react-native-gesture-handler";
 
 export default function VoiceModifyScreen({ visible, onClose }) {
   const navigation = useNavigation();
@@ -25,7 +26,7 @@ export default function VoiceModifyScreen({ visible, onClose }) {
             </TouchableOpacity>
           </View>
           <ScrollView style={styles.content}>
-            <Text>kkkkkkkkkkkkkk kkkkkkkkkkk</Text>
+            <TextInput multiline>음성 전체 내용</TextInput>
             <View style={{ marginBottom: 40 }} />
           </ScrollView>
         </View>

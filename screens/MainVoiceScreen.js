@@ -15,16 +15,6 @@ function NewVoiceScreen() {
   );
 }
 
-// 보이스 헤더정의
-const VoiceHeaderLeft = (navigation) => (
-  <TouchableOpacity
-    style={{ paddingLeft: 24 }}
-    onPress={() => navigation.popToTop()}
-  >
-    <Ionicons name="chevron-back" size={22} color="grey" />
-  </TouchableOpacity>
-);
-
 export default function MainVoiceScreen({ route, navigation }) {
   return (
     <Tab.Navigator
@@ -41,14 +31,7 @@ export default function MainVoiceScreen({ route, navigation }) {
         component={NewVoiceScreen}
         options={({ navigation }) => ({
           title: "새 녹음",
-          headerBackVisible: false,
-          headerTitleAlign: "center",
-          headerLeft: () => VoiceHeaderLeft(navigation),
-          headerTitle: ({ children }) => (
-            <View>
-              <Text style={styles.headerTitleText}>{children}</Text>
-            </View>
-          ),
+          headerShown: false,
         })}
       />
       <Tab.Screen
@@ -56,14 +39,7 @@ export default function MainVoiceScreen({ route, navigation }) {
         component={VoiceHistoryScreen}
         options={({ navigation }) => ({
           title: "음성기록",
-          headerBackVisible: false,
-          headerTitleAlign: "center",
-          headerLeft: () => VoiceHeaderLeft(navigation),
-          headerTitle: ({ children }) => (
-            <View>
-              <Text style={styles.headerTitleText}>{children}</Text>
-            </View>
-          ),
+          headerShown: false,
         })}
       />
     </Tab.Navigator>

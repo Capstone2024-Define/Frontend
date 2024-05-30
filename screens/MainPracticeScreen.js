@@ -5,9 +5,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StyleSheet,
+  Button,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
@@ -61,11 +63,19 @@ function HomeScreen({ navigation }) {
           ))}
         </View>
       </View>
-      <TouchableOpacity style={styles.recordButton}>
+      <TouchableOpacity
+        style={styles.recordButton}
+        onPress={() => {
+          navigation.push("SymptomCheck");
+        }}
+      >
         <Text style={styles.recordTitle}>하루 기록</Text>
         <Text style={styles.recordText}>오늘 우리 아이를 기록해요</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.recordButton}>
+      <TouchableOpacity
+        style={styles.recordButton}
+        onPress={() => navigation.push("MainVoice")}
+      >
         <Text style={styles.recordTitle}>음성기록</Text>
         <Text style={styles.recordText}>음성을 텍스트로 변환</Text>
       </TouchableOpacity>
@@ -74,17 +84,27 @@ function HomeScreen({ navigation }) {
 }
 
 function InfoScreen() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.defaultScreen}>
-      <Text>정보</Text>
+      <Button
+        title="기록보기"
+        onPress={() => navigation.push("RecordHistory")}
+      />
     </View>
   );
 }
 
 function CalendarScreen() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.defaultScreen}>
-      <Text>캘린더</Text>
+      <Button
+        title="갤러리 테스트"
+        onPress={() => navigation.navigate("GalleryTest")}
+      />
     </View>
   );
 }
@@ -101,7 +121,17 @@ export default function MainPracticeScreen() {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 55,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingBottom: 8,
+          paddingTop: 5,
+        },
+        tabBarActiveTintColor: "green",
+      }}
     >
       <Tab.Screen
         name="Home"

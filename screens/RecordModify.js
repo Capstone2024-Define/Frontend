@@ -10,137 +10,149 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import VoiceButton from "../component/VoiceButton";
+import SmallTag from "../component/SmallTag";
+import Header from "../component/Header";
+import { showToast } from "../component/Toast";
 
 // Dimensions로 화면 크기 가져오기
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-export default function RecordModify() {
+export default function RecordModify({ navigation }) {
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.subContainer}>
-        <Text style={styles.guideText}>우리 아이의 증상을 자세히 기록해요</Text>
-        <Text style={styles.subText}>
-          기록할 내용이 없다면 공한으로 둬도 괜찮아요
-        </Text>
-        <View style={styles.againView}>
-          <FontAwesome5 name="smile" size={18} color="black" />
-          <Text style={styles.againText}>증상 다시 선택하기</Text>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Ionicons name="chevron-forward" size={22} color="black" />
-          </TouchableOpacity>
+    <>
+      <Header
+        left="leftArrow"
+        title="수정하기"
+        right="완료"
+        onLeftPress={() => {
+          navigation.pop();
+        }}
+        onRightPress={() => {
+          navigation.navigate("RecordHistory");
+          showToast("수정이 완료되었어요");
+        }}
+        line={true}
+      />
+      <ScrollView style={styles.container}>
+        <View style={styles.subContainer}>
+          <Text style={styles.guideText}>
+            우리 아이의 증상을 자세히 기록해요
+          </Text>
+          <Text style={styles.subText}>
+            기록할 내용이 없다면 공한으로 둬도 괜찮아요
+          </Text>
+          <View style={styles.againView}>
+            <FontAwesome5 name="smile" size={18} color="black" />
+            <Text style={styles.againText}>증상 다시 선택하기</Text>
+            <TouchableOpacity activeOpacity={0.5}>
+              <Ionicons name="chevron-forward" size={22} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <View style={styles.scroll}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tagScroll}
-        >
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>고자질</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>끼어들기</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>자기연민</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>고자질</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>끼어들기</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>끼어들기</Text>
-          </View>
-        </ScrollView>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.photoScroll}
-        >
-          <TouchableOpacity activeOpacity={0.7}>
-            <View style={styles.photo}>
-              <Feather name="camera" size={20} color="black" />
-              <Text style={{ fontSize: 12 }}>0/10</Text>
-            </View>
-          </TouchableOpacity>
-          <>
-            <View style={styles.photo}></View>
-            <TouchableOpacity activeOpacity={0.7}>
-              <View style={styles.deleteButton}>
-                <Ionicons name="close" size={SCREEN_WIDTH / 25} color="black" />
+        <View style={styles.scroll}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.tagScroll}
+          >
+            <SmallTag text="불순응" />
+            <SmallTag text="끼어들기" />
+            <SmallTag text="고자질" />
+            <SmallTag text="자기연민" />
+            <SmallTag text="불순응" />
+          </ScrollView>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.photoScroll}
+          >
+            <TouchableOpacity activeOpacity={0.5}>
+              <View style={styles.photo}>
+                <Feather name="camera" size={20} color="black" />
+                <Text style={{ fontSize: 12 }}>0/10</Text>
               </View>
             </TouchableOpacity>
-          </>
-          <>
-            <View style={styles.photo}></View>
-            <TouchableOpacity activeOpacity={0.7}>
-              <View style={styles.deleteButton}>
-                <Ionicons name="close" size={SCREEN_WIDTH / 25} color="black" />
-              </View>
-            </TouchableOpacity>
-          </>
-          <>
-            <View style={styles.photo}></View>
-            <TouchableOpacity activeOpacity={0.7}>
-              <View style={styles.deleteButton}>
-                <Ionicons name="close" size={SCREEN_WIDTH / 25} color="black" />
-              </View>
-            </TouchableOpacity>
-          </>
-          <>
-            <View style={styles.photo}></View>
-            <TouchableOpacity activeOpacity={0.7}>
-              <View style={styles.deleteButton}>
-                <Ionicons name="close" size={SCREEN_WIDTH / 25} color="black" />
-              </View>
-            </TouchableOpacity>
-          </>
-        </ScrollView>
-      </View>
-      <View style={styles.subContainer}>
-        <Text style={styles.inputGuideText}>가정에서 우리 아이는</Text>
-        <TextInput
-          placeholder="가정에서 우리 아이가 어땠는지 작성해주세요"
-          style={styles.input}
-          returnKeyType="done"
-          multiline
-          numberOfLines={4}
-        ></TextInput>
-        <Text style={styles.inputGuideText}>학교에서 우리 아이는</Text>
-        <TextInput
-          placeholder="학교에서 우리 아이가 어땠는지 작성해주세요"
-          style={styles.input}
-          returnKeyType="done"
-          multiline
-          numberOfLines={4}
-        ></TextInput>
-        <TouchableOpacity activeOpacity={0.7} style={{ alignItems: "center" }}>
-          <View style={styles.voiceButton}>
-            <View style={styles.place}>
-              <Text style={styles.placeText}>병원</Text>
-            </View>
-            <View style={styles.voiceContent}>
-              <Text style={styles.voiceTime}>오후 4:50</Text>
-              <Text style={styles.voiceText}>
-                앞 내용 짧은 글로 보여주기 어쩌구
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.inputGuideText}>병원에서 우리 아이는</Text>
-        <TextInput
-          placeholder="병원에서 우리 아이가 어땠는지 작성해주세요"
-          style={styles.input}
-          returnKeyType="done"
-          multiline
-          numberOfLines={4}
-        ></TextInput>
-      </View>
-      <View style={{ marginBottom: 70 }}></View>
-    </ScrollView>
+            <>
+              <View style={styles.photo}></View>
+              <TouchableOpacity activeOpacity={0.5}>
+                <View style={styles.deleteButton}>
+                  <Ionicons
+                    name="close"
+                    size={SCREEN_WIDTH / 25}
+                    color="black"
+                  />
+                </View>
+              </TouchableOpacity>
+            </>
+            <>
+              <View style={styles.photo}></View>
+              <TouchableOpacity activeOpacity={0.5}>
+                <View style={styles.deleteButton}>
+                  <Ionicons
+                    name="close"
+                    size={SCREEN_WIDTH / 25}
+                    color="black"
+                  />
+                </View>
+              </TouchableOpacity>
+            </>
+            <>
+              <View style={styles.photo}></View>
+              <TouchableOpacity activeOpacity={0.5}>
+                <View style={styles.deleteButton}>
+                  <Ionicons
+                    name="close"
+                    size={SCREEN_WIDTH / 25}
+                    color="black"
+                  />
+                </View>
+              </TouchableOpacity>
+            </>
+            <>
+              <View style={styles.photo}></View>
+              <TouchableOpacity activeOpacity={0.5}>
+                <View style={styles.deleteButton}>
+                  <Ionicons
+                    name="close"
+                    size={SCREEN_WIDTH / 25}
+                    color="black"
+                  />
+                </View>
+              </TouchableOpacity>
+            </>
+          </ScrollView>
+        </View>
+        <View style={styles.subContainer}>
+          <Text style={styles.inputGuideText}>가정에서 우리 아이는</Text>
+          <TextInput
+            placeholder="가정에서 우리 아이가 어땠는지 작성해주세요"
+            style={styles.input}
+            returnKeyType="done"
+            multiline
+            numberOfLines={4}
+          ></TextInput>
+          <Text style={styles.inputGuideText}>학교에서 우리 아이는</Text>
+          <TextInput
+            placeholder="학교에서 우리 아이가 어땠는지 작성해주세요"
+            style={styles.input}
+            returnKeyType="done"
+            multiline
+            numberOfLines={4}
+          ></TextInput>
+          <VoiceButton onPress={() => navigation.navigate("DetailVoice")} />
+          <Text style={styles.inputGuideText}>병원에서 우리 아이는</Text>
+          <TextInput
+            placeholder="병원에서 우리 아이가 어땠는지 작성해주세요"
+            style={styles.input}
+            returnKeyType="done"
+            multiline
+            numberOfLines={4}
+          ></TextInput>
+        </View>
+        <View style={{ marginBottom: 70 }}></View>
+      </ScrollView>
+    </>
   );
 }
 
@@ -181,23 +193,10 @@ const styles = StyleSheet.create({
     marginLeft: 27,
   },
   tagScroll: { marginTop: 10 },
-  tag: {
-    height: SCREEN_WIDTH / 13,
-    borderRadius: 5,
-    backgroundColor: "black",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-    paddingHorizontal: 12,
-  },
-  tagText: {
-    fontSize: 12,
-    color: "white",
-  },
   photoScroll: { marginTop: 25 },
   photo: {
-    width: SCREEN_WIDTH / 6,
-    height: SCREEN_WIDTH / 6,
+    width: 60,
+    height: 60,
     borderRadius: 8,
     backgroundColor: "lightgrey",
     alignItems: "center",
@@ -234,32 +233,4 @@ const styles = StyleSheet.create({
     borderColor: "lightgrey",
     textAlignVertical: "top",
   },
-  voiceButton: {
-    flexDirection: "row",
-    flex: 1,
-    width: SCREEN_WIDTH - 70,
-    height: SCREEN_WIDTH / 5,
-    borderRadius: 16,
-    backgroundColor: "lightgrey",
-    marginTop: 15,
-    marginBottom: 10,
-    padding: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "grey",
-  },
-  place: {
-    flex: 1,
-    backgroundColor: "grey",
-    marginRight: 12,
-    paddingVertical: 3,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-  },
-  placeText: { fontSize: 14, color: "white" },
-  voiceContent: { flex: 4.5, justifyContent: "center" },
-  voiceTime: { fontSize: 16, fontWeight: "500", color: "black" },
-  voiceText: { fontSize: 13 },
 });

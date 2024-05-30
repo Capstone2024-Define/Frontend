@@ -1,102 +1,90 @@
 import { StyleSheet, View, Text, ScrollView, Dimensions } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome5 } from "@expo/vector-icons";
+import VoiceButton from "../component/VoiceButton";
+import SmallTag from "../component/SmallTag";
+import Header from "../component/Header";
 
 // Dimensions로 화면 크기 가져오기
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export default function RecordHistory({ navigation }) {
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.subContainer}>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.guideText}>기록요약</Text>
-          <FontAwesome5 name="smile" size={18} color="black" />
-        </View>
-        <Text style={styles.subText}>
-          오늘 우리 아이의 증상은 이랬습니다 저랬습니다 오늘 하루는 어땠습니다
-          학교에서는 저랬습니다
-        </Text>
-      </View>
-      <View style={styles.scroll}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tagScroll}
-        >
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>고자질</Text>
+    <>
+      <Header
+        left="leftArrow"
+        title="0월 0일"
+        right="수정"
+        onLeftPress={() => {
+          navigation.pop();
+        }}
+        onRightPress={() => {
+          navigation.push("RecordModify");
+        }}
+        line={true}
+      />
+      <ScrollView style={styles.container}>
+        <View style={styles.subContainer}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.guideText}>기록요약</Text>
+            <FontAwesome5 name="smile" size={18} color="black" />
           </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>끼어들기</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>자기연민</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>고자질</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>끼어들기</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>끼어들기</Text>
-          </View>
-        </ScrollView>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.photoScroll}
-        >
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-        </ScrollView>
-      </View>
-      <View style={styles.subContainer}>
-        <View style={styles.recordView}>
-          <Text style={styles.recordText1}>가정에서 우리 아이는</Text>
-          <Text style={styles.recordText2}>
-            상세 기록을 하지 않았어요! 상세 기록을 하지 않았어요!상세 기록을
-            하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
-            않았어요!상세 기록을 하지 않았어요!상세 기록을 하지 않았어요!상세
-            기록을 하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
-            않았어요!상세 기록을 하지 않았어요!상세 기록을 하지 않았어요!상세
-            기록을 하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
-            않았어요!상세 기록을 하지 않았어요!상세 기록을 하지 않았어요!상세
-            기록을 하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
-            않았어요!
+          <Text style={styles.subText}>
+            오늘 우리 아이의 증상은 이랬습니다 저랬습니다 오늘 하루는 어땠습니다
+            학교에서는 저랬습니다
           </Text>
         </View>
-        <View style={styles.recordView}>
-          <Text style={styles.recordText1}>학교에서 우리 아이는</Text>
-          <Text style={styles.recordText2}>상세 기록을 하지 않았어요!</Text>
-        </View>
-        <View style={styles.recordView}>
-          <Text style={styles.recordText1}>병원에서 우리 아이는</Text>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={{ alignItems: "center" }}
+        <View style={styles.scroll}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.tagScroll}
           >
-            <View style={styles.voiceButton}>
-              <View style={styles.place}>
-                <Text style={styles.placeText}>병원</Text>
-              </View>
-              <View style={styles.voiceContent}>
-                <Text style={styles.voiceTime}>오후 4:50</Text>
-                <Text style={styles.voiceText}>
-                  앞 내용 짧은 글로 보여주기 어쩌구
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <View style={{ marginBottom: 70 }}></View>
+            <SmallTag text="불순응" />
+            <SmallTag text="끼어들기" />
+            <SmallTag text="고자질" />
+            <SmallTag text="자기연민" />
+            <SmallTag text="불순응" />
+          </ScrollView>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.photoScroll}
+          >
+            <View style={styles.photo}></View>
+            <View style={styles.photo}></View>
+            <View style={styles.photo}></View>
+            <View style={styles.photo}></View>
+            <View style={styles.photo}></View>
+            <View style={styles.photo}></View>
+          </ScrollView>
         </View>
-      </View>
-    </ScrollView>
+        <View style={styles.subContainer}>
+          <View style={styles.recordView}>
+            <Text style={styles.recordText1}>가정에서 우리 아이는</Text>
+            <Text style={styles.recordText2}>
+              상세 기록을 하지 않았어요! 상세 기록을 하지 않았어요!상세 기록을
+              하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
+              않았어요!상세 기록을 하지 않았어요!상세 기록을 하지 않았어요!상세
+              기록을 하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
+              않았어요!상세 기록을 하지 않았어요!상세 기록을 하지 않았어요!상세
+              기록을 하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
+              않았어요!상세 기록을 하지 않았어요!상세 기록을 하지 않았어요!상세
+              기록을 하지 않았어요!상세 기록을 하지 않았어요!상세 기록을 하지
+              않았어요!
+            </Text>
+          </View>
+          <View style={styles.recordView}>
+            <Text style={styles.recordText1}>학교에서 우리 아이는</Text>
+            <Text style={styles.recordText2}>상세 기록을 하지 않았어요!</Text>
+          </View>
+          <View style={styles.recordView}>
+            <Text style={styles.recordText1}>병원에서 우리 아이는</Text>
+            <VoiceButton onPress={() => navigation.navigate("DetailVoice")} />
+            <View style={{ marginBottom: 96 }}></View>
+          </View>
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
@@ -124,23 +112,10 @@ const styles = StyleSheet.create({
     marginLeft: 27,
   },
   tagScroll: { marginTop: 25 },
-  tag: {
-    height: SCREEN_WIDTH / 13,
-    borderRadius: 8,
-    backgroundColor: "black",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-    paddingHorizontal: 12,
-  },
-  tagText: {
-    fontSize: 12,
-    color: "white",
-  },
   photoScroll: { marginTop: 15 },
   photo: {
-    width: SCREEN_WIDTH / 5,
-    height: SCREEN_WIDTH / 5,
+    width: 75,
+    height: 75,
     borderRadius: 8,
     backgroundColor: "lightgrey",
     alignItems: "center",
@@ -162,31 +137,4 @@ const styles = StyleSheet.create({
     marginTop: 15,
     color: "grey",
   },
-  voiceButton: {
-    flexDirection: "row",
-    flex: 1,
-    width: SCREEN_WIDTH - 70,
-    height: SCREEN_WIDTH / 5,
-    borderRadius: 16,
-    backgroundColor: "lightgrey",
-    marginTop: 15,
-    padding: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "grey",
-  },
-  place: {
-    flex: 1,
-    backgroundColor: "grey",
-    marginRight: 12,
-    paddingVertical: 3,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-  },
-  placeText: { fontSize: 14, color: "white" },
-  voiceContent: { flex: 4.5, justifyContent: "center" },
-  voiceTime: { fontSize: 16, fontWeight: "500", color: "black" },
-  voiceText: { fontSize: 13 },
 });
