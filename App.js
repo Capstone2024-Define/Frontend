@@ -28,31 +28,6 @@ import GalleryTest from "./screens/GalleryTest";
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
 
-// 증상체크 헤더정의
-const SymptomCheckHeaderLeft = (navigation) => (
-  <TouchableOpacity style={{ paddingLeft: 7 }} onPress={() => navigation.pop()}>
-    <Ionicons name="chevron-back" size={22} color="grey" />
-  </TouchableOpacity>
-);
-const SymptomCheckHeaderRight = (navigation) => (
-  <TouchableOpacity
-    style={{ paddingRight: 10 }}
-    onPress={() => navigation.push("DetailRecord")}
-  >
-    <Text style={styles.headerLRText}>다음</Text>
-  </TouchableOpacity>
-);
-
-// 보이스 헤더정의
-const VoiceHeaderLeft = (navigation) => (
-  <TouchableOpacity
-    style={{ paddingLeft: 7 }}
-    onPress={() => navigation.popToTop()}
-  >
-    <Ionicons name="chevron-back" size={22} color="grey" />
-  </TouchableOpacity>
-);
-
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -77,29 +52,18 @@ export default function App() {
             <Stack.Screen
               name="SymptomCheck"
               component={SymptomCheckScreen}
-              options={({ navigation }) => ({
+              options={{
                 title: "증상체크",
-                headerBackVisible: false,
-
-                headerShadowVisible: false,
-                headerStyle: styles.header,
-                headerTitleAlign: "center",
-                headerLeft: () => SymptomCheckHeaderLeft(navigation),
-                headerTitle: ({ children }) => (
-                  <View>
-                    <Text style={styles.headerTitleText}>{children}</Text>
-                  </View>
-                ),
-                headerRight: () => SymptomCheckHeaderRight(navigation),
-              })}
+                headerShown: false,
+              }}
             />
             <Stack.Screen
               name="DetailRecord"
               component={DetailRecordScreen}
-              options={({ navigation }) => ({
+              options={{
                 title: "상세기록",
                 headerShown: false,
-              })}
+              }}
             />
             <Stack.Screen
               name="DoneRecord"
@@ -118,34 +82,26 @@ export default function App() {
             <Stack.Screen
               name="RecordHistory"
               component={RecordHistory}
-              options={({ navigation }) => ({
+              options={{
                 title: "0월 0일 기록",
                 headerShown: false,
-              })}
+              }}
             />
             <Stack.Screen
               name="RecordModify"
               component={RecordModify}
-              options={({ navigation }) => ({
+              options={{
                 title: "수정하기",
                 headerShown: false,
-              })}
+              }}
             />
             <Stack.Screen
               name="MainVoice"
               component={MainVoiceScreen}
-              options={({ navigation }) => ({
+              options={{
                 title: "음성기록",
-                headerBackVisible: false,
-                headerStyle: styles.header,
-                headerTitleAlign: "center",
-                headerLeft: () => VoiceHeaderLeft(navigation),
-                headerTitle: ({ children }) => (
-                  <View>
-                    <Text style={styles.headerTitleText}>{children}</Text>
-                  </View>
-                ),
-              })}
+                headerShown: false,
+              }}
             />
             <Stack.Screen
               name="DetailVoice"
