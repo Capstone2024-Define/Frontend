@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Button,
-  Date,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
@@ -94,6 +93,7 @@ function InfoScreen() {
   const [fetchedDetail, setFetchedDetail] = useState(null);
 
   const navigation = useNavigation();
+  const date = new Date(2024, 6, 2);
 
   useEffect(() => {
     // const handleSummary = async () => {
@@ -113,8 +113,8 @@ function InfoScreen() {
   // 서버 연동 테스트
   const handleSaveDetail = () => {
     saveDetail({
-      date: new Date(2024, 6, 2),
-      user_id: 1,
+      date: date,
+      user_id: 1000,
       detail_home: "홈",
       detail_school: "학교",
       detail_hospital: "병원",
@@ -122,7 +122,7 @@ function InfoScreen() {
   };
 
   const handleGetDetail = () => {
-    getDetail({ date: new Date(2024, 6, 2), user_id: 1 }).then((data) =>
+    getDetail({ date: date, user_id: 1000 }).then((data) =>
       setFetchedDetail(data)
     );
     console(fetchedDetail);
