@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import Header from "../component/Header";
+import { theme } from "../colors/color";
 
 const symptoms = {
   행동조작: ["불순응", "반항", "떼쓰기"],
@@ -73,10 +74,14 @@ export default function SymptomCheckScreen({ navigation }) {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.push("DetailRecord");
+          navigation.push("SymptomResult");
         }}
         line={false}
       />
+      <View style={styles.progressView}>
+        <View style={styles.progressLeft}></View>
+        <View style={styles.progressRight}></View>
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.headerText}>증상체크</Text>
         <Text style={styles.subtitleText}>
@@ -95,6 +100,19 @@ export default function SymptomCheckScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  progressView: {
+    flexDirection: "row",
+    width: "100%",
+    height: 8,
+  },
+  progressLeft: {
+    width: "33%",
+    backgroundColor: theme.green500,
+  },
+  progressRight: {
+    width: "67%",
+    backgroundColor: theme.grey150,
+  },
   container: {
     padding: 16,
     backgroundColor: "#fff",

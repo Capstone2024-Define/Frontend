@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Header from "../component/Header";
+import { theme } from "../colors/color";
 
 const VoiceRecordScreen = ({ navigation }) => {
   const [isSchoolSelected, setIsSchoolSelected] = useState(true);
@@ -82,6 +83,10 @@ const VoiceRecordScreen = ({ navigation }) => {
           <Text style={styles.recordButtonText}>녹음 시작</Text>
         </TouchableOpacity>
       </View>
+      <View style={{ flexDirection: "row" }}>
+        <View style={styles.progressLeft} />
+        <View style={styles.progressRight} />
+      </View>
     </View>
   );
 };
@@ -153,6 +158,16 @@ const styles = StyleSheet.create({
   recordButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  progressLeft: {
+    width: "50%",
+    height: 4,
+    backgroundColor: theme.green500,
+  },
+  progressRight: {
+    width: "50%",
+    height: 4,
+    backgroundColor: theme.grey150,
   },
 });
 

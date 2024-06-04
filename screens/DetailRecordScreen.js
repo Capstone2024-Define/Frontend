@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
 import { showToast } from "../component/Toast";
+import { theme } from "../colors/color";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -32,9 +33,11 @@ export default function DetailRecordScreen({ navigation }) {
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
 
-  // 이미지 저장
+  // 이미지 배열
   const [images, setImages] = useState([]);
-  const [id, setId] = useState(1);
+  // 이미지 객체 id 설정 위한 변수
+  const [id, setId] = useState(0);
+  let k = 0;
 
   // 이미지 업로드
   const uploadImage = async () => {
@@ -57,26 +60,35 @@ export default function DetailRecordScreen({ navigation }) {
 
     // 이미지 업로드 기능
     if (images.length < 10) {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        quality: 1,
-        aspect: [1, 1],
-      });
-      if (result.cancelled) {
-        return null; // 이미지 업로드 취소한 경우
+      try {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: false,
+          quality: 0.5,
+          allowsMultipleSelection: true,
+          selectionLimit: 10 - images.length,
+        });
+        //console.log(result);
+
+        if (!result.cancelled && result.assets && result.assets.length > 0) {
+          // 이미지 업로드 결과
+          const selectedUri = result.assets.map((asset) => asset.uri);
+          console.log(selectedUri);
+
+          // 이미지 객체 배열에 추가
+          const newImage = selectedUri.map((uri) => {
+            return { id: id + k++, uri: uri };
+          });
+          setImages(images.concat(newImage));
+          setId(id + k);
+
+          console.log(id);
+          console.log(images);
+        }
+      } catch (error) {
+        console.log(error);
+        showToast("업로드 실패, 다시 시도해주세요");
       }
-
-      // 이미지 업로드 결과
-      const selectedUri = result.assets.map((asset) => asset.uri);
-
-      // 이미지 객체 배열에 추가
-      const newImage = selectedUri.map((uri) => ({
-        id: id,
-        uri: uri,
-      }));
-      setImages(images.concat(newImage));
-      setId(id + 1);
     } else {
       showToast("이미지는 최대 10장입니다");
     }
@@ -157,28 +169,52 @@ export default function DetailRecordScreen({ navigation }) {
             placeholder="가정에서 우리 아이가 어땠는지 작성해주세요"
             style={styles.input}
             multiline
+            maxLength={600}
             numberOfLines={4}
             onChangeText={setHomeText}
             returnKeyType="done"
           ></TextInput>
+          <View
+            style={{
+              alignItems: "flex-end",
+            }}
+          >
+            <Text style={styles.limitText}>{homeText.length}/600</Text>
+          </View>
           <Text style={styles.inputGuideText}>학교에서 우리 아이는</Text>
           <TextInput
             placeholder="학교에서 우리 아이가 어땠는지 작성해주세요"
             style={styles.input}
             multiline
+            maxLength={600}
             numberOfLines={4}
             onChangeText={setSchoolText}
             returnKeyType="done"
           ></TextInput>
+          <View
+            style={{
+              alignItems: "flex-end",
+            }}
+          >
+            <Text style={styles.limitText}>{schoolText.length}/600</Text>
+          </View>
           <Text style={styles.inputGuideText}>병원에서 우리 아이는</Text>
           <TextInput
             placeholder="병원에서 우리 아이가 어땠는지 작성해주세요"
             style={styles.input}
+            multiline
+            maxLength={600}
+            numberOfLines={4}
             returnKeyType="done"
             onChangeText={setHospitalText}
-            multiline
-            numberOfLines={4}
           ></TextInput>
+          <View
+            style={{
+              alignItems: "flex-end",
+            }}
+          >
+            <Text style={styles.limitText}>{hospitalText.length}/600</Text>
+          </View>
         </View>
         <View style={{ marginBottom: 70 }}></View>
       </ScrollView>
@@ -193,8 +229,8 @@ const styles = StyleSheet.create({
   },
   progress: {
     width: "100%",
-    height: 6,
-    backgroundColor: "lightgrey",
+    height: 8,
+    backgroundColor: theme.green500,
   },
   scroll: {
     paddingVertical: 23,
@@ -253,4 +289,5 @@ const styles = StyleSheet.create({
     borderColor: "lightgrey",
     textAlignVertical: "top",
   },
+  limitText: {},
 });

@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TextInput,
-  Dimensions,
   TouchableOpacity,
 } from "react-native";
 import { useState } from "react";
@@ -13,9 +12,6 @@ import FilterButton from "../component/FilterButton";
 import { theme } from "../colors/color";
 import VoiceTimeButton from "../component/VoiceTimeButton";
 import Header from "../component/Header";
-
-// Dimensions로 화면 크기 가져오기
-const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export default function VoiceHistoryScreen({ navigation }) {
   // 어느 필터를 선택했는지 확인할 state
@@ -99,13 +95,13 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   progressLeft: {
-    width: SCREEN_WIDTH / 2,
-    height: 6,
-    backgroundColor: "lightgrey",
+    width: "50%",
+    height: 4,
+    backgroundColor: theme.grey150,
   },
   progressRight: {
-    width: SCREEN_WIDTH / 2,
-    height: 6,
-    backgroundColor: "grey",
+    width: "50%",
+    height: 4,
+    backgroundColor: theme.green500,
   },
 });

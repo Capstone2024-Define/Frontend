@@ -11,12 +11,16 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import VoiceModifyScreen from "./VoiceModifyScreen";
+import { useNavigation } from "@react-navigation/native";
 
 // Dimensions로 화면 크기 가져오기
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const Modal2 = ({ visible, onClose }) => {
+  // 이동 위한 내비게이션 추가
+  const navigation = useNavigation();
+
   // 어두운 배경 눌러도 모달창 닫히게 Pressable
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
@@ -25,7 +29,10 @@ const Modal2 = ({ visible, onClose }) => {
           <TouchableOpacity activeOpacity={0.5}>
             <Text style={styles.modal2Text}>이날 하루 기록 보기</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.5}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => navigation.navigate("VoiceHistory")}
+          >
             <Text style={styles.modal2Text}>삭제하기</Text>
           </TouchableOpacity>
         </Pressable>

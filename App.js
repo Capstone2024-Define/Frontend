@@ -26,6 +26,7 @@ import SymptomCheckScreen from "./screens/SymptomCheckScreen";
 import SymptomInfoScreen from "./screens/SymptomInfoScreen";
 import GalleryTest from "./screens/GalleryTest";
 import VoiceRecordScreen from "./screens/VoiceRecordScreen"; // 추가된 부분
+import SymptomResultScreen from "./screens/SymptomResultScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -56,6 +57,14 @@ export default function App() {
               component={SymptomCheckScreen}
               options={{
                 title: "증상체크",
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="SymptomResult"
+              component={SymptomResultScreen}
+              options={{
+                title: "측정 결과",
                 headerShown: false,
               }}
             />
