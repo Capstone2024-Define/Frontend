@@ -11,7 +11,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DetailRecordScreen from "./screens/DetailRecordScreen";
-import MainPracticeScreen from "./screens/MainPracticeScreen";
+import MainScreen from "./screens/MainScreen";
 import DoneRecord from "./screens/DoneRecord";
 import RecordHistory from "./screens/RecordHistory";
 import RecordModify from "./screens/RecordModify";
@@ -49,7 +49,7 @@ export default function App() {
             {/* 내비게이터로 이동할 화면들 추가 */}
             <Stack.Screen
               name="Main"
-              component={MainPracticeScreen}
+              component={MainScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen

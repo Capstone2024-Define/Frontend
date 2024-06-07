@@ -23,12 +23,7 @@ export default function Header({
         <TouchableOpacity activeOpacity={0.5} onPress={onLeftPress}>
           <View style={styles.space}>
             {left === "leftArrow" ? (
-              <Ionicons
-                name="chevron-back"
-                style={styles.image}
-                size={24}
-                color="black"
-              />
+              <Ionicons name="chevron-back" size={24} color={theme.grey800} />
             ) : (
               <Text style={styles.left}>{left}</Text>
             )}

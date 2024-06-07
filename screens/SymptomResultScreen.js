@@ -19,6 +19,10 @@ export default function SymptomResultScreen({ navigation }) {
         }}
         line={false}
       />
+      <View style={styles.progressView}>
+        <View style={styles.progressLeft}></View>
+        <View style={styles.progressRight}></View>
+      </View>
       <View style={styles.container}>
         <View style={styles.progressView}>
           <View style={styles.progressLeft}></View>

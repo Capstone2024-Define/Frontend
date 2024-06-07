@@ -1,0 +1,40 @@
+import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { theme } from "../colors/color";
+
+export default function HomeVoiceButton({ text, onPress }) {
+  return (
+    <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
+      <View style={styles.container}>
+        <Image
+          source={require("../assets/graphic_eq.png")}
+          style={styles.image}
+          resizeMode="contain"
+        />
+        <Text style={styles.text}>{text}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 36,
+    paddingVertical: 12,
+    marginLeft: 16,
+    borderRadius: 24,
+    backgroundColor: theme.yellow500,
+  },
+  image: {
+    width: 18,
+    height: 18,
+    marginRight: 8,
+  },
+  text: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "white",
+  },
+});

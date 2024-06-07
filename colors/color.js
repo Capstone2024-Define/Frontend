@@ -5,6 +5,7 @@ export const theme = {
   green800: "#436645",
 
   yellow100: "#FCF2DE",
+  yellow500: "#F6D494",
   yellow800: "#877551",
 
   grey50: "#FBFBFB",
@@ -15,4 +16,5 @@ export const theme = {
   grey500: "#6F6F6F",
   grey600: "#555555",
   grey700: "#333333",
+  grey800: "#242424",
 };
