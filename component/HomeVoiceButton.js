@@ -19,6 +19,7 @@ export default function HomeVoiceButton({ text, onPress }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    width: 118,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 36,

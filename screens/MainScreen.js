@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import summary from "./SummaryAPI";
-import { getDetail, saveDetail } from "../ServerConnect";
+import { getDetail, saveDetail } from "./ServerConnect";
 import HomeScreen from "./HomeScreen";
 
 const Tab = createBottomTabNavigator();
