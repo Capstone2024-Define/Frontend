@@ -206,7 +206,13 @@ export default function DetailRecordScreen({ navigation }) {
             onChangeText={setSchoolText}
             returnKeyType="done"
           ></TextInput>
-          <VoiceButton onPress={() => navigation.navigate("DetailVoice")} />
+          <VoiceButton
+            onPress={() =>
+              navigation.navigate("DetailVoice", {
+                detail: true,
+              })
+            }
+          />
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>

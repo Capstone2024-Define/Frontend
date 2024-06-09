@@ -54,6 +54,11 @@ function InfoScreen() {
 
   return (
     <View style={styles.defaultScreen}>
+      <View style={{ marginTop: 30 }} />
+      <Button
+        title="DetailNone"
+        onPress={() => navigation.push("DetailNone")}
+      />
       <Button
         title="기록보기"
         onPress={() => navigation.push("DetailHistory")}
@@ -77,10 +82,7 @@ function CalendarScreen() {
 
   return (
     <View style={styles.defaultScreen}>
-      <Button
-        title="갤러리 테스트"
-        onPress={() => navigation.push("GalleryTest", { limit: 10 })}
-      />
+      <Text>캘린더</Text>
     </View>
   );
 }

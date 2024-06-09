@@ -63,27 +63,15 @@ export default function VoiceHistoryScreen({ navigation }) {
           <>
             <VoiceDateButton
               place="학교"
-              onPress={() => navigation.push("DetailVoice")}
+              onPress={() => navigation.push("DetailVoice", { detail: false })}
             />
             <VoiceDateButton
               place="병원"
-              onPress={() => navigation.push("DetailVoice")}
+              onPress={() => navigation.push("DetailVoice", { detail: false })}
             />
             <VoiceDateButton
               place="병원"
-              onPress={() => navigation.push("DetailVoice")}
-            />
-            <VoiceDateButton
-              place="병원"
-              onPress={() => navigation.push("DetailVoice")}
-            />
-            <VoiceDateButton
-              place="병원"
-              onPress={() => navigation.push("DetailVoice")}
-            />
-            <VoiceDateButton
-              place="병원"
-              onPress={() => navigation.push("DetailVoice")}
+              onPress={() => navigation.push("DetailVoice", { detail: false })}
             />
           </>
           <View style={{ marginBottom: 30 }} />
@@ -101,6 +89,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   subContainer: {
     flex: 1,

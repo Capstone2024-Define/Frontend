@@ -23,9 +23,9 @@ import DetailVoiceScreen from "./screens/DetailVoiceScreen";
 import VoiceModifyScreen from "./screens/VoiceModifyScreen";
 import SymptomCheckScreen from "./screens/SymptomCheckScreen";
 import SymptomInfoScreen from "./screens/SymptomInfoScreen";
-import GalleryTest from "./screens/GalleryTest";
 import VoiceRecordScreen from "./screens/VoiceRecordScreen"; // 추가된 부분
 import SymptomResultScreen from "./screens/SymptomResultScreen";
+import DetailNoneScreen from "./screens/DetailNoneScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -102,23 +102,27 @@ export default function App() {
             <Stack.Screen
               name="DetailVoice"
               component={DetailVoiceScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, animation: "slide_from_bottom" }}
             />
             <Stack.Screen
               name="VoiceModify"
               component={VoiceModifyScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="GalleryTest" component={GalleryTest} />
             <Stack.Screen
               name="SymptomInfo"
               component={SymptomInfoScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="VoiceRecord" // 추가된 부분
-              component={VoiceRecordScreen} // 추가된 부분
-              options={{ headerShown: false }} // 추가된 부분
+              name="VoiceRecord"
+              component={VoiceRecordScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="DetailNone"
+              component={DetailNoneScreen}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         </NavigationContainer>

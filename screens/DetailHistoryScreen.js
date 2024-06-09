@@ -142,7 +142,13 @@ export default function DetailHistoryScreen({ navigation }) {
               <Text style={styles.recordText}>{schoolText}</Text>
             )}
           </View>
-          <VoiceButton onPress={() => navigation.navigate("DetailVoice")} />
+          <VoiceButton
+            onPress={() =>
+              navigation.navigate("DetailVoice", {
+                detail: true,
+              })
+            }
+          />
           <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
