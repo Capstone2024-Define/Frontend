@@ -1,19 +1,11 @@
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { theme } from "../colors/color";
 
-export default function FilterButton({
-  text,
-  onPress,
-  backgroundColor,
-  textColor,
-}) {
+export default function FilterButton({ text, onPress, onOff, textColor }) {
   return (
     <TouchableOpacity
       activeOpacity={0.5}
-      style={{
-        ...styles.filter,
-        backgroundColor: backgroundColor,
-      }}
+      style={onOff === "on" ? styles.filterOn : styles.filterOff}
       onPress={onPress}
     >
       <Text
@@ -28,15 +20,23 @@ export default function FilterButton({
   );
 }
 const styles = StyleSheet.create({
-  filter: {
-    borderWidth: 1,
+  filterOn: {
     borderRadius: 30,
-    borderColor: theme.green500,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 6,
     paddingHorizontal: 12,
-    marginRight: 12,
+    marginRight: 8,
+    backgroundColor: theme.green500,
   },
-  filterText: { fontSize: 14 },
+  filterOff: {
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    backgroundColor: theme.grey100,
+  },
+  filterText: { fontSize: 14, fontWeight: "500" },
 });

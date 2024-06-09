@@ -56,7 +56,7 @@ function InfoScreen() {
     <View style={styles.defaultScreen}>
       <Button
         title="기록보기"
-        onPress={() => navigation.push("RecordHistory")}
+        onPress={() => navigation.push("DetailHistory")}
       />
       <View style={{ padding: 20 }}>
         <Text>{summaryText}</Text>

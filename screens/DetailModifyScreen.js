@@ -20,6 +20,7 @@ import Camera from "../assets/photo_camera.svg";
 import Home from "../assets/home.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
+import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
 
 // 상세 기록 DB
@@ -113,14 +114,14 @@ export default function DetailRecordScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Header
-        left="이전"
-        title="기록하기"
+        left="leftArrow"
+        title="수정하기"
         right="완료"
         onLeftPress={() => {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.popToTop();
+          navigation.pop();
           showToast("기록이 완료되었어요");
 
           // DB에 저장
@@ -131,13 +132,9 @@ export default function DetailRecordScreen({ navigation }) {
             console.log(i, images[i].uri);
           }
         }}
-        line={false}
+        line={true}
       />
-      <View style={styles.progress} />
       <ScrollView style={styles.scroll}>
-        <View style={styles.subContainer}>
-          <Text style={styles.guideText}>좀더 자세히{"\n"}기록해볼까요?</Text>
-        </View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -192,19 +189,13 @@ export default function DetailRecordScreen({ navigation }) {
             numberOfLines={2}
             onChangeText={setHomeText}
             returnKeyType="done"
+            defaultValue="아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침 준비가 늦어짐.
+저녁 식사 중간에 계속 자리를 떠서 여러 번 주의를 줌. 식사 후 설거지를 도와주었음.
+숙제를 할 때 집중하지 못하고 자주 딴짓을 해서 함께 앉아 도와주며 완료함."
           ></TextInput>
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={School} />
             <Text style={styles.inputGuideText}>학교에서 어땠나요?</Text>
-            <Text
-              style={{
-                ...styles.inputGuideText,
-                marginLeft: 4,
-                color: theme.grey300,
-              }}
-            >
-              (선택)
-            </Text>
           </View>
           <TextInput
             placeholder="학교에서 있었던 일을 작성해주세요"
@@ -215,18 +206,10 @@ export default function DetailRecordScreen({ navigation }) {
             onChangeText={setSchoolText}
             returnKeyType="done"
           ></TextInput>
+          <VoiceButton onPress={() => navigation.navigate("DetailVoice")} />
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
-            <Text
-              style={{
-                ...styles.inputGuideText,
-                marginLeft: 4,
-                color: theme.grey300,
-              }}
-            >
-              (선택)
-            </Text>
           </View>
           <TextInput
             placeholder="병원에서 있었던 일을 작성해주세요"
@@ -236,6 +219,9 @@ export default function DetailRecordScreen({ navigation }) {
             numberOfLines={2}
             returnKeyType="done"
             onChangeText={setHospitalText}
+            defaultValue="오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이 필요하다고 판단됨.
+의사 선생님이 추천해준 행동치료 프로그램에 등록하기로 결정함.
+치료 계획에 대해 상담하고 가정에서 할 수 있는 행동 관리 방법에 대해 교육 받음."
           ></TextInput>
         </View>
         <View
@@ -256,23 +242,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-  progress: {
-    width: "100%",
-    height: 4,
-    backgroundColor: theme.green500,
-  },
   scroll: {},
   subContainer: {
     flex: 1,
     paddingHorizontal: 24,
   },
-  guideText: {
-    fontSize: 18,
-    fontWeight: "500",
-    marginTop: 28,
-    color: theme.grey800,
-  },
-  photoScroll: { marginLeft: 24, marginVertical: 20 },
+  photoScroll: { marginLeft: 24, marginTop: 28, marginBottom: 8 },
   photo: {
     width: 60,
     height: 60,
@@ -306,6 +281,7 @@ const styles = StyleSheet.create({
   },
   subTextContainer: {
     flexDirection: "row",
+    marginTop: 12,
     marginBottom: 8,
     alignItems: "center",
   },
@@ -316,7 +292,7 @@ const styles = StyleSheet.create({
     color: theme.grey600,
   },
   input: {
-    marginBottom: 20,
+    marginBottom: 8,
     padding: 10,
     borderRadius: 8,
     backgroundColor: theme.green50,

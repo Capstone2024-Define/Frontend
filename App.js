@@ -12,9 +12,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DetailRecordScreen from "./screens/DetailRecordScreen";
 import MainScreen from "./screens/MainScreen";
-import DoneRecord from "./screens/DoneRecord";
-import RecordHistory from "./screens/RecordHistory";
-import RecordModify from "./screens/RecordModify";
+import DetailHistoryScreen from "./screens/DetailHistoryScreen";
+import DetailModifyScreen from "./screens/DetailModifyScreen";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "./component/Toast";
@@ -77,30 +76,16 @@ export default function App() {
               }}
             />
             <Stack.Screen
-              name="DoneRecord"
-              component={DoneRecord}
-              options={{
-                title: "기록완료",
-                headerBackVisible: false,
-                headerTitleAlign: "center",
-                headerTitle: ({ children }) => (
-                  <View>
-                    <Text style={styles.headerTitleText}>{children}</Text>
-                  </View>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="RecordHistory"
-              component={RecordHistory}
+              name="DetailHistory"
+              component={DetailHistoryScreen}
               options={{
                 title: "0월 0일 기록",
                 headerShown: false,
               }}
             />
             <Stack.Screen
-              name="RecordModify"
-              component={RecordModify}
+              name="DetailModify"
+              component={DetailModifyScreen}
               options={{
                 title: "수정하기",
                 headerShown: false,

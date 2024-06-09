@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import VoiceModifyScreen from "./VoiceModifyScreen";
 import { useNavigation } from "@react-navigation/native";
+import { theme } from "../colors/color";
 
 // Dimensions로 화면 크기 가져오기
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -56,7 +57,7 @@ export default function DetailVoiceScreen({ navigation }) {
             activeOpacity={0.5}
             onPress={() => setVisible1(true)}
           >
-            <Text style={styles.headerText}>수정하기</Text>
+            <Text style={styles.headerText}>수정</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
@@ -108,18 +109,20 @@ export default function DetailVoiceScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 17,
+    paddingHorizontal: 24,
     backgroundColor: "white",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 15,
-    paddingHorizontal: 23,
   },
   headerText: {
-    fontSize: 14,
-    marginRight: 10,
+    fontSize: 16,
+    marginRight: 12,
+    fontWeight: "500",
+    color: theme.green500,
   },
   content: {
     paddingHorizontal: 33,
