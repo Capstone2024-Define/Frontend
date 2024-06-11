@@ -28,12 +28,16 @@ const styles = StyleSheet.create({
     height: 47,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 60,
+    marginTop: 55,
     padding: 10,
     backgroundColor: "white",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.green300,
   },
-  customToastText: { fontSize: 14, fontWeight: "400", color: theme.grey600 },
+  customToastText: {
+    fontSize: 14,
+    fontFamily: "Pretendard-Regular",
+    color: theme.grey600,
+  },
 });

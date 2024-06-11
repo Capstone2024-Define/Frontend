@@ -6,8 +6,20 @@ import { useNavigation } from "@react-navigation/native";
 import summary from "./SummaryAPI";
 import { getDetail, saveDetail } from "./ServerConnect";
 import HomeScreen from "./HomeScreen";
+import { theme } from "../colors/color";
+import { Octicons } from "@expo/vector-icons";
+import { SvgXml } from "react-native-svg";
+import Home from "../assets/home.svg";
+import Info from "../assets/info.svg";
+import Calendar from "../assets/calendar_nav.svg";
+import My from "../assets/Group 163.svg";
 
 const Tab = createBottomTabNavigator();
+
+// 탭바 아이콘
+const SvgIcon = ({ svg, color }) => (
+  <SvgXml xml={svg} width="25" height="25" fill={color} />
+);
 
 function InfoScreen() {
   // 서머리 테스트
@@ -54,10 +66,16 @@ function InfoScreen() {
 
   return (
     <View style={styles.defaultScreen}>
+      <View style={{ marginTop: 30 }} />
+      <Button
+        title="DetailNone"
+        onPress={() => navigation.push("DetailNone")}
+      />
       <Button
         title="기록보기"
         onPress={() => navigation.push("DetailHistory")}
       />
+      {/* <Button title="음성테스트" onPress={() => navigation.push("VoiceTest")} /> */}
       <View style={{ padding: 20 }}>
         <Text>{summaryText}</Text>
       </View>
@@ -77,10 +95,7 @@ function CalendarScreen() {
 
   return (
     <View style={styles.defaultScreen}>
-      <Button
-        title="갤러리 테스트"
-        onPress={() => navigation.push("GalleryTest", { limit: 10 })}
-      />
+      <Text>캘린더</Text>
     </View>
   );
 }
@@ -100,13 +115,16 @@ export default function MainScreen() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 55,
+          height: 67,
           alignItems: "center",
           justifyContent: "center",
-          paddingBottom: 8,
-          paddingTop: 5,
+          paddingBottom: 12,
+          paddingTop: 8,
+          paddingHorizontal: 10,
         },
-        tabBarActiveTintColor: "green",
+        tabBarActiveTintColor: theme.green500,
+        tabBarInactiveTintColor: theme.grey250,
+        tabBarLabelStyle: styles.tabBarText,
       }}
     >
       <Tab.Screen
@@ -114,8 +132,8 @@ export default function MainScreen() {
         component={HomeScreen}
         options={{
           title: "홈",
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="home" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Octicons name="home" size={21} color={color} />
           ),
         }}
       />
@@ -124,8 +142,8 @@ export default function MainScreen() {
         component={InfoScreen}
         options={{
           title: "정보",
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="book" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="book" size={25} color={color} />
           ),
         }}
       />
@@ -134,8 +152,8 @@ export default function MainScreen() {
         component={CalendarScreen}
         options={{
           title: "캘린더",
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="calendar" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Octicons name="calendar" size={21} color={color} />
           ),
         }}
       />
@@ -144,8 +162,8 @@ export default function MainScreen() {
         component={MyPageScreen}
         options={{
           title: "마이",
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="solution1" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="solution1" size={25} color={color} />
           ),
         }}
       />
@@ -153,4 +171,10 @@ export default function MainScreen() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  tabBarText: {
+    fontSize: 12,
+    fontFamily: "Pretendard-Medium",
+    marginTop: 6,
+  },
+});

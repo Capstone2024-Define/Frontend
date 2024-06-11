@@ -2,57 +2,138 @@ import {
   StyleSheet,
   View,
   Text,
-  Dimensions,
   ScrollView,
   TouchableOpacity,
   Modal,
   Pressable,
+  Animated,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import VoiceModifyScreen from "./VoiceModifyScreen";
 import { useNavigation } from "@react-navigation/native";
 import { theme } from "../colors/color";
+import { WithLocalSvg } from "react-native-svg/css";
+import School from "../assets/school.svg";
+import Hospital from "../assets/stethoscope.svg";
+import Note from "../assets/notes.svg";
+import { FontAwesome } from "@expo/vector-icons";
 
-// Dimensions로 화면 크기 가져오기
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const SCREEN_HEIGHT = Dimensions.get("window").height;
-
+// 음성녹음 창에서 올때는 이 날 기록보기, 삭제하기를 띄움
 const Modal2 = ({ visible, onClose }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
 
-  // 어두운 배경 눌러도 모달창 닫히게 Pressable
+  // 애니메이션
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
-      <Pressable style={styles.modalBackground} onPress={onClose}>
-        <Pressable style={styles.modal2}>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Text style={styles.modal2Text}>이날 하루 기록 보기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => navigation.navigate("VoiceHistory")}
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalBackground}>
+          <Animated.View
+            style={[styles.modal2, { transform: [{ translateY: slideAnim }] }]}
           >
-            <Text style={styles.modal2Text}>삭제하기</Text>
-          </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => navigation.navigate("DetailHistory")}
+            >
+              <Text style={styles.modal2Text}>이 날 기록 보기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => navigation.pop()}
+            >
+              <Text style={styles.modal2Text}>삭제하기</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
 
-export default function DetailVoiceScreen({ navigation }) {
+// 되돌아보기 창에서 올때는 삭제하기만 띄움
+const Modal3 = ({ visible, onClose }) => {
+  // 이동 위한 내비게이션 추가
+  const navigation = useNavigation();
+
+  // 애니메이션
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
+  // 어두운 배경 눌러도 모달창 닫히게 Pressable
+  return (
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalBackground}>
+          <Animated.View
+            style={[styles.modal3, { transform: [{ translateY: slideAnim }] }]}
+          >
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                navigation.pop();
+              }}
+            >
+              <Text style={{ ...styles.modal2Text, marginBottom: 0 }}>
+                삭제하기
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
+};
+
+export default function DetailVoiceScreen({ navigation, route }) {
   // 모달창 상태
   const [visible1, setVisible1] = useState(false);
   const [visible2, setVisible2] = useState(false);
+
+  // 장소
+  const [place, setPlace] = useState("");
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.pop()}>
-          <Ionicons name="close" size={24} color="black" />
+          <Ionicons name="close" size={24} color={theme.grey800} />
         </TouchableOpacity>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => setVisible1(true)}
@@ -63,45 +144,61 @@ export default function DetailVoiceScreen({ navigation }) {
             activeOpacity={0.5}
             onPress={() => setVisible2(true)}
           >
-            <Ionicons name="ellipsis-vertical-sharp" size={19} color="grey" />
+            <View style={styles.space}>
+              <FontAwesome
+                name="circle"
+                size={3.5}
+                color={theme.grey400}
+                style={{ marginVertical: 1.2 }}
+              />
+              <FontAwesome
+                name="circle"
+                size={3.5}
+                color={theme.grey400}
+                style={{ marginVertical: 1.2 }}
+              />
+              <FontAwesome
+                name="circle"
+                size={3.5}
+                color={theme.grey400}
+                style={{ marginVertical: 1.2 }}
+              />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.content}>
-        <View style={styles.infoHeader}>
-          <View style={styles.filter}>
-            <Text style={styles.filterText}>학교</Text>
-          </View>
-          <Text style={styles.date}>5.10 토</Text>
-          <Text style={styles.time}>오후 4:50</Text>
-        </View>
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryTitle}>음성요약</Text>
-          <Text style={styles.summaryText}>글 요약한 내용 기록 요약</Text>
-        </View>
+      <View style={styles.infoHeader}>
+        {place === "학교" ? (
+          <WithLocalSvg width={20} height={20} asset={School} />
+        ) : (
+          <WithLocalSvg width={20} height={20} asset={Hospital} />
+        )}
+        <Text style={styles.date}>5.10 토</Text>
+        <Text style={styles.time}>오후 4:50</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.summaryBox}>
+        <View style={{ flexDirection: "row", marginBottom: 12 }}>
+          <WithLocalSvg width={20} height={20} asset={Note} />
+          <Text style={styles.summaryTitle}>음성 기록을 요약했어요</Text>
+        </View>
+        <Text style={styles.summaryText}>글 요약한 내용 기록 요약</Text>
+      </View>
+      <ScrollView>
         <Text style={{ ...styles.text, paddingBottom: 20 }}>
           음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체
           내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성
           전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용
-          음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체
-          내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성
-          전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용
-          음성 전체 내용 음성 전체 내용 음성 전체 내용음성 전체 내용 음성 전체
-          내용 음성 전체 내용
         </Text>
       </ScrollView>
-      <View style={styles.playView}>
-        <TouchableOpacity activeOpacity={0.5}>
-          <Ionicons name="play-circle-outline" size={40} color="black" />
-        </TouchableOpacity>
-      </View>
       <VoiceModifyScreen
         visible={visible1}
         onClose={() => setVisible1(false)}
       />
-      <Modal2 visible={visible2} onClose={() => setVisible2(false)} />
+      {route.params.detail ? (
+        <Modal3 visible={visible2} onClose={() => setVisible2(false)} />
+      ) : (
+        <Modal2 visible={visible2} onClose={() => setVisible2(false)} />
+      )}
     </View>
   );
 }
@@ -117,84 +214,90 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 28,
   },
   headerText: {
     fontSize: 16,
     marginRight: 12,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },
-  content: {
-    paddingHorizontal: 33,
+  space: {
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
   },
   infoHeader: {
     flexDirection: "row",
-
-    paddingVertical: 20,
     alignItems: "center",
+    marginBottom: 12,
   },
-  filter: {
-    width: SCREEN_WIDTH / 8,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 3,
-    marginHorizontal: 2,
-    backgroundColor: "grey",
-  },
-  filterText: { fontSize: 14, color: "white" },
   date: {
     fontSize: 16,
-    fontWeight: "500",
-    marginHorizontal: 10,
+    fontFamily: "Pretendard-Medium",
+    marginHorizontal: 8,
+    color: theme.grey700,
   },
   time: {
     fontSize: 16,
-    color: "grey",
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey500,
   },
   summaryBox: {
-    height: SCREEN_WIDTH / 3,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 16,
-    backgroundColor: "lightgrey",
-    marginBottom: 20,
+    width: 312,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: theme.grey50,
+    marginBottom: 26,
   },
   summaryTitle: {
+    marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey600,
   },
   summaryText: {
-    fontSize: 14,
-    color: "grey",
+    fontSize: 12,
+    fontFamily: "Pretendard-Regular",
+    lineHeight: 20,
+    color: theme.grey500,
   },
   text: {
     fontSize: 14,
-    color: "grey",
-  },
-  playView: {
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "lightgrey",
+    fontFamily: "Pretendard-Regular",
+    lineHeight: 20,
+    color: theme.grey700,
   },
   modalBackground: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "#1212125C",
   },
   modal2: {
-    marginTop: SCREEN_HEIGHT - 100,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingVertical: 20,
-    paddingHorizontal: 30,
-    paddingBottom: 25,
+    width: "100%",
+    height: 156,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 28,
+    paddingBottom: 56,
+    paddingHorizontal: 35,
     backgroundColor: "white",
   },
   modal2Text: {
-    fontSize: 14,
-    paddingVertical: 6,
+    marginBottom: 24,
+    fontSize: 16,
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey700,
+  },
+  modal3: {
+    width: "100%",
+    height: 95,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 28,
+    paddingBottom: 43,
+    paddingHorizontal: 35,
+    backgroundColor: "white",
   },
 });

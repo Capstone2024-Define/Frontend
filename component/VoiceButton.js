@@ -32,7 +32,6 @@ VoiceButton.defaultProps = {
 const styles = StyleSheet.create({
   voiceButton: {
     flexDirection: "row",
-    flex: 1,
     width: 312,
     height: 68,
     borderRadius: 16,
@@ -42,17 +41,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  place: {
-    backgroundColor: theme.yellow100,
-    marginRight: 14,
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 24,
-  },
-  placeText: { fontSize: 12, color: theme.yellow800, fontWeight: "500" },
-  voiceContent: { flex: 1, justifyContent: "center" },
+  voiceContent: { flex: 1 },
   voiceContentHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -63,9 +52,18 @@ const styles = StyleSheet.create({
   voiceTime: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey700,
   },
-  dubogi: { fontSize: 12, fontWeight: "700", color: theme.grey400 },
-  voiceText: { fontSize: 12, fontWeight: "400", color: theme.grey500 },
+  dubogi: {
+    fontSize: 12,
+    //fontWeight: "700",
+    fontFamily: "Pretendard-Bold",
+    color: theme.grey400,
+  },
+  voiceText: {
+    fontSize: 12,
+    fontFamily: "Pretendard-Regular",
+    color: theme.grey500,
+  },
 });

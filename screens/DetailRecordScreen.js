@@ -110,6 +110,17 @@ export default function DetailRecordScreen({ navigation }) {
     console.log(images);
   };
 
+  // TextInput 제한 글자 색
+  const getColor = (num, length) => {
+    if (length === 0) {
+      return theme.grey400;
+    } else if (length > num) {
+      return "#F86D6D";
+    } else {
+      return theme.grey600;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -156,7 +167,7 @@ export default function DetailRecordScreen({ navigation }) {
                 >
                   {images.length}
                 </Text>
-                <Text style={styles.photoText}>/10</Text>
+                <Text style={styles.photoText}> / 10</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -182,17 +193,28 @@ export default function DetailRecordScreen({ navigation }) {
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Home} />
             <Text style={styles.inputGuideText}>가정에서 어땠나요?</Text>
+            <View style={styles.limit}>
+              <Text
+                style={{
+                  ...styles.limitText1,
+                  color: getColor(800, homeText.length),
+                }}
+              >
+                {homeText.length}
+              </Text>
+              <Text style={styles.limitText2}>/800</Text>
+            </View>
           </View>
           <TextInput
             placeholder="가정에서 있었던 일을 작성해주세요"
             style={styles.input}
             placeholderTextColor={theme.grey400}
             multiline
-            maxLength={2000 - totalText.length + homeText.length}
             numberOfLines={2}
             onChangeText={setHomeText}
             returnKeyType="done"
           ></TextInput>
+
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={School} />
             <Text style={styles.inputGuideText}>학교에서 어땠나요?</Text>
@@ -205,16 +227,27 @@ export default function DetailRecordScreen({ navigation }) {
             >
               (선택)
             </Text>
+            <View style={styles.limit}>
+              <Text
+                style={{
+                  ...styles.limitText1,
+                  color: getColor(600, schoolText.length),
+                }}
+              >
+                {schoolText.length}
+              </Text>
+              <Text style={styles.limitText2}>/600</Text>
+            </View>
           </View>
           <TextInput
             placeholder="학교에서 있었던 일을 작성해주세요"
             style={styles.input}
             multiline
-            maxLength={2000 - totalText.length + schoolText.length}
             numberOfLines={2}
             onChangeText={setSchoolText}
             returnKeyType="done"
           ></TextInput>
+
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -227,12 +260,22 @@ export default function DetailRecordScreen({ navigation }) {
             >
               (선택)
             </Text>
+            <View style={styles.limit}>
+              <Text
+                style={{
+                  ...styles.limitText1,
+                  color: getColor(600, hospitalText.length),
+                }}
+              >
+                {hospitalText.length}
+              </Text>
+              <Text style={styles.limitText2}>/600</Text>
+            </View>
           </View>
           <TextInput
             placeholder="병원에서 있었던 일을 작성해주세요"
             style={styles.input}
             multiline
-            maxLength={2000 - totalText.length + hospitalText.length}
             numberOfLines={2}
             returnKeyType="done"
             onChangeText={setHospitalText}
@@ -242,9 +285,7 @@ export default function DetailRecordScreen({ navigation }) {
           style={{
             alignItems: "flex-end",
           }}
-        >
-          <Text style={styles.limitText}>{totalText.length}/2000</Text>
-        </View>
+        ></View>
         <View style={{ marginBottom: 70 }}></View>
       </ScrollView>
     </View>
@@ -268,7 +309,8 @@ const styles = StyleSheet.create({
   },
   guideText: {
     fontSize: 18,
-    fontWeight: "500",
+    //fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginTop: 28,
     color: theme.grey800,
   },
@@ -285,7 +327,8 @@ const styles = StyleSheet.create({
   },
   photoText: {
     fontSize: 12,
-    fontWeight: "400",
+    // fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
     color: theme.grey800,
   },
   deleteButton: {
@@ -311,16 +354,30 @@ const styles = StyleSheet.create({
   },
   inputGuideText: {
     fontSize: 14,
-    fontWeight: "500",
+    //fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginLeft: 8,
     color: theme.grey600,
   },
   input: {
-    marginBottom: 20,
     padding: 10,
     borderRadius: 8,
     backgroundColor: theme.green50,
     textAlignVertical: "top",
+    fontFamily: "Human-beomseok",
+    lineHeight: 19.6,
+    marginBottom: 20,
   },
-  limitText: {},
+  limit: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  limitText1: { fontSize: 12, fontFamily: "Pretendard-Medium" },
+  limitText2: {
+    fontSize: 12,
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey400,
+  },
 });

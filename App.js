@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -23,14 +23,26 @@ import DetailVoiceScreen from "./screens/DetailVoiceScreen";
 import VoiceModifyScreen from "./screens/VoiceModifyScreen";
 import SymptomCheckScreen from "./screens/SymptomCheckScreen";
 import SymptomInfoScreen from "./screens/SymptomInfoScreen";
-import GalleryTest from "./screens/GalleryTest";
-import VoiceRecordScreen from "./screens/VoiceRecordScreen"; // 추가된 부분
+import VoiceRecordScreen from "./screens/VoiceRecordScreen";
 import SymptomResultScreen from "./screens/SymptomResultScreen";
+import DetailNoneScreen from "./screens/DetailNoneScreen";
+import { useFonts } from "expo-font"; // 폰트 관련
+// import VoiceTestScreen from "./screens/VoiceTestScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  // 폰트 - 엑스포 방법
+  // Medium -> 500
+  const [fontsLoaded] = useFonts({
+    "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
+    "Pretendard-Bold": require("./assets/fonts/Pretendard-Bold.ttf"),
+    "Pretendard-Medium": require("./assets/fonts/Pretendard-Medium.ttf"),
+    "Pretendard-Regular": require("./assets/fonts/Pretendard-Regular.ttf"),
+  });
+  if (!fontsLoaded) return null;
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -102,24 +114,33 @@ export default function App() {
             <Stack.Screen
               name="DetailVoice"
               component={DetailVoiceScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, animation: "slide_from_bottom" }}
             />
             <Stack.Screen
               name="VoiceModify"
               component={VoiceModifyScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="GalleryTest" component={GalleryTest} />
             <Stack.Screen
               name="SymptomInfo"
               component={SymptomInfoScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="VoiceRecord" // 추가된 부분
-              component={VoiceRecordScreen} // 추가된 부분
-              options={{ headerShown: false }} // 추가된 부분
+              name="VoiceRecord"
+              component={VoiceRecordScreen}
+              options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="DetailNone"
+              component={DetailNoneScreen}
+              options={{ headerShown: false }}
+            />
+            {/* <Stack.Screen
+              name="VoiceTest"
+              component={VoiceTestScreen}
+              options={{ headerShown: false }}
+            /> */}
           </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>
@@ -131,16 +152,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerTitleText: {
-    fontSize: 17,
-  },
-  headerLRText: {
-    color: "grey",
   },
 });

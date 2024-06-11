@@ -142,7 +142,13 @@ export default function DetailHistoryScreen({ navigation }) {
               <Text style={styles.recordText}>{schoolText}</Text>
             )}
           </View>
-          <VoiceButton onPress={() => navigation.navigate("DetailVoice")} />
+          <VoiceButton
+            onPress={() =>
+              navigation.navigate("DetailVoice", {
+                detail: true,
+              })
+            }
+          />
           <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -193,13 +199,14 @@ const styles = StyleSheet.create({
   title: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey600,
   },
   subText: {
     fontSize: 14,
-    fontWeight: "400",
     color: theme.grey700,
+    fontFamily: "Human-beomseok",
+    lineHeight: 19.6,
   },
   line: {
     width: "100%",
@@ -220,7 +227,7 @@ const styles = StyleSheet.create({
   remindText: {
     marginLeft: 12,
     fontSize: 14,
-    fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
     color: theme.grey800,
   },
   space: {
@@ -236,7 +243,7 @@ const styles = StyleSheet.create({
   },
   inputGuideText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginLeft: 8,
     color: theme.grey600,
   },
@@ -256,7 +263,8 @@ const styles = StyleSheet.create({
   },
   recordText: {
     fontSize: 14,
-    fontWeight: "400",
     color: theme.grey800,
+    fontFamily: "Human-beomseok",
+    lineHeight: 19.6,
   },
 });

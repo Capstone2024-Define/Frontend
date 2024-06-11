@@ -38,5 +38,5 @@ const styles = StyleSheet.create({
     marginRight: 8,
     backgroundColor: theme.grey100,
   },
-  filterText: { fontSize: 14, fontWeight: "500" },
+  filterText: { fontSize: 14, fontFamily: "Pretendard-Medium" },
 });

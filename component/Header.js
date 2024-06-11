@@ -1,14 +1,7 @@
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { theme } from "../colors/color";
-import { Ionicons } from "@expo/vector-icons";
 import { WithLocalSvg } from "react-native-svg/css";
 import Back from "../assets/arrow_back_ios.svg";
-
-// 모든 SVG 파일을 임포트
-const svgMap = {
-  Back: Back,
-  // 다른 SVG 파일도 여기 추가
-};
 
 // 왼쪽 헤더가 화살표 아이콘일때는 left = "leftArrow" 라고 props 보내기
 // line은 헤더 아래 선을 그을지 말지 boolean값
@@ -76,17 +69,20 @@ const styles = StyleSheet.create({
   },
   left: {
     fontSize: 16,
-    fontWeight: "500",
+    // fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },
   title: {
     fontSize: 16,
-    fontWeight: "500",
+    // fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey800,
   },
   right: {
     fontSize: 16,
-    fontWeight: "500",
+    // fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },
   line: {
