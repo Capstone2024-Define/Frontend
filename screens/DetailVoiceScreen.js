@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
+  Animated,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import VoiceModifyScreen from "./VoiceModifyScreen";
 import { useNavigation } from "@react-navigation/native";
 import { theme } from "../colors/color";
@@ -23,30 +25,47 @@ const Modal2 = ({ visible, onClose }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
 
-  // 어두운 배경 눌러도 모달창 닫히게 Pressable
+  // 애니메이션
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
   return (
-    <Modal
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-      animationType="fade"
-    >
-      <Pressable style={styles.modalBackground} onPress={onClose}>
-        <Pressable style={styles.modal2}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => navigation.navigate("DetailHistory")}
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalBackground}>
+          <Animated.View
+            style={[styles.modal2, { transform: [{ translateY: slideAnim }] }]}
           >
-            <Text style={styles.modal2Text}>이 날 기록 보기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => navigation.pop()}
-          >
-            <Text style={styles.modal2Text}>삭제하기</Text>
-          </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => navigation.navigate("DetailHistory")}
+            >
+              <Text style={styles.modal2Text}>이 날 기록 보기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => navigation.pop()}
+            >
+              <Text style={styles.modal2Text}>삭제하기</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -56,28 +75,46 @@ const Modal3 = ({ visible, onClose }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
 
+  // 애니메이션
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
   // 어두운 배경 눌러도 모달창 닫히게 Pressable
   return (
-    <Modal
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-      animationType="fade"
-    >
-      <Pressable style={styles.modalBackground} onPress={onClose}>
-        <Pressable style={styles.modal3}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              navigation.pop();
-            }}
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalBackground}>
+          <Animated.View
+            style={[styles.modal3, { transform: [{ translateY: slideAnim }] }]}
           >
-            <Text style={{ ...styles.modal2Text, marginBottom: 0 }}>
-              삭제하기
-            </Text>
-          </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                navigation.pop();
+              }}
+            >
+              <Text style={{ ...styles.modal2Text, marginBottom: 0 }}>
+                삭제하기
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -151,7 +188,6 @@ export default function DetailVoiceScreen({ navigation, route }) {
           음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체
           내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성
           전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용 음성 전체 내용
-          음성 전체 내용 음성 전체 내용 음성 전체
         </Text>
       </ScrollView>
       <VoiceModifyScreen

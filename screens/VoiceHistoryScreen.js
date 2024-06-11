@@ -29,7 +29,7 @@ export default function VoiceHistoryScreen({ navigation }) {
         line={true}
       />
       <View style={styles.subContainer}>
-        <ScrollView style={styles.scroll}>
+        <View style={styles.headerContainer}>
           <View style={{ flexDirection: "row" }}>
             <TextInput
               style={styles.textInput}
@@ -60,20 +60,20 @@ export default function VoiceHistoryScreen({ navigation }) {
               textColor={filter === "hospital" ? "white" : theme.grey300}
             />
           </View>
-          <>
-            <VoiceDateButton
-              place="학교"
-              onPress={() => navigation.push("DetailVoice", { detail: false })}
-            />
-            <VoiceDateButton
-              place="병원"
-              onPress={() => navigation.push("DetailVoice", { detail: false })}
-            />
-            <VoiceDateButton
-              place="병원"
-              onPress={() => navigation.push("DetailVoice", { detail: false })}
-            />
-          </>
+        </View>
+        <ScrollView style={styles.scroll}>
+          <VoiceDateButton
+            place="학교"
+            onPress={() => navigation.push("DetailVoice", { detail: false })}
+          />
+          <VoiceDateButton
+            place="병원"
+            onPress={() => navigation.push("DetailVoice", { detail: false })}
+          />
+          <VoiceDateButton
+            place="병원"
+            onPress={() => navigation.push("DetailVoice", { detail: false })}
+          />
           <View style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 24,
   },
-  scroll: {
+  headerContainer: {
     paddingTop: 28,
   },
   textInput: {

@@ -33,7 +33,7 @@ export default function MainVoiceScreen({ route, navigation }) {
         name="VoiceHistory"
         component={VoiceHistoryScreen}
         options={({ navigation }) => ({
-          title: "기록",
+          title: "목록",
           headerShown: false,
         })}
       />

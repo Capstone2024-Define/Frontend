@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    fontWeight: "400",
     color: theme.grey700,
+    fontFamily: "Human-beomseok",
   },
   line: {
     width: "100%",
@@ -262,7 +262,8 @@ const styles = StyleSheet.create({
   },
   recordText: {
     fontSize: 14,
-    fontWeight: "400",
     color: theme.grey800,
+    fontFamily: "Human-beomseok",
+    lineHeight: 19.6,
   },
 });

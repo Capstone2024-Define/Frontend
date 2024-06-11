@@ -1,3 +1,4 @@
+import React, { useRef, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -5,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -13,16 +15,37 @@ import { theme } from "../colors/color";
 import { showToast } from "../component/Toast";
 
 export default function VoiceModifyScreen({ visible, onClose }) {
+  // 내비게이션
   const navigation = useNavigation();
+
+  // 애니메이션
+  const slideAnim = useRef(new Animated.Value(300)).current; // 초기 위치를 화면 밖으로 설정
+
+  // toValue: 애니메이션의 최종값
+  // duration: 속도
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible, slideAnim]);
+
   return (
-    <Modal
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-      animationType="fade"
-    >
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.modalBackground}>
-        <View style={styles.container}>
+        <View style={styles.overlay} onPress={onClose} />
+        <Animated.View
+          style={[styles.container, { transform: [{ translateY: slideAnim }] }]}
+        >
           <View style={styles.header}>
             <TouchableOpacity activeOpacity={0.5} onPress={onClose}>
               <Ionicons name="close" size={24} color="black" />
@@ -55,7 +78,7 @@ export default function VoiceModifyScreen({ visible, onClose }) {
             </TextInput>
             <View style={{ marginBottom: 40 }} />
           </ScrollView>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -64,7 +87,7 @@ export default function VoiceModifyScreen({ visible, onClose }) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: "93%",
+    height: "92%",
     backgroundColor: "white",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
@@ -95,5 +118,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     backgroundColor: "#1212125C",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
