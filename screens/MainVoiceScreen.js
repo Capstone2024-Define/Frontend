@@ -13,12 +13,11 @@ export default function MainVoiceScreen({ route, navigation }) {
     <Tab.Navigator
       initialRouteName="VoiceRecord"
       screenOptions={{
-        tabBarLabelStyle: styles.tabBarText,
         tabBarIconStyle: { display: "none" }, // 아이콘을 숨기는 스타일
         tabBarActiveTintColor: theme.green500, // 활성화 텍스트 색상
         tabBarInactiveTintColor: theme.grey300, // 비활성화 텍스트 색상
         tabBarStyle: { height: 47, paddingTop: 8, paddingBottom: 16 },
-        tabBarLabelStyle: { fontSize: 14, fontWeight: "500" },
+        tabBarLabelStyle: { fontSize: 14, fontFamily: "Pretendard-Medium" },
       }}
     >
       <Tab.Screen
@@ -41,12 +40,4 @@ export default function MainVoiceScreen({ route, navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  tabBarText: {
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  headerTitleText: {
-    fontSize: 17,
-  },
-});
+const styles = StyleSheet.create({});

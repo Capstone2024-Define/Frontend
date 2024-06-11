@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 16,
     marginRight: 12,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },
   space: {
@@ -235,13 +235,13 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginHorizontal: 8,
     color: theme.grey700,
   },
   time: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey500,
   },
   summaryBox: {
@@ -254,17 +254,19 @@ const styles = StyleSheet.create({
   summaryTitle: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey600,
   },
   summaryText: {
     fontSize: 12,
-    fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
+    lineHeight: 20,
     color: theme.grey500,
   },
   text: {
     fontSize: 14,
-    fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
+    lineHeight: 20,
     color: theme.grey700,
   },
   modalBackground: {
@@ -285,7 +287,7 @@ const styles = StyleSheet.create({
   modal2Text: {
     marginBottom: 24,
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey700,
   },
   modal3: {

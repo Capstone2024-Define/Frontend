@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
@@ -6,7 +6,6 @@ import Edit from "../assets/edit.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import VoiceButton from "../component/VoiceButton";
-import Voice from "../assets/graphic_eq.svg";
 
 export default function DetailNoneScreen({ navigation }) {
   return (
@@ -70,13 +69,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey600,
   },
   subText: {
     marginTop: 4,
     fontSize: 12,
-    fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
     color: theme.grey400,
   },
   buttonView: {
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
   buttonText: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: "white",
   },
   subContainer: {
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
   },
   guideText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginLeft: 8,
     color: theme.grey600,
   },

@@ -35,5 +35,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.green300,
   },
-  customToastText: { fontSize: 14, fontWeight: "400", color: theme.grey600 },
+  customToastText: {
+    fontSize: 14,
+    fontFamily: "Pretendard-Regular",
+    color: theme.grey600,
+  },
 });

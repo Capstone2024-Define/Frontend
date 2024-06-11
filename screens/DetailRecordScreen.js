@@ -354,7 +354,8 @@ const styles = StyleSheet.create({
   },
   inputGuideText: {
     fontSize: 14,
-    fontWeight: "500",
+    //fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginLeft: 8,
     color: theme.grey600,
   },

@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.grey100,
     borderRadius: 24,
     fontSize: 12,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
   },
   search: {
     position: "absolute",

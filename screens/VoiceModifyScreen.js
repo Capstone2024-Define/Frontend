@@ -101,17 +101,18 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey800,
   },
   done: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },
   text: {
     fontSize: 14,
-    fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
+    lineHeight: 20,
     color: theme.grey700,
   },
   modalBackground: {

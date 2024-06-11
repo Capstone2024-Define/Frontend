@@ -52,9 +52,18 @@ const styles = StyleSheet.create({
   voiceTime: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey700,
   },
-  dubogi: { fontSize: 12, fontWeight: "700", color: theme.grey400 },
-  voiceText: { fontSize: 12, fontWeight: "400", color: theme.grey500 },
+  dubogi: {
+    fontSize: 12,
+    //fontWeight: "700",
+    fontFamily: "Pretendard-Bold",
+    color: theme.grey400,
+  },
+  voiceText: {
+    fontSize: 12,
+    fontFamily: "Pretendard-Regular",
+    color: theme.grey500,
+  },
 });

@@ -199,13 +199,14 @@ const styles = StyleSheet.create({
   title: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     color: theme.grey600,
   },
   subText: {
     fontSize: 14,
     color: theme.grey700,
     fontFamily: "Human-beomseok",
+    lineHeight: 19.6,
   },
   line: {
     width: "100%",
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   remindText: {
     marginLeft: 12,
     fontSize: 14,
-    fontWeight: "400",
+    fontFamily: "Pretendard-Regular",
     color: theme.grey800,
   },
   space: {
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
   },
   inputGuideText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Medium",
     marginLeft: 8,
     color: theme.grey600,
   },
