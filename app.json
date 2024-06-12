@@ -22,13 +22,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-<<<<<<< HEAD
-      "permissions": [
-        "RECORD_AUDIO"
-      ]
-=======
       "permissions": ["RECORD_AUDIO"]
->>>>>>> 3ae1c84c3d8e9e7a9f3d3a7c6d2b3af244d236e2
     },
     "web": {
       "favicon": "./assets/favicon.png"
