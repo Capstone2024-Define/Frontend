@@ -17,11 +17,12 @@ import { showToast } from "../component/Toast";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Camera from "../assets/photo_camera.svg";
-import Home from "../assets/home.svg";
+import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -31,18 +32,12 @@ import X from "../assets/close_small.svg";
 // 날짜(date), 유저아이디(user_id)
 // 인덱스(index, 0~9), 사진(image)
 
-export default function DetailRecordScreen({ navigation }) {
+export default function DetailRecordScreen({ navigation, route }) {
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
-  const [totalText, setTotalText] = useState("");
-
-  // totalText 계산
-  useEffect(() => {
-    setTotalText(homeText + schoolText + hospitalText);
-    //console.log(`전체 텍스트 : ${totalText}`);
-  }, [homeText, schoolText, hospitalText]);
+  const date = route.params.date;
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -52,6 +47,25 @@ export default function DetailRecordScreen({ navigation }) {
   // 이미지 객체 id 설정 위한 변수
   const [id, setId] = useState(0);
   let k = 0;
+
+  // 기록 로드
+  useState(() => {
+    async function load() {
+      try {
+        const rawRecord = await AsyncStorage.getItem(date);
+        const newRecord = JSON.parse(rawRecord);
+
+        setHomeText(newRecord.home);
+        setSchoolText(newRecord.school);
+        setHospitalText(newRecord.hospital);
+        setImages(newRecord.image);
+        console.log(newRecord);
+      } catch (e) {
+        console.log("기록 로드 에러");
+      }
+    }
+    load();
+  }, []);
 
   // 이미지 업로드
   const uploadImage = async () => {
@@ -122,6 +136,15 @@ export default function DetailRecordScreen({ navigation }) {
     }
   };
 
+  // 저장
+  const save = async (toSave) => {
+    try {
+      await AsyncStorage.setItem(date, JSON.stringify(toSave));
+    } catch (error) {
+      console.log("기록 저장 에러");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -131,7 +154,7 @@ export default function DetailRecordScreen({ navigation }) {
         onLeftPress={() => {
           navigation.pop();
         }}
-        onRightPress={() => {
+        onRightPress={async () => {
           navigation.pop();
           showToast("기록이 완료되었어요");
 
@@ -142,6 +165,19 @@ export default function DetailRecordScreen({ navigation }) {
           for (let i = 0; i < images.length; i++) {
             console.log(i, images[i].uri);
           }
+
+          // 객체 설정
+          const newRecord = {
+            date: date,
+            home: homeText,
+            school: schoolText,
+            hospital: hospitalText,
+            image: images,
+          };
+          console.log(newRecord);
+
+          // 스토리지 저장
+          await save(newRecord);
         }}
         line={true}
       />
@@ -210,10 +246,9 @@ export default function DetailRecordScreen({ navigation }) {
             numberOfLines={2}
             onChangeText={setHomeText}
             returnKeyType="done"
-            defaultValue="아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침 준비가 늦어짐.
-저녁 식사 중간에 계속 자리를 떠서 여러 번 주의를 줌. 식사 후 설거지를 도와주었음.
-숙제를 할 때 집중하지 못하고 자주 딴짓을 해서 함께 앉아 도와주며 완료함."
-          ></TextInput>
+          >
+            {homeText}
+          </TextInput>
 
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={School} />
@@ -237,7 +272,9 @@ export default function DetailRecordScreen({ navigation }) {
             numberOfLines={2}
             onChangeText={setSchoolText}
             returnKeyType="done"
-          ></TextInput>
+          >
+            {schoolText}
+          </TextInput>
 
           <VoiceButton
             onPress={() =>
@@ -268,10 +305,9 @@ export default function DetailRecordScreen({ navigation }) {
             numberOfLines={2}
             returnKeyType="done"
             onChangeText={setHospitalText}
-            defaultValue="오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이 필요하다고 판단됨.
-의사 선생님이 추천해준 행동치료 프로그램에 등록하기로 결정함.
-치료 계획에 대해 상담하고 가정에서 할 수 있는 행동 관리 방법에 대해 교육 받음."
-          ></TextInput>
+          >
+            {hospitalText}
+          </TextInput>
         </View>
         <View
           style={{

@@ -5,24 +5,24 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StyleSheet,
+  Image,
   Pressable,
   Modal,
   Dimensions,
+  ImageBackground,
+  ScrollView,
 } from "react-native";
-
+import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Calendar } from "react-native-calendars";
 import HomeDayButton from "../component/HomeDayButton";
 import HomeVoiceButton from "../component/HomeVoiceButton";
-import { Feather } from "@expo/vector-icons";
-import { Calendar } from "react-native-calendars";
 import { theme } from "../colors/color";
-import { Ionicons } from "@expo/vector-icons";
 
 // 화면 크기 가져오기
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 // 캘린더 모달창
-const CalenderModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
-  // 어두운 배경 눌러도 모달창 닫히게 Pressable
+const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.modalBackground} onPress={onClose}>
@@ -49,28 +49,21 @@ const CalenderModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
 
 // 홈 스크린
 export default function HomeScreen({ navigation }) {
-  // 모달창 visible
   const [modalVisible, setModalVisible] = useState(false);
-  // 선택된 날짜(String형)
   const [selectedDate, setSelectedDate] = useState("");
-  // 선택된 날짜 주간
   const [weeks, setWeeks] = useState([]);
 
-  // 시작 시 selectedDate 초기화
   useEffect(() => {
     const date = cvtDateString(new Date());
     setSelectedDate(date);
   }, []);
 
-  // 선택된 날짜에 맞게 주간 변경
   useEffect(() => {
     if (selectedDate) {
       getWeeks(selectedDate);
     }
-    console.log(selectedDate);
   }, [selectedDate]);
 
-  // Date형 날짜 -> String형 날짜
   const cvtDateString = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -78,15 +71,11 @@ export default function HomeScreen({ navigation }) {
     return `${year}-${month}-${day}`;
   };
 
-  // 선택 날짜 주간 날짜 가져오는 함수
   const getWeeks = (date) => {
     const startDate = new Date(date);
-    const dayOfWeek = startDate.getDay(); // 0 (일) to 6 (토)
-
-    // 시작일 계산
+    const dayOfWeek = startDate.getDay();
     startDate.setDate(startDate.getDate() - dayOfWeek);
 
-    // 주간 배열 초기화
     const newWeeks = [];
     for (let i = 0; i < 7; i++) {
       const tempDate = new Date(startDate);
@@ -96,18 +85,16 @@ export default function HomeScreen({ navigation }) {
     setWeeks(newWeeks);
   };
 
-  // 선택 날짜가 몇주차인지 계산
   const getWeekNumber = (date) => {
     const dateFrom = new Date(date);
-    const currentDate = dateFrom.getDate(); // 해당 날짜(일)
-    const startOfMonth = new Date(dateFrom.setDate(1)); // 이번달 1일
-    const weekDay = startOfMonth.getDay(); // 이번달 1일 요일, 0 (일) to 6 (토)
+    const currentDate = dateFrom.getDate();
+    const startOfMonth = new Date(dateFrom.setDate(1));
+    const weekDay = startOfMonth.getDay();
 
-    // ((요일 - 1) + 해당 날짜) / 7일로 나누기 = N 주차
     return parseInt((weekDay - 1 + currentDate) / 7) + 1;
   };
 
-  const [moods, setMoods] = useState({}); // 날짜별 이모지 상태
+  const [moods, setMoods] = useState({});
 
   const renderEmoji = (emoji, index) => (
     <TouchableOpacity
@@ -127,78 +114,201 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>오늘 우리 아이가 어땠는지 기록해주세요</Text>
-      <View style={styles.calenderHeader}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => setModalVisible(true)}
-        >
-          <Feather name="calendar" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.month}>
-          {new Date(selectedDate).getFullYear()}년{" "}
-          {new Date(selectedDate).getMonth() + 1}월{" "}
-          {getWeekNumber(selectedDate)}주차
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
-            const date = new Date(selectedDate);
-            date.setDate(date.getDate() - 1);
-            setSelectedDate(cvtDateString(date));
-          }}
-        >
-          <Ionicons name="chevron-back" size={24} color={theme.grey800} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            const date = new Date(selectedDate);
-            date.setDate(date.getDate() + 1);
-            setSelectedDate(cvtDateString(date));
-          }}
-        >
-          <Ionicons name="chevron-forward" size={24} color={theme.grey800} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.calendar}>
-        <View style={styles.week}>
-          {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => (
-            <Text key={index} style={styles.day}>
-              {day}
-            </Text>
-          ))}
-        </View>
-        <View style={styles.days}>
-          {weeks.map((day) => (
-            <View key={day} style={styles.dayContainer}>
-              <TouchableOpacity onPress={() => setSelectedDate(day)}>
-                <Text
-                  style={[
-                    styles.dayNumber,
-                    selectedDate === day ? styles.selectedDay : null,
-                  ]}
+      <ImageBackground
+        source={require("../assets/background.png")}
+        style={styles.backgroundImage}
+      >
+        <ScrollView>
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: 12,
+              marginHorizontal: 30,
+            }}
+          >
+            <View style={{ flex: 1, marginTop: 68, marginRight: 4 }}>
+              <Text
+                style={{ color: "#FFFFFF", fontSize: 16, marginBottom: 11 }}
+              >
+                {"오늘도 같이 기록해볼까요?"}
+              </Text>
+              <Text style={{ color: "#FFFFFF" }}>{"12일째 기록하는 중"}</Text>
+            </View>
+            <Image
+              source={require("../assets/rabbit.png")}
+              resizeMode={"stretch"}
+              style={{ width: 72, height: 122 }}
+            />
+          </View>
+          <View
+            style={{
+              backgroundColor: "#FEFCF4",
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              paddingTop: 24,
+              paddingBottom: 14,
+              paddingHorizontal: 24,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => setModalVisible(true)}
+              >
+                <Feather name="calendar" size={16} color="gray" />
+              </TouchableOpacity>
+              <Text style={{ color: "#555555", fontSize: 14 }}>
+                {`${new Date(selectedDate).getFullYear()}년 ${
+                  new Date(selectedDate).getMonth() + 1
+                }월 ${getWeekNumber(selectedDate)}주차`}
+              </Text>
+              <View style={{ flex: 1, alignSelf: "stretch" }}></View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                paddingVertical: 8,
+                marginBottom: 16,
+              }}
+            >
+              {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: 39,
+                    backgroundColor:
+                      selectedDate === weeks[index] ? "#78BA7D" : "transparent",
+                    borderRadius: 24,
+                    paddingVertical: 9,
+                    paddingHorizontal: 12,
+                    marginRight: index === 6 ? 0 : 16,
+                  }}
                 >
-                  {new Date(day).getDate()}
+                  <Text
+                    style={{
+                      color:
+                        selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
+                      fontSize: 12,
+                      marginBottom: 7,
+                      textAlign: "center",
+                    }}
+                  >
+                    {day}
+                  </Text>
+                  <Text
+                    style={{
+                      color:
+                        selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
+                      fontSize: 12,
+                      marginBottom: 7,
+                      textAlign: "center",
+                    }}
+                  >
+                    {new Date(weeks[index]).getDate()}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            <View
+              style={{
+                backgroundColor: "#FBFBFB",
+                borderRadius: 8,
+                paddingTop: 15,
+                paddingBottom: 37,
+                marginBottom: 36,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#333333",
+                  fontSize: 14,
+                  marginBottom: 108,
+                  marginLeft: 17,
+                }}
+              >
+                {`${new Date(selectedDate).getMonth() + 1}.${new Date(
+                  selectedDate
+                ).getDate()} ${
+                  ["일", "월", "화", "수", "목", "금", "토"][
+                    new Date(selectedDate).getDay()
+                  ]
+                }요일 (오늘)`}
+              </Text>
+              <View style={{ alignItems: "center" }}>
+                <Image
+                  source={require("../assets/rabbit.png")}
+                  resizeMode={"stretch"}
+                  style={{ width: 40, height: 40 }}
+                />
+                <Text
+                  style={{
+                    color: "#6F6F6F",
+                    fontSize: 14,
+                    marginTop: 5,
+                  }}
+                >
+                  {"작성된 기록이 없어요"}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  width: 177,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#78BA7D",
+                  borderRadius: 24,
+                  paddingVertical: 13,
+                }}
+                onPress={() =>
+                  navigation.push("SymptomCheck", { date: selectedDate })
+                }
+              >
+                <FontAwesome name="pencil" size={24} color="white" />
+                <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+                  {"하루기록"}
                 </Text>
               </TouchableOpacity>
-              <Text style={styles.emoji}>{moods[day] ? moods[day] : "😐"}</Text>
+              <TouchableOpacity
+                style={{
+                  width: 118,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#F5DE8F",
+                  borderRadius: 24,
+                  paddingVertical: 13,
+                }}
+                onPress={() => navigation.push("MainVoice")}
+              >
+                <FontAwesome name="microphone" size={24} color="white" />
+                <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+                  {"음성기록"}
+                </Text>
+              </TouchableOpacity>
             </View>
-          ))}
-        </View>
-      </View>
-      <View style={styles.buttonView}>
-        <HomeDayButton
-          text="하루기록"
-          onPress={() => {
-            navigation.push("SymptomCheck");
-          }}
-        />
-        <HomeVoiceButton
-          text="음성기록"
-          onPress={() => navigation.push("MainVoice")}
-        />
-      </View>
-      <CalenderModal
+          </View>
+        </ScrollView>
+      </ImageBackground>
+      <CalendarModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         selectedDate={selectedDate}
@@ -211,90 +321,116 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f0f0f0",
   },
-  title: {
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+  },
+  header: {
+    backgroundColor: "#DFF0D8",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+  },
+  headerText: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
+    color: "#333",
   },
-  calenderHeader: {
-    flexDirection: "row",
-    padding: 20,
+  subHeaderText: {
+    fontSize: 16,
+    color: "#555",
+  },
+  rabbitImage: {
+    width: 50,
+    height: 50,
+    marginTop: 10,
   },
   calendar: {
-    backgroundColor: "#fff",
+    marginTop: 20,
     padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 20,
+    backgroundColor: "#F7F7F7",
   },
-  month: {
+  calendarHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  calendarTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
   },
-  week: {
+  weekDays: {
     flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  day: {
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  days: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   dayContainer: {
     alignItems: "center",
   },
-  dayNumber: {
+  dayText: {
+    fontSize: 14,
+    color: "#888",
+  },
+  dayCircle: {
     width: 30,
     height: 30,
-    textAlign: "center",
-    lineHeight: 30,
     borderRadius: 15,
-    marginVertical: 5,
+    backgroundColor: "#F0F0F0",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 5,
   },
   selectedDay: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#66BB6A",
   },
-  emoji: {
-    fontSize: 30,
+  dateText: {
+    color: "#333",
   },
-  selectedEmoji: {
-    borderWidth: 2,
-    borderColor: "#000",
-    borderRadius: 15,
-    padding: 5,
-  },
-  recordButton: {
-    backgroundColor: "#e0e0e0",
+  recordContainer: {
+    marginTop: 20,
     padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 20,
+    backgroundColor: "#F7F7F7",
+    alignItems: "center",
   },
   recordTitle: {
-    color: "#000",
     fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 10,
   },
-  recordText: {
-    color: "#000",
+  noRecord: {
+    alignItems: "center",
+  },
+  noRecordImage: {
+    width: 40,
+    height: 40,
+  },
+  noRecordText: {
     fontSize: 14,
+    color: "#888",
+    marginTop: 5,
   },
-  defaultScreen: {
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#66BB6A",
+    padding: 10,
+    borderRadius: 20,
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    marginHorizontal: 5,
   },
-  buttonView: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+  audioButton: {
+    backgroundColor: "#FFCA28",
+  },
+  buttonText: {
+    color: "white",
+    marginLeft: 5,
   },
   modalBackground: {
     flex: 1,

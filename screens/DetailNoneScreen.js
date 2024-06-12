@@ -6,6 +6,7 @@ import Edit from "../assets/edit.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import VoiceButton from "../component/VoiceButton";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function DetailNoneScreen({ navigation }) {
   return (
@@ -22,10 +23,12 @@ export default function DetailNoneScreen({ navigation }) {
             <Text style={styles.title}>아직 하루기록을 하지 않았어요!</Text>
             <Text style={styles.subText}>6월 12일의 하루기록을 해주세요!</Text>
           </View>
-          <View style={styles.buttonView}>
-            <WithLocalSvg width={18} height={18} asset={Edit} />
-            <Text style={styles.buttonText}>하루기록</Text>
-          </View>
+          <TouchableOpacity activeOpacity={0.5}>
+            <View style={styles.buttonView}>
+              <WithLocalSvg width={18} height={18} asset={Edit} />
+              <Text style={styles.buttonText}>하루기록</Text>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.subContainer}>
           <WithLocalSvg width={20} height={20} asset={School} />

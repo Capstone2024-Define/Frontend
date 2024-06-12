@@ -1,21 +1,42 @@
-import { View, Text, Button, StyleSheet } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { AntDesign } from "@expo/vector-icons";
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 
-export default function SymptomResultScreen({ navigation }) {
+const resultImages = {
+  최고예요: require("../assets/high.png"), // 최고예요 이미지 경로
+  보통이에요: require("../assets/medium.png"), // 보통이에요 이미지 경로
+  아쉬워요: require("../assets/low.png"), // 아쉬워요 이미지 경로
+};
+
+export default function SymptomResultScreen({ route, navigation }) {
+  const { selectedCount } = route.params.selectedCount;
+
+  let resultText = "";
+  let resultImage = null;
+
+  if (selectedCount <= 3) {
+    resultText = "최고예요!";
+    resultImage = resultImages["최고예요"];
+  } else if (selectedCount <= 9) {
+    resultText = "보통이에요!";
+    resultImage = resultImages["보통이에요"];
+  } else {
+    resultText = "아쉬워요!";
+    resultImage = resultImages["아쉬워요"];
+  }
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="이전"
-        title="측정 결과"
+        title="되돌아보기 결과"
         right="다음"
         onLeftPress={() => {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.push("DetailRecord");
+          navigation.push("DetailRecord", { date: route.params.date });
         }}
         line={false}
       />
@@ -24,16 +45,9 @@ export default function SymptomResultScreen({ navigation }) {
         <View style={styles.progressRight}></View>
       </View>
       <View style={styles.container}>
-        <View style={styles.progressView}>
-          <View style={styles.progressLeft}></View>
-          <View style={styles.progressRight}></View>
-        </View>
-        <View style={styles.subContainer}>
-          <AntDesign name="checkcircle" size={80} color="grey" />
-          <Text style={styles.middleText}>
-            오늘 아이의 상태는 아주좋음이네요
-          </Text>
-        </View>
+        <Image source={resultImage} style={styles.resultImage} />
+        <Text style={styles.resultText}>오늘 지현님은</Text>
+        <Text style={styles.resultTextHighlight}>{resultText}</Text>
       </View>
     </View>
   );
@@ -42,12 +56,13 @@ export default function SymptomResultScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   progressView: {
     flexDirection: "row",
     width: "100%",
-    height: 8,
+    height: 4,
   },
   progressLeft: {
     width: "66%",
@@ -57,28 +72,19 @@ const styles = StyleSheet.create({
     width: "34%",
     backgroundColor: theme.grey150,
   },
-  subContainer: {
-    flex: 1,
-    padding: 15,
-    alignItems: "center",
-    justifyContent: "center",
+  resultImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
   },
-  middleText: {
-    marginTop: 25,
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "grey",
+  resultText: {
+    fontSize: 18,
+    color: "#242424",
+    fontFamily: "Pretendard-Medium",
   },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 16,
-    padding: 14,
-    backgroundColor: "grey",
-  },
-  buttonText: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "white",
+  resultTextHighlight: {
+    fontSize: 18,
+    color: theme.green500,
+    fontFamily: "Pretendard-Bold",
   },
 });
