@@ -90,7 +90,7 @@ export default function SymptomCheckScreen({ route, navigation }) {
             </TouchableOpacity>
           ))}
         </View>
-        <View style={{ marginBottom: 40 }} />
+        <View style={{ marginBottom: 30 }} />
       </ScrollView>
       <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>
@@ -136,6 +136,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 14,
+    alignItems: "center",
+    marginBottom: 14,
   },
   checkbox: {
     width: 18,
@@ -163,6 +165,6 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Pretendard-Bold",
   },
 });

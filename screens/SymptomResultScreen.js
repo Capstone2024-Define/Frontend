@@ -40,10 +40,6 @@ export default function SymptomResultScreen({ route, navigation }) {
         }}
         line={false}
       />
-      <View style={styles.progressView}>
-        <View style={styles.progressLeft}></View>
-        <View style={styles.progressRight}></View>
-      </View>
       <View style={styles.container}>
         <Image source={resultImage} style={styles.resultImage} />
         <Text style={styles.resultText}>오늘 지현님은</Text>
