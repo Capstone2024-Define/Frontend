@@ -10,7 +10,7 @@ const resultImages = {
 };
 
 export default function SymptomResultScreen({ route, navigation }) {
-  const { selectedCount } = route.params;
+  const { selectedCount } = route.params.selectedCount;
 
   let resultText = "";
   let resultImage = null;
@@ -29,14 +29,14 @@ export default function SymptomResultScreen({ route, navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <Header
-        left="leftArrow"
+        left="이전"
         title="되돌아보기 결과"
         right="다음"
         onLeftPress={() => {
           navigation.pop();
         }}
         onRightPress={() => {
-          // Add navigation to next screen if needed
+          navigation.push("DetailRecord");
         }}
         line={false}
       />
@@ -63,9 +63,11 @@ const styles = StyleSheet.create({
   resultText: {
     fontSize: 18,
     color: "#242424",
+    fontFamily: "Pretendard-Medium",
   },
   resultTextHighlight: {
     fontSize: 18,
     color: theme.green500,
+    fontFamily: "Pretendard-Bold",
   },
 });

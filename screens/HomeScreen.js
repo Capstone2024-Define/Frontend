@@ -112,6 +112,12 @@ export default function HomeScreen({ navigation }) {
     </TouchableOpacity>
   );
 
+  const handleWeekChange = (direction) => {
+    const current = new Date(selectedDate);
+    const newDate = new Date(current.setDate(current.getDate() + direction * 7));
+    setSelectedDate(cvtDateString(newDate));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -135,9 +141,9 @@ export default function HomeScreen({ navigation }) {
               <Text style={{ color: "#FFFFFF" }}>{"12일째 기록하는 중"}</Text>
             </View>
             <Image
-             source={require("../assets/rabbit.png")}
+             source={require("../assets/homerabbit.png")}
               resizeMode={"stretch"}
-              style={{ width: 72, height: 122 }}
+              style={{ width: 132, height: 142 ,marginTop:12, marginBottom:-14 }}
             />
           </View>
           <View
@@ -163,12 +169,24 @@ export default function HomeScreen({ navigation }) {
               >
                 <Feather name="calendar" size={16} color="gray" />
               </TouchableOpacity>
-              <Text style={{ color: "#555555", fontSize: 14 }}>
+              <Text style={{ color: "#555555", fontSize: 14, marginLeft: 8 }}>
                 {`${new Date(selectedDate).getFullYear()}년 ${
                   new Date(selectedDate).getMonth() + 1
                 }월 ${getWeekNumber(selectedDate)}주차`}
               </Text>
               <View style={{ flex: 1, alignSelf: "stretch" }}></View>
+              <TouchableOpacity onPress={() => handleWeekChange(-1)}>
+                <Image
+                  source={require("../assets/chevron_left.png")} 
+                  style={{ width: 24, height: 24 }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleWeekChange(1)}>
+                <Image
+                  source={require("../assets/chevron_right.png")} 
+                  style={{ width: 24, height: 24 }}
+                />
+              </TouchableOpacity>
             </View>
             <View
               style={{
@@ -185,7 +203,7 @@ export default function HomeScreen({ navigation }) {
                 <View
                   key={index}
                   style={{
-                    width: 39,
+                    width: 37,
                     backgroundColor:
                       selectedDate === weeks[index]
                         ? "#78BA7D"
@@ -250,18 +268,19 @@ export default function HomeScreen({ navigation }) {
               </Text>
               <View style={{ alignItems: "center" }}>
                 <Image
-                     source={require("../assets/rabbit.png")}
+                     source={require("../assets/homechecklist.png")}
                   resizeMode={"stretch"}
-                  style={{ width: 40, height: 40 }}
+                  style={{ width: 67.1, height: 70 }}
                 />
                 <Text
                   style={{
                     color: "#6F6F6F",
                     fontSize: 14,
                     marginTop: 5,
+                 
                   }}
                 >
-                  {"작성된 기록이 없어요"}
+                  {"아직 기록하지 않았어요!"}
                 </Text>
               </View>
             </View>
@@ -285,7 +304,7 @@ export default function HomeScreen({ navigation }) {
                 onPress={() => navigation.push("SymptomCheck")}
               >
                 <FontAwesome name="pencil" size={24} color="white" />
-                <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: 14, marginLeft: 8 }}>
                   {"하루기록"}
                 </Text>
               </TouchableOpacity>
@@ -302,7 +321,7 @@ export default function HomeScreen({ navigation }) {
                 onPress={() => navigation.push("MainVoice")}
               >
                 <FontAwesome name="microphone" size={24} color="white" />
-                <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: 14, marginLeft: 8 }}>
                   {"음성기록"}
                 </Text>
               </TouchableOpacity>
