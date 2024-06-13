@@ -90,11 +90,7 @@ export default function SymptomCheckScreen({ route, navigation }) {
             </TouchableOpacity>
           ))}
         </View>
-<<<<<<< HEAD
         <View style={{ marginBottom: 40 }} />
-=======
-        <View style={{ marginBottom: 30 }} />
->>>>>>> 7bc6a62b076229c5d6a7e3a092999d4a8d141c65
       </ScrollView>
       <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>

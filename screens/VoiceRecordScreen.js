@@ -1,286 +1,232 @@
-import React, { useState, useRef } from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, TouchableOpacity, StyleSheet, Image, ImageBackground, ScrollView, SafeAreaView } from 'react-native';
 import { Audio } from 'expo-av';
-import axios from 'axios';
-import * as FileSystem from 'expo-file-system';
+import Header from "../component/Header";
 
-const VoiceRecordScreen = () => {
+const VoiceRecordScreen = ({ navigation, route }) => {
   const [recording, setRecording] = useState(null);
-  const [transcript, setTranscript] = useState('');
-  const recordingRef = useRef(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [recordingUri, setRecordingUri] = useState('');
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
+  const [mode, setMode] = useState('school');
+
+  useEffect(() => {
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [intervalId]);
 
   const startRecording = async () => {
     try {
+      console.log('Requesting permissions..');
       await Audio.requestPermissionsAsync();
-      
-      // 오디오 모드 설정
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
 
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
-      recordingRef.current = recording;
+      console.log('Starting recording..');
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.startAsync();
+
       setRecording(recording);
-      console.log('Recording started');
+      setIsRecording(true);
+      const id = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+      setIntervalId(id);
     } catch (err) {
       console.error('Failed to start recording', err);
     }
   };
 
   const stopRecording = async () => {
-    try {
-      console.log('Stopping recording..');
-      await recordingRef.current.stopAndUnloadAsync();
-      const uri = recordingRef.current.getURI();
-      console.log('Recording stopped and stored at', uri);
-
-      const info = await FileSystem.getInfoAsync(uri);
-      console.log('Recording file info:', info);
-
-      if (info.size > 0) {
-        sendToNaverSTT(uri);
-      } else {
-        console.error('Recording file is empty');
-      }
+    console.log('Stopping recording..');
+    if (recording) {
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      setRecordingUri(uri);
       setRecording(null);
-    } catch (error) {
-      console.error('Failed to stop recording', error);
+      setIsRecording(false);
+      clearInterval(intervalId);
+      setIntervalId(null);
+      setRecordingTime(0);
     }
   };
 
-  const sendToNaverSTT = async (fileUri) => {
-    try {
-      // 바이너리 파일 읽기
-      const fileData = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      console.log('File Data Length:', fileData.length);
-      console.log('File Data:', fileData.substring(0, 100)); // 전송 데이터의 일부를 로그로 출력
-
-      const url = 'https://naveropenapi.apigw.ntruss.com/recog/v1/stt?lang=Kor';
-      const config = {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'X-NCP-APIGW-API-KEY-ID': 'tnu2l7l5pe', // 네이버 클라우드 API 키
-          'X-NCP-APIGW-API-KEY': 'Ng7ni9swMdivuktz74C8lAH4NxkP02XW1X9typnt', // 네이버 클라우드 API 시크릿
-        },
-      };
-      const response = await axios.post(url, fileData, config);
-      console.log('Response from Naver STT:', response.data);
-      setTranscript(response.data.text);
-    } catch (err) {
-      console.error('Failed to send to Naver STT', err);
-      if (err.response) {
-        console.log('Response data:', err.response.data);
-        console.log('Response status:', err.response.status);
-        console.log('Response headers:', err.response.headers);
-      }
+  const pauseRecording = async () => {
+    console.log('Pausing recording..');
+    if (recording) {
+      await recording.pauseAsync();
+      setIsPaused(true);
+      clearInterval(intervalId);
     }
+  };
+
+  const resumeRecording = async () => {
+    console.log('Resuming recording..');
+    if (recording) {
+      await recording.startAsync();
+      setIsPaused(false);
+      const id = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+      setIntervalId(id);
+    }
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   return (
-    <View style={styles.container}>
-      <Button
-        title={recording ? 'Stop Recording' : 'Start Recording'}
-        onPress={recording ? stopRecording : startRecording}
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <Header
+        left="leftArrow"
+        title="음성기록"
+        right="다음"
+        onLeftPress={() => {
+          navigation.popToTop();
+        }}
+        onRightPress={() =>
+          navigation.push("SymptomResult", {
+            selectedCount: selectedChecklistItems.length,
+            date: route.params.date,
+          })
+        }
+        line={false}
       />
-      {transcript ? <Text style={styles.transcript}>{transcript}</Text> : null}
+      <SafeAreaView style={styles.safeArea}>
+       
+    
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionText}>{"음성을 녹음하면\n텍스트로 변환해요"}</Text>
+            <View style={styles.modeSwitcher}>
+              <TouchableOpacity onPress={() => setMode('school')} style={mode === 'school' ? styles.activeMode : styles.inactiveMode}>
+                <Text style={mode === 'school' ? styles.activeModeText : styles.inactiveModeText}>{"학교"}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setMode('hospital')} style={mode === 'hospital' ? styles.activeMode : styles.inactiveMode}>
+                <Text style={mode === 'hospital' ? styles.activeModeText : styles.inactiveModeText}>{"병원"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Text style={styles.recordingHint}>{"녹음을 하면 글로 기록이 되고\n기록된 내용은 상세기록에 추가돼요"}</Text>
+          <Text style={styles.timer}>{formatTime(recordingTime)}</Text>
+          <View style={styles.separator} />
+          <TouchableOpacity onPress={isRecording ? stopRecording : startRecording} style={styles.recordButton}>
+
+            <Text style={styles.recordButtonText}>{isRecording ? "녹음정지" : "녹음시작"}</Text>
+          </TouchableOpacity>
+       
+      </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: "#FFFFFF",
   },
-  transcript: {
-    marginTop: 20,
+  scrollView: {
+    flex: 1,
+    backgroundColor: "#FEFCF8",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FEFCF4",
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    marginBottom: 28,
+  },
+  titleText: {
+    color: "#242424",
     fontSize: 16,
-    color: 'black',
+    flex: 1,
+  },
+  descriptionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    marginHorizontal: 24,
+  },
+  descriptionText: {
+    color: "#242424",
+    fontSize: 18,
+    width: 127,
+  },
+  modeSwitcher: {
+    width: 138,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 24,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+  },
+  activeMode: {
+    width: 63,
+    alignItems: "center",
+    backgroundColor: "#78BA7D",
+    borderRadius: 30,
+    paddingVertical: 9,
+  },
+  inactiveMode: {
+    width: 63,
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 30,
+    paddingVertical: 9,
+  },
+  activeModeText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+  },
+  inactiveModeText: {
+    color: "#A5A5A5",
+    fontSize: 14,
+  },
+  recordingHint: {
+    color: "#A5A5A5",
+    fontSize: 12,
+    marginBottom: 124,
+    marginHorizontal: 24,
+    width: 312,
+  },
+  timer: {
+    color: "#8B8B8B",
+    fontSize: 36,
+    marginBottom: 55,
+    marginLeft: 142,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#A5D1A9",
+    marginBottom: 98,
+  },
+  recordButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#78BA7D",
+    borderRadius: 24,
+    paddingVertical: 13,
+    marginBottom: 93,
+    marginHorizontal: 106,
+  },
+  recordIcon: {
+    width: 18,
+    height: 18,
+    marginRight: 8,
+  },
+  recordButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
   },
 });
 
 export default VoiceRecordScreen;
-
-
-
-// import React, { useState } from "react";
-// import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-// import Header from "../component/Header";
-// import { theme } from "../colors/color";
-
-// const VoiceRecordScreen = ({ navigation }) => {
-//   const [isSchoolSelected, setIsSchoolSelected] = useState(true);
-//   const [recording, setRecording] = useState(false);
-//   const [recordingTime, setRecordingTime] = useState("0:00");
-
-//   const toggleCategory = () => {
-//     setIsSchoolSelected(!isSchoolSelected);
-//   };
-
-//   const startRecording = () => {
-//     // 녹음 시작 로직
-//     setRecording(true);
-//   };
-
-//   return (
-//     <View style={{ flex: 1, backgroundColor: "white" }}>
-//       <Header
-//         left="leftArrow"
-//         title="음성기록"
-//         onLeftPress={() => navigation.popToTop()}
-//         line={true}
-//       />
-//       <View style={styles.container}>
-//         <Text style={styles.headerText}>음성기록</Text>
-//         <View style={styles.categoryContainer}>
-//           <TouchableOpacity
-//             style={[
-//               styles.categoryButton,
-//               isSchoolSelected && styles.categoryButtonSelected,
-//             ]}
-//             onPress={toggleCategory}
-//           >
-//             <Text
-//               style={
-//                 isSchoolSelected
-//                   ? styles.categoryTextSelected
-//                   : styles.categoryText
-//               }
-//             >
-//               학교
-//             </Text>
-//           </TouchableOpacity>
-//           <TouchableOpacity
-//             style={[
-//               styles.categoryButton,
-//               !isSchoolSelected && styles.categoryButtonSelected,
-//             ]}
-//             onPress={toggleCategory}
-//           >
-//             <Text
-//               style={
-//                 !isSchoolSelected
-//                   ? styles.categoryTextSelected
-//                   : styles.categoryText
-//               }
-//             >
-//               병원
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//         <Text style={styles.infoText}>
-//           우리 아이의 학교 관련 기록을 음성으로 기록해요!
-//         </Text>
-//         <Text style={styles.infoSubText}>
-//           음성을 텍스트로 변환 기록되고 기록된 내용은 상세 기록에 자동으로
-//           추가돼요
-//         </Text>
-//         <Text style={styles.recordingPrompt}>
-//           녹음 버튼을 눌러서 기록을 시작하세요!
-//         </Text>
-//         <Text style={styles.recordingTime}>{recordingTime}</Text>
-//         <View style={styles.recordingIcons}>
-//           <Text>🔊</Text>
-//           <Text>➡️</Text>
-//           <Text>📄</Text>
-//         </View>
-//         <TouchableOpacity style={styles.recordButton} onPress={startRecording}>
-//           <Text style={styles.recordButtonText}>녹음 시작</Text>
-//         </TouchableOpacity>
-//       </View>
-//       <View style={{ flexDirection: "row" }}>
-//         <View style={styles.progressLeft} />
-//         <View style={styles.progressRight} />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//     backgroundColor: "#fff",
-//     alignItems: "center",
-//   },
-//   headerText: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     marginBottom: 16,
-//   },
-//   categoryContainer: {
-//     flexDirection: "row",
-//     marginBottom: 16,
-//   },
-//   categoryButton: {
-//     flex: 1,
-//     padding: 10,
-//     backgroundColor: "#eee",
-//     alignItems: "center",
-//     borderRadius: 20,
-//   },
-//   categoryButtonSelected: {
-//     backgroundColor: "#000",
-//   },
-//   categoryText: {
-//     color: "#000",
-//   },
-//   categoryTextSelected: {
-//     color: "#fff",
-//   },
-//   infoText: {
-//     fontSize: 16,
-//     textAlign: "center",
-//     marginBottom: 8,
-//   },
-//   infoSubText: {
-//     fontSize: 14,
-//     textAlign: "center",
-//     color: "#666",
-//     marginBottom: 16,
-//   },
-//   recordingPrompt: {
-//     fontSize: 16,
-//     textAlign: "center",
-//     marginBottom: 16,
-//   },
-//   recordingTime: {
-//     fontSize: 32,
-//     fontWeight: "bold",
-//     marginBottom: 16,
-//   },
-//   recordingIcons: {
-//     flexDirection: "row",
-//     justifyContent: "space-around",
-//     width: "60%",
-//     marginBottom: 16,
-//   },
-//   recordButton: {
-//     backgroundColor: "#aaa",
-//     padding: 10,
-//     borderRadius: 20,
-//   },
-//   recordButtonText: {
-//     color: "#fff",
-//     fontSize: 16,
-//   },
-//   progressLeft: {
-//     width: "50%",
-//     height: 4,
-//     backgroundColor: theme.green500,
-//   },
-//   progressRight: {
-//     width: "50%",
-//     height: 4,
-//     backgroundColor: theme.grey150,
-//   },
-// });
-
-// export default VoiceRecordScreen;
