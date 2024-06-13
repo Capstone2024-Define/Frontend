@@ -8,17 +8,20 @@ import { getDetail, saveDetail } from "./ServerConnect";
 import HomeScreen from "./HomeScreen";
 import { theme } from "../colors/color";
 import { Octicons } from "@expo/vector-icons";
-import { SvgXml } from "react-native-svg";
-import Home from "../assets/home.svg";
-import Info from "../assets/info.svg";
-import Calendar from "../assets/calendar_nav.svg";
-import My from "../assets/Group 163.svg";
+import { SvgXml, WithLocalSvg } from "react-native-svg/css";
+import HomeGray from "../assets/home_gray.svg";
+import InfoGray from "../assets/info_gray.svg";
+import CalendarGray from "../assets/calendar_gray.svg";
+import MyGray from "../assets/person_gray.svg";
+import HomeGreen from "../assets/home_green.svg";
+import InfoGreen from "../assets/info_green.svg";
+import CalendarGreen from "../assets/calendar_green.svg";
+import MyGreen from "../assets/person_green.svg";
 
 const Tab = createBottomTabNavigator();
 
-// 탭바 아이콘
-const SvgIcon = ({ svg, color }) => (
-  <SvgXml xml={svg} width="25" height="25" fill={color} />
+const SvgIcon = ({ asset }) => (
+  <WithLocalSvg width="25" height="25" asset={asset} />
 );
 
 function InfoScreen() {
@@ -132,9 +135,12 @@ export default function MainScreen() {
         component={HomeScreen}
         options={{
           title: "홈",
-          tabBarIcon: ({ color }) => (
-            <Octicons name="home" size={21} color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            color === theme.green500 ? (
+              <SvgIcon asset={HomeGreen} />
+            ) : (
+              <SvgIcon asset={HomeGray} />
+            ),
         }}
       />
       <Tab.Screen
@@ -142,9 +148,12 @@ export default function MainScreen() {
         component={InfoScreen}
         options={{
           title: "정보",
-          tabBarIcon: ({ color }) => (
-            <AntDesign name="book" size={25} color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            color === theme.green500 ? (
+              <SvgIcon asset={InfoGreen} />
+            ) : (
+              <SvgIcon asset={InfoGray} />
+            ),
         }}
       />
       <Tab.Screen
@@ -152,9 +161,12 @@ export default function MainScreen() {
         component={CalendarScreen}
         options={{
           title: "캘린더",
-          tabBarIcon: ({ color }) => (
-            <Octicons name="calendar" size={21} color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            color === theme.green500 ? (
+              <SvgIcon asset={CalendarGreen} />
+            ) : (
+              <SvgIcon asset={CalendarGray} />
+            ),
         }}
       />
       <Tab.Screen
@@ -162,9 +174,12 @@ export default function MainScreen() {
         component={MyPageScreen}
         options={{
           title: "마이",
-          tabBarIcon: ({ color }) => (
-            <AntDesign name="solution1" size={25} color={color} />
-          ),
+          tabBarIcon: ({ color }) =>
+            color === theme.green500 ? (
+              <SvgIcon asset={MyGreen} />
+            ) : (
+              <SvgIcon asset={MyGray} />
+            ),
         }}
       />
     </Tab.Navigator>

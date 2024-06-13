@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Image,
 } from "react-native";
 import VoiceButton from "../component/VoiceButton";
 import Header from "../component/Header";
@@ -15,33 +16,66 @@ import Note from "../assets/notes.svg";
 import Check from "../assets/check.svg";
 import DropDown from "../assets/keyboard_arrow_down.svg";
 import DropUp from "../assets/keyboard_arrow_up.svg";
-import Home from "../assets/home.svg";
+import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import { FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function DetailHistoryScreen({ navigation }) {
   // 상세 기록 state
-  const [homeText, setHomeText] = useState(" ");
+  const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
-  const [hospitalText, setHospitalText] = useState(" ");
+  const [hospitalText, setHospitalText] = useState("");
+  const [images, setImages] = useState([]);
+  const [date, setDate] = useState("");
 
   // 되돌아보기 드롭다운 활성화
   const [remindVisible, setRemindVisible] = useState(false);
+
+  // 서머리 요약을 위한 전체 텍스트
+  const [totalText, setTotalText] = useState("");
+
+  // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
+  useFocusEffect(
+    useCallback(() => {
+      async function load() {
+        try {
+          const rawRecord = await AsyncStorage.getItem("2024-06-13");
+          const newRecord = JSON.parse(rawRecord);
+
+          setHomeText(newRecord.home);
+          setSchoolText(newRecord.school);
+          setHospitalText(newRecord.hospital);
+          setImages(newRecord.image);
+          setDate(newRecord.date);
+          setTotalText(
+            newRecord.home + newRecord.school + newRecord.hospitalText
+          );
+        } catch (e) {
+          console.log("기록 로드 에러");
+        }
+      }
+      load();
+    }, [])
+  );
 
   return (
     <>
       <Header
         left="leftArrow"
-        title="0월 0일"
+        title={`${new Date(date).getMonth() + 1}월 ${new Date(
+          date
+        ).getDate()}일`}
         right="수정"
         onLeftPress={() => {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.push("DetailModify");
+          navigation.push("DetailModify", { date: date });
         }}
-        iconName={School}
+        iconColor={theme.green500}
         line={true}
       />
       <ScrollView style={styles.container}>
@@ -50,12 +84,15 @@ export default function DetailHistoryScreen({ navigation }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.photoScroll}
         >
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
-          <View style={styles.photo}></View>
+          {images.map((image) => (
+            <View key={image.id}>
+              <Image
+                source={{ uri: image.uri }}
+                style={styles.photo}
+                resizeMode="cover"
+              />
+            </View>
+          ))}
         </ScrollView>
         <View style={styles.subContainer}>
           <View style={{ marginVertical: 24 }}>
@@ -121,12 +158,7 @@ export default function DetailHistoryScreen({ navigation }) {
                 상세기록을 하지 않았어요{"\n"}
               </Text>
             ) : (
-              <Text style={styles.recordText}>
-                아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침
-                준비가 늦어짐. 저녁 식사 중간에 계속 자리를 떠서 여러 번 주의를
-                줌. 식사후 설거지를 도와주었음. 숙제를 할 때 집중하지 못하고
-                자주 딴짓을 해서 함께 앉아 도와주며 완료함.
-              </Text>
+              <Text style={styles.recordText}>{homeText}</Text>
             )}
           </View>
           <View style={styles.subTextContainer}>
@@ -159,12 +191,7 @@ export default function DetailHistoryScreen({ navigation }) {
                 상세기록을 하지 않았어요{"\n"}
               </Text>
             ) : (
-              <Text style={styles.recordText}>
-                오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이 필요하다고
-                판단됨. 의사 선생님이 추천해준 행동치료 프로그램에 등록하기로
-                결정함. 치료 계획에 대해 상담하고 가정에서 할 수 있는 행동 관리
-                방법에 대해 교육 받음.
-              </Text>
+              <Text style={styles.recordText}>{hospitalText}</Text>
             )}
           </View>
 

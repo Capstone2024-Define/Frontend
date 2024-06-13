@@ -2,6 +2,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Back from "../assets/arrow_back_ios.svg";
+import { FontAwesome } from "@expo/vector-icons";
 
 // 왼쪽 헤더가 화살표 아이콘일때는 left = "leftArrow" 라고 props 보내기
 // line은 헤더 아래 선을 그을지 말지 boolean값
@@ -11,7 +12,7 @@ export default function Header({
   right,
   onLeftPress,
   onRightPress,
-  iconName,
+  iconColor,
   line,
 }) {
   return (
@@ -28,11 +29,11 @@ export default function Header({
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.title}>{title}</Text>
-          {iconName ? (
-            <WithLocalSvg
-              width={20}
-              height={20}
-              asset={iconName}
+          {iconColor ? (
+            <FontAwesome
+              name="circle"
+              size={20}
+              color={iconColor}
               style={{ marginLeft: 8.5 }}
             />
           ) : null}

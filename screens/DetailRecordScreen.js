@@ -8,8 +8,6 @@ import {
   Image,
 } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
-import { Feather } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
@@ -17,10 +15,11 @@ import { showToast } from "../component/Toast";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Camera from "../assets/photo_camera.svg";
-import Home from "../assets/home.svg";
+import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import X from "../assets/close_small.svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -30,18 +29,19 @@ import X from "../assets/close_small.svg";
 // 날짜(date), 유저아이디(user_id)
 // 인덱스(index, 0~9), 사진(image)
 
-export default function DetailRecordScreen({ navigation }) {
+export default function DetailRecordScreen({ navigation, route }) {
+  const date = route.params.date;
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
-  const [totalText, setTotalText] = useState("");
+  // const [totalText, setTotalText] = useState("");
 
   // totalText 계산
-  useEffect(() => {
-    setTotalText(homeText + schoolText + hospitalText);
-    //console.log(`전체 텍스트 : ${totalText}`);
-  }, [homeText, schoolText, hospitalText]);
+  // useEffect(() => {
+  //   setTotalText(homeText + schoolText + hospitalText);
+  //   console.log(`전체 텍스트 : ${totalText}`);
+  // }, [homeText, schoolText, hospitalText]);
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -86,7 +86,7 @@ export default function DetailRecordScreen({ navigation }) {
         if (!result.cancelled && result.assets && result.assets.length > 0) {
           // 이미지 업로드 결과
           const selectedUri = result.assets.map((asset) => asset.uri);
-          console.log(selectedUri);
+          //console.log(selectedUri);
 
           // 이미지 객체 배열에 추가
           const newImage = selectedUri.map((uri) => {
@@ -107,7 +107,7 @@ export default function DetailRecordScreen({ navigation }) {
   // 이미지 삭제
   const deleteImage = (key) => {
     setImages(images.filter((image) => image.id !== key));
-    console.log(images);
+    //console.log(images);
   };
 
   // TextInput 제한 글자 색
@@ -121,6 +121,15 @@ export default function DetailRecordScreen({ navigation }) {
     }
   };
 
+  // 저장
+  const save = async (toSave) => {
+    try {
+      await AsyncStorage.setItem(date, JSON.stringify(toSave));
+    } catch (error) {
+      console.log("기록 저장 에러");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -130,7 +139,7 @@ export default function DetailRecordScreen({ navigation }) {
         onLeftPress={() => {
           navigation.pop();
         }}
-        onRightPress={() => {
+        onRightPress={async () => {
           navigation.popToTop();
           showToast("기록이 완료되었어요");
 
@@ -141,6 +150,19 @@ export default function DetailRecordScreen({ navigation }) {
           for (let i = 0; i < images.length; i++) {
             console.log(i, images[i].uri);
           }
+
+          // 객체 설정
+          const newRecord = {
+            date: date,
+            home: homeText,
+            school: schoolText,
+            hospital: hospitalText,
+            image: images,
+          };
+          console.log(newRecord);
+
+          // 스토리지 저장
+          await save(newRecord);
         }}
         line={false}
       />

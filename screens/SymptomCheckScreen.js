@@ -9,7 +9,7 @@ import {
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 
-export default function SymptomCheckScreen({ navigation }) {
+export default function SymptomCheckScreen({ route, navigation }) {
   const [selectedChecklistItems, setSelectedChecklistItems] = useState([]);
 
   const toggleChecklistItem = (item) => {
@@ -51,9 +51,14 @@ export default function SymptomCheckScreen({ navigation }) {
         title="되돌아보기"
         right="다음"
         onLeftPress={() => {
-          navigation.pop();
+          navigation.popToTop();
         }}
-        onRightPress={handleNextPress}
+        onRightPress={() =>
+          navigation.push("SymptomResult", {
+            selectedCount: selectedChecklistItems.length,
+            date: route.params.date,
+          })
+        }
         line={false}
       />
       <View style={styles.progressView}>
@@ -85,7 +90,11 @@ export default function SymptomCheckScreen({ navigation }) {
             </TouchableOpacity>
           ))}
         </View>
+<<<<<<< HEAD
         <View style={{ marginBottom: 40 }} />
+=======
+        <View style={{ marginBottom: 30 }} />
+>>>>>>> 7bc6a62b076229c5d6a7e3a092999d4a8d141c65
       </ScrollView>
       <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>
@@ -131,6 +140,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 14,
+    alignItems: "center",
+    marginBottom: 14,
   },
   checkbox: {
     width: 18,
@@ -158,6 +169,6 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Pretendard-Bold",
   },
 });

@@ -132,7 +132,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../assets/background.png")} 
+        source={require("../assets/background.png")}
         style={styles.backgroundImage}
       >
         <ScrollView>
@@ -216,9 +216,7 @@ export default function HomeScreen({ navigation }) {
                   style={{
                     width: 37,
                     backgroundColor:
-                      selectedDate === weeks[index]
-                        ? "#78BA7D"
-                        : "transparent",
+                      selectedDate === weeks[index] ? "#78BA7D" : "transparent",
                     borderRadius: 24,
                     paddingVertical: 9,
                     paddingHorizontal: 12,
@@ -229,9 +227,7 @@ export default function HomeScreen({ navigation }) {
                   <Text
                     style={{
                       color:
-                        selectedDate === weeks[index]
-                          ? "#FFFFFF"
-                          : "#242424",
+                        selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
                       fontSize: 12,
                       marginBottom: 7,
                       textAlign: "center",
@@ -242,9 +238,7 @@ export default function HomeScreen({ navigation }) {
                   <Text
                     style={{
                       color:
-                        selectedDate === weeks[index]
-                          ? "#FFFFFF"
-                          : "#242424",
+                        selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
                       fontSize: 12,
                       marginBottom: 7,
                       textAlign: "center",
@@ -313,7 +307,9 @@ export default function HomeScreen({ navigation }) {
                   borderRadius: 24,
                   paddingVertical: 13,
                 }}
-                onPress={() => navigation.push("SymptomCheck")}
+                onPress={() =>
+                  navigation.push("SymptomCheck", { date: selectedDate })
+                }
               >
                 <FontAwesome name="pencil" size={24} color="white" />
                 <Text style={{ color: "#FFFFFF", fontSize: 14, marginLeft: 8 }}>

@@ -14,6 +14,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@react-navigation/stack": "^6.3.29",
+    "@types/react": "~18.2.79",
     "axios": "^1.7.2",
     "expo": "~51.0.8",
     "expo-av": "~14.0.5",
@@ -34,7 +35,11 @@
     "react-native-svg": "^15.3.0",
     "react-native-toast-message": "^2.2.0",
     "typescript": "~5.3.3",
+<<<<<<< HEAD
     "@types/react": "~18.2.79"
+=======
+    "@react-native-async-storage/async-storage": "1.23.1"
+>>>>>>> 7bc6a62b076229c5d6a7e3a092999d4a8d141c65
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
