@@ -17,6 +17,7 @@ import { Calendar } from "react-native-calendars";
 import HomeDayButton from "../component/HomeDayButton";
 import HomeVoiceButton from "../component/HomeVoiceButton";
 import { theme } from "../colors/color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // 화면 크기 가져오기
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -52,6 +53,7 @@ export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const date = cvtDateString(new Date());
@@ -61,6 +63,20 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     if (selectedDate) {
       getWeeks(selectedDate);
+
+      // 기록 로드
+      async function load() {
+        try {
+          const rawRecord = await AsyncStorage.getItem(selectedDate);
+          const newRecord = JSON.parse(rawRecord);
+
+          setImages(newRecord.image);
+          console.log(newRecord);
+        } catch (e) {
+          console.log("기록 로드 에러");
+        }
+      }
+      load();
     }
   }, [selectedDate]);
 

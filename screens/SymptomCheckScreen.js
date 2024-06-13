@@ -53,12 +53,13 @@ export default function SymptomCheckScreen({ route, navigation }) {
         onLeftPress={() => {
           navigation.popToTop();
         }}
-        onRightPress={() =>
+        onRightPress={() => {
           navigation.push("SymptomResult", {
             selectedCount: selectedChecklistItems.length,
+            checkList: selectedChecklistItems,
             date: route.params.date,
-          })
-        }
+          });
+        }}
         line={false}
       />
       <View style={styles.progressView}>

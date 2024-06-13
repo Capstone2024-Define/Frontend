@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import summary from "./SummaryAPI";
 import { getDetail, saveDetail } from "./ServerConnect";
 import HomeScreen from "./HomeScreen";
 import { theme } from "../colors/color";
-import { Octicons } from "@expo/vector-icons";
-import { SvgXml, WithLocalSvg } from "react-native-svg/css";
+import { WithLocalSvg } from "react-native-svg/css";
 import HomeGray from "../assets/home_gray.svg";
 import InfoGray from "../assets/info_gray.svg";
 import CalendarGray from "../assets/calendar_gray.svg";

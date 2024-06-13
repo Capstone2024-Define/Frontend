@@ -257,7 +257,7 @@ export default function DetailRecordScreen({ navigation, route }) {
               <Text
                 style={{
                   ...styles.limitText1,
-                  color: getColor(10, schoolText.length),
+                  color: getColor(600, schoolText.length),
                 }}
               >
                 {schoolText.length}

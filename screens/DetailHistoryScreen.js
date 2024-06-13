@@ -22,6 +22,7 @@ import Hospital from "../assets/stethoscope.svg";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import summary from "./SummaryAPI";
 
 export default function DetailHistoryScreen({ navigation }) {
   // 상세 기록 state
@@ -31,11 +32,9 @@ export default function DetailHistoryScreen({ navigation }) {
   const [images, setImages] = useState([]);
   const [date, setDate] = useState("");
 
-  // 되돌아보기 드롭다운 활성화
-  const [remindVisible, setRemindVisible] = useState(false);
-
-  // 서머리 요약을 위한 전체 텍스트
-  const [totalText, setTotalText] = useState("");
+  const [remindVisible, setRemindVisible] = useState(false); // 되돌아보기 드롭다운 활성화
+  const [totalText, setTotalText] = useState(""); // 서머리 요약을 위한 전체 텍스트
+  const [summaryText, setSummaryText] = useState(""); // 서머리  결과
 
   // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
   useFocusEffect(
@@ -50,15 +49,48 @@ export default function DetailHistoryScreen({ navigation }) {
           setHospitalText(newRecord.hospital);
           setImages(newRecord.image);
           setDate(newRecord.date);
-          setTotalText(
-            newRecord.home + newRecord.school + newRecord.hospitalText
-          );
+
+          // totalText
+          let newTotalText = "";
+          if (newRecord.home) {
+            newTotalText += newRecord.home;
+          }
+          if (newRecord.school) {
+            newTotalText += ` ${newRecord.school}`;
+          }
+          if (newRecord.hospital) {
+            newTotalText += ` ${newRecord.hospital}`;
+          }
+          setTotalText(newTotalText);
+
+          console.log(newTotalText);
+          console.log(newRecord);
         } catch (e) {
           console.log("기록 로드 에러");
         }
       }
       load();
+      console.log(`전체 텍스트: ${totalText}`);
     }, [])
+  );
+
+  // 네이버 summary api
+  useFocusEffect(
+    useCallback(() => {
+      const handleSummary = async () => {
+        try {
+          const result = await summary(totalText);
+          setSummaryText(result.summary);
+          console.log(result.summary);
+        } catch (error) {
+          console.log("서머리 에러", error.response.data.error.errorCode);
+        }
+      };
+
+      if (totalText) {
+        handleSummary();
+      }
+    }, [totalText])
   );
 
   return (
@@ -100,9 +132,7 @@ export default function DetailHistoryScreen({ navigation }) {
               <WithLocalSvg width={20} height={20} asset={Note} />
               <Text style={styles.title}>기록을 요약했어요</Text>
             </View>
-            <Text style={styles.subText}>
-              기록을요약했대어쩌구우리아이가어땠대어쩌구기록요약어쩌구기록을요약했대어쩌구우리아이가어땠대어쩌구기록요약어쩌구기록을요약했대어쩌구우리아이가어땠대어쩌구기록요약어쩌구
-            </Text>
+            <Text style={styles.subText}>{summaryText}</Text>
           </View>
         </View>
 
