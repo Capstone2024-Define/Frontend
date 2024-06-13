@@ -40,7 +40,7 @@ export default function SymptomCheckScreen({ navigation }) {
 
   const handleNextPress = () => {
     navigation.push("SymptomResult", {
-      selectedCount: selectedChecklistItems.length,
+      selectedItems: selectedChecklistItems,
     });
   };
 
@@ -53,11 +53,7 @@ export default function SymptomCheckScreen({ navigation }) {
         onLeftPress={() => {
           navigation.pop();
         }}
-        onRightPress={() =>
-          navigation.push("SymptomResult", {
-            selectedCount: selectedChecklistItems.length,
-          })
-        }
+        onRightPress={handleNextPress}
         line={false}
       />
       <View style={styles.progressView}>

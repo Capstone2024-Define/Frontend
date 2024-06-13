@@ -118,6 +118,17 @@ export default function HomeScreen({ navigation }) {
     setSelectedDate(cvtDateString(newDate));
   };
 
+  // 현재 날짜와 선택한 날짜가 같은지 확인하는 함수
+  const isToday = (date) => {
+    const today = new Date();
+    const compareDate = new Date(date);
+    return (
+      today.getFullYear() === compareDate.getFullYear() &&
+      today.getMonth() === compareDate.getMonth() &&
+      today.getDate() === compareDate.getDate()
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -200,7 +211,7 @@ export default function HomeScreen({ navigation }) {
               }}
             >
               {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => (
-                <View
+                <TouchableOpacity
                   key={index}
                   style={{
                     width: 37,
@@ -213,6 +224,7 @@ export default function HomeScreen({ navigation }) {
                     paddingHorizontal: 12,
                     marginRight: index === 6 ? 0 : 16,
                   }}
+                  onPress={() => setSelectedDate(weeks[index])}
                 >
                   <Text
                     style={{
@@ -240,7 +252,7 @@ export default function HomeScreen({ navigation }) {
                   >
                     {new Date(weeks[index]).getDate()}
                   </Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
             <View
@@ -264,7 +276,7 @@ export default function HomeScreen({ navigation }) {
                   selectedDate
                 ).getDate()} ${["일", "월", "화", "수", "목", "금", "토"][
                   new Date(selectedDate).getDay()
-                ]}요일 (오늘)`}
+                ]}요일${isToday(selectedDate) ? " (오늘)" : ""}`}
               </Text>
               <View style={{ alignItems: "center" }}>
                 <Image
