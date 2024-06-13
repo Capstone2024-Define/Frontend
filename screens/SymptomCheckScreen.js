@@ -40,7 +40,7 @@ export default function SymptomCheckScreen({ route, navigation }) {
 
   const handleNextPress = () => {
     navigation.push("SymptomResult", {
-      selectedCount: selectedChecklistItems.length,
+      selectedItems: selectedChecklistItems,
     });
   };
 

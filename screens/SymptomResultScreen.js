@@ -10,7 +10,8 @@ const resultImages = {
 };
 
 export default function SymptomResultScreen({ route, navigation }) {
-  const { selectedCount } = route.params.selectedCount;
+  const { selectedCount } = route.params;
+  console.log(selectedCount);
 
   let resultText = "";
   let resultImage = null;
@@ -77,18 +78,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.grey150,
   },
   resultImage: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   resultText: {
     fontSize: 18,
     color: "#242424",
     fontFamily: "Pretendard-Medium",
+    fontFamily: "Pretendard-Bold",
   },
   resultTextHighlight: {
     fontSize: 18,
     color: theme.green500,
     fontFamily: "Pretendard-Bold",
+    marginTop: 4,
   },
 });

@@ -24,13 +24,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import summary from "./SummaryAPI";
 
-export default function DetailHistoryScreen({ navigation }) {
+export default function DetailHistoryScreen({ navigation, route }) {
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
   const [images, setImages] = useState([]);
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(route.params.date);
+  const [checkList, setCheckList] = useState([]);
+  const [headerColor, setHeaderColor] = useState(theme.green500);
 
   const [remindVisible, setRemindVisible] = useState(false); // 되돌아보기 드롭다운 활성화
   const [totalText, setTotalText] = useState(""); // 서머리 요약을 위한 전체 텍스트
@@ -41,7 +43,7 @@ export default function DetailHistoryScreen({ navigation }) {
     useCallback(() => {
       async function load() {
         try {
-          const rawRecord = await AsyncStorage.getItem("2024-06-13");
+          const rawRecord = await AsyncStorage.getItem(date);
           const newRecord = JSON.parse(rawRecord);
 
           setHomeText(newRecord.home);
@@ -49,6 +51,7 @@ export default function DetailHistoryScreen({ navigation }) {
           setHospitalText(newRecord.hospital);
           setImages(newRecord.image);
           setDate(newRecord.date);
+          setCheckList(newRecord.checkList);
 
           // totalText
           let newTotalText = "";
@@ -93,6 +96,22 @@ export default function DetailHistoryScreen({ navigation }) {
     }, [totalText])
   );
 
+  // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
+  useFocusEffect(
+    useCallback(() => {
+      if (checkList) {
+        const selectedCount = checkList.length;
+        if (selectedCount <= 3) {
+          setHeaderColor(theme.green);
+        } else if (selectedCount <= 9) {
+          setHeaderColor(theme.yellow);
+        } else {
+          setHeaderColor(theme.pink);
+        }
+      }
+    }, [checkList])
+  );
+
   return (
     <>
       <Header
@@ -107,7 +126,7 @@ export default function DetailHistoryScreen({ navigation }) {
         onRightPress={() => {
           navigation.push("DetailModify", { date: date });
         }}
-        iconColor={theme.green500}
+        iconColor={headerColor}
         line={true}
       />
       <ScrollView style={styles.container}>
@@ -160,18 +179,12 @@ export default function DetailHistoryScreen({ navigation }) {
           </View>
           {remindVisible ? (
             <View style={{ marginTop: 12, paddingHorizontal: 24 }}>
-              <View style={styles.subRemind}>
-                <FontAwesome name="circle" size={6} color={theme.green300} />
-                <Text style={styles.remindText}>
-                  아이의 사소한 실수는 눈 감아주었어요
-                </Text>
-              </View>
-              <View style={styles.subRemind}>
-                <FontAwesome name="circle" size={6} color={theme.green300} />
-                <Text style={styles.remindText}>
-                  아이에게 천천히 설명했어요
-                </Text>
-              </View>
+              {checkList.map((check, index) => (
+                <View style={styles.subRemind} key={index}>
+                  <FontAwesome name="circle" size={6} color={theme.green300} />
+                  <Text style={styles.remindText}>{check}</Text>
+                </View>
+              ))}
             </View>
           ) : null}
         </View>
