@@ -17,14 +17,14 @@ export default function SymptomResultScreen({ route, navigation }) {
   let resultImage = null;
 
   if (selectedCount <= 3) {
-    resultText = "최고예요!";
-    resultImage = resultImages["최고예요"];
+    resultText = "아쉬워요!";
+    resultImage = resultImages["아쉬워요"];
   } else if (selectedCount <= 9) {
     resultText = "보통이에요!";
     resultImage = resultImages["보통이에요"];
   } else {
-    resultText = "아쉬워요!";
-    resultImage = resultImages["아쉬워요"];
+    resultText = "최고예요!";
+    resultImage = resultImages["최고예요"];
   }
 
   return (

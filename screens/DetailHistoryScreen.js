@@ -102,11 +102,11 @@ export default function DetailHistoryScreen({ navigation, route }) {
       if (checkList) {
         const selectedCount = checkList.length;
         if (selectedCount <= 3) {
-          setHeaderColor(theme.green);
+          setHeaderColor(theme.pink);
         } else if (selectedCount <= 9) {
           setHeaderColor(theme.yellow);
         } else {
-          setHeaderColor(theme.pink);
+          setHeaderColor(theme.green);
         }
       }
     }, [checkList])
