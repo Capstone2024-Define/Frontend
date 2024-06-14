@@ -10,20 +10,21 @@ const resultImages = {
 };
 
 export default function SymptomResultScreen({ route, navigation }) {
-  const { selectedCount } = route.params.selectedCount;
+  const { selectedCount } = route.params;
+  console.log(selectedCount);
 
   let resultText = "";
   let resultImage = null;
 
   if (selectedCount <= 3) {
-    resultText = "최고예요!";
-    resultImage = resultImages["최고예요"];
+    resultText = "아쉬워요!";
+    resultImage = resultImages["아쉬워요"];
   } else if (selectedCount <= 9) {
     resultText = "보통이에요!";
     resultImage = resultImages["보통이에요"];
   } else {
-    resultText = "아쉬워요!";
-    resultImage = resultImages["아쉬워요"];
+    resultText = "최고예요!";
+    resultImage = resultImages["최고예요"];
   }
 
   return (
@@ -36,10 +37,18 @@ export default function SymptomResultScreen({ route, navigation }) {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.push("DetailRecord", { date: route.params.date });
+          navigation.push("DetailRecord", {
+            date: route.params.date,
+            checkList: route.params.checkList,
+          });
+          console.log(route.params.checkList);
         }}
         line={false}
       />
+      <View style={styles.progressView}>
+        <View style={styles.progressLeft}></View>
+        <View style={styles.progressRight}></View>
+      </View>
       <View style={styles.container}>
         <Image source={resultImage} style={styles.resultImage} />
         <Text style={styles.resultText}>오늘 지현님은</Text>
@@ -78,12 +87,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#242424",
     fontFamily: "Pretendard-Medium",
-    fontFamily : "Pretendard-Bold"
+    fontFamily: "Pretendard-Bold",
   },
   resultTextHighlight: {
     fontSize: 18,
     color: theme.green500,
-    fontFamily : "Pretendard-Bold",
-    marginTop:4,
+    fontFamily: "Pretendard-Bold",
+    marginTop: 4,
   },
 });

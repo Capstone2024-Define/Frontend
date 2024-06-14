@@ -158,6 +158,7 @@ export default function DetailRecordScreen({ navigation, route }) {
             school: schoolText,
             hospital: hospitalText,
             image: images,
+            checkList: route.params.checkList,
           };
           console.log(newRecord);
 

@@ -47,12 +47,13 @@ export default function SymptomCheckScreen({ route, navigation }) {
         onLeftPress={() => {
           navigation.popToTop();
         }}
-        onRightPress={() =>
+        onRightPress={() => {
           navigation.push("SymptomResult", {
             selectedCount: selectedChecklistItems.length,
+            checkList: selectedChecklistItems,
             date: route.params.date,
-          })
-        }
+          });
+        }}
         line={false}
       />
       <View style={styles.progressView}>
@@ -91,7 +92,11 @@ export default function SymptomCheckScreen({ route, navigation }) {
             </TouchableOpacity>
           ))}
         </View>
+<<<<<<< HEAD
         <View style={{ marginBottom: 40 }} />
+=======
+        <View style={{ marginBottom: 30 }} />
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
       </ScrollView>
       <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>

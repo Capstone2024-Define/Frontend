@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,16 @@ import {
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import { theme } from "../colors/color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { WithLocalSvg } from "react-native-svg/css";
+import Rabbit from "../assets/homeRabbit.svg";
+import Edit from "../assets/edit.svg";
+import Mic from "../assets/mic.svg";
+import Left from "../assets/chevron_left.svg";
+import Right from "../assets/chevron_right.svg";
+import Calender from "../assets/calendar.svg";
+import NoRecord from "../assets/norecord.svg";
 
 // 화면 크기 가져오기
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -56,11 +66,57 @@ export default function HomeScreen({ navigation }) {
     setSelectedDate(date);
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (selectedDate) {
+        getWeeks(selectedDate);
+
+        // 기록 로드
+        async function load() {
+          try {
+            const rawRecord = await AsyncStorage.getItem(selectedDate);
+            const newRecord = JSON.parse(rawRecord);
+
+            let newTotalText = "";
+            if (newRecord.home) {
+              newTotalText += newRecord.home;
+            }
+            if (newRecord.school) {
+              newTotalText += ` ${newRecord.school}`;
+            }
+            if (newRecord.hospital) {
+              newTotalText += ` ${newRecord.hospital}`;
+            }
+            setText(newTotalText);
+            setImages(newRecord.image);
+
+            //console.log(newRecord);
+          } catch (e) {
+            console.log("기록 로드 에러");
+          }
+        }
+        load();
+      }
+    }, [selectedDate])
+  );
+
   useEffect(() => {
-    if (selectedDate) {
-      getWeeks(selectedDate);
-    }
-  }, [selectedDate]);
+    const fetchEmojiColors = async () => {
+      const newEmoji = [];
+      for (let i = 0; i < weeks.length; i++) {
+        try {
+          const color = await getEmojiColor(weeks[i]);
+          newEmoji.push(color);
+        } catch (error) {
+          console.error("fetchEmojiColors 에러", error);
+        }
+      }
+      //console.log(newEmoji);
+      setEmoji(newEmoji);
+    };
+
+    fetchEmojiColors();
+  }, [weeks]);
 
   useEffect(() => {
     fetchData();
@@ -96,6 +152,7 @@ export default function HomeScreen({ navigation }) {
     return parseInt((weekDay - 1 + currentDate) / 7) + 1;
   };
 
+<<<<<<< HEAD
   const fetchData = async () => {
     // 서버에서 데이터를 받아오는 로직 예시
     const data = {
@@ -103,10 +160,37 @@ export default function HomeScreen({ navigation }) {
     };
     setMoods(data);
   };
+=======
+  // const renderEmoji = (emoji, index) => (
+  //   <TouchableOpacity
+  //     key={index}
+  //     onPress={() => setMoods({ ...moods, [selectedDate]: emoji })}
+  //   >
+  //     <Text
+  //       style={[
+  //         styles.emoji,
+  //         moods[selectedDate] === emoji ? styles.selectedEmoji : null,
+  //       ]}
+  //     >
+  //       {emoji}
+  //     </Text>
+  //   </TouchableOpacity>
+  // );
+
+  // const fetchData = async () => {
+  //   // 서버에서 데이터를 받아오는 로직 예시
+  //   const data = {
+  //     "2024-06-09": "green",
+  //   };
+  //   setMoods(data);
+  // };
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
 
   const handleWeekChange = (direction) => {
     const current = new Date(selectedDate);
-    const newDate = new Date(current.setDate(current.getDate() + direction * 7));
+    const newDate = new Date(
+      current.setDate(current.getDate() + direction * 7)
+    );
     setSelectedDate(cvtDateString(newDate));
   };
 
@@ -121,9 +205,15 @@ export default function HomeScreen({ navigation }) {
     );
   };
 
+<<<<<<< HEAD
   const getMoodColor = (date) => {
     return moods[date] || "#D3D3D3";
   };
+=======
+  // const getMoodColor = (date) => {
+  //   return moods[date] || "#D3D3D3";
+  // };
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
 
   const isPastDate = (date) => {
     const today = new Date();
@@ -131,36 +221,81 @@ export default function HomeScreen({ navigation }) {
     return today < compareDate;
   };
 
+<<<<<<< HEAD
+=======
+  // 이모지 색 컬러
+  const getEmojiColor = async (date) => {
+    let emojiColor = theme.grey50;
+
+    try {
+      const rawRecord = await AsyncStorage.getItem(date);
+      if (rawRecord !== null) {
+        const record = JSON.parse(rawRecord);
+        if (record.checkList) {
+          const selectedCount = record.checkList.length;
+          if (selectedCount <= 3) {
+            emojiColor = theme.pink;
+          } else if (selectedCount <= 9) {
+            emojiColor = theme.yellow;
+          } else {
+            emojiColor = theme.green;
+          }
+        }
+      }
+
+      return emojiColor;
+    } catch (error) {
+      console.log("getEmojiColor 에러", error);
+    }
+  };
+
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
         source={require("../assets/background.png")}
         style={styles.backgroundImage}
       >
+<<<<<<< HEAD
         <View>
+=======
+        <View style={{ flex: 1 }}>
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
           <View
             style={{
               flexDirection: "row",
-              marginBottom: 12,
-              marginHorizontal: 30,
+              marginTop: 17,
+              marginLeft: 29,
+              marginRight: 16,
+              justifyContent: "space-between",
             }}
           >
-            <View style={{ flex: 1, marginTop: 68, marginRight: 4 }}>
-              <Text
-                style={{ color: "#FFFFFF", fontSize: 16, marginBottom: 11 }}
-              >
-                {"오늘도 같이 기록해볼까요?"}
-              </Text>
-              <Text style={{ color: "#FFFFFF" }}>{"12일째 기록하는 중"}</Text>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "flex-end",
+                marginBottom: 18,
+              }}
+            >
+              <Text style={styles.title}>{"오늘도 같이 기록해볼까요?"}</Text>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <Text style={styles.boldTitle}>12일째 </Text>
+                <Text style={styles.title}>기록하는 중</Text>
+              </View>
             </View>
+<<<<<<< HEAD
             <Image
               source={require("../assets/homerabbit.png")}
               resizeMode={"stretch"}
               style={{ width: 132, height: 142, marginTop: 12, marginBottom: -14 }}
             />
+=======
+            <WithLocalSvg asset={Rabbit} />
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
           </View>
           <View
             style={{
+              flex: 1,
               backgroundColor: "#FEFCF4",
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
@@ -181,15 +316,23 @@ export default function HomeScreen({ navigation }) {
                 activeOpacity={0.5}
                 onPress={() => setModalVisible(true)}
               >
-                <Feather name="calendar" size={16} color="gray" />
+                <WithLocalSvg asset={Calender} />
               </TouchableOpacity>
-              <Text style={{ color: "#555555", fontSize: 14, marginLeft: 8 }}>
+              <Text
+                style={{
+                  color: "#555555",
+                  fontSize: 14,
+                  marginLeft: 8,
+                  fontFamily: "Pretendard-Medium",
+                }}
+              >
                 {`${new Date(selectedDate).getFullYear()}년 ${
                   new Date(selectedDate).getMonth() + 1
                 }월 ${getWeekNumber(selectedDate)}주차`}
               </Text>
               <View style={{ flex: 1, alignSelf: "stretch" }}></View>
               <TouchableOpacity onPress={() => handleWeekChange(-1)}>
+<<<<<<< HEAD
                 <Image
                   source={require("../assets/chevron_left.png")}
                   style={{ width: 24, height: 24 }}
@@ -200,6 +343,12 @@ export default function HomeScreen({ navigation }) {
                   source={require("../assets/chevron_right.png")}
                   style={{ width: 24, height: 24 }}
                 />
+=======
+                <WithLocalSvg asset={Left} style={{ marginRight: 10 }} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleWeekChange(1)}>
+                <WithLocalSvg asset={Right} />
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
               </TouchableOpacity>
             </View>
             <View
@@ -225,7 +374,13 @@ export default function HomeScreen({ navigation }) {
                     paddingVertical: 9,
                     paddingHorizontal: 4,
                     backgroundColor:
+<<<<<<< HEAD
                       selectedDate === weeks[index] ? "#78BA7D" : "transparent",
+=======
+                      selectedDate === weeks[index]
+                        ? theme.green500
+                        : "transparent",
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     borderRadius: selectedDate === weeks[index] ? 24 : 0,
                   }}
                   onPress={() => setSelectedDate(weeks[index])}
@@ -237,7 +392,14 @@ export default function HomeScreen({ navigation }) {
                       fontSize: 12,
                       marginBottom: 7,
                       textAlign: "center",
+<<<<<<< HEAD
                       fontWeight: selectedDate === weeks[index] ? "bold" : "normal",
+=======
+                      fontFamily:
+                        selectedDate === weeks[index]
+                          ? "Pretendard-Bold"
+                          : "Pretendard-Regular",
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     }}
                   >
                     {day}
@@ -245,16 +407,36 @@ export default function HomeScreen({ navigation }) {
                   <Text
                     style={{
                       color:
+<<<<<<< HEAD
                         selectedDate === weeks[index] ? "#FFFFFF" : isPastDate(weeks[index]) ? "#A9A9A9" : "#242424",
                       fontSize: 12,
                       marginBottom: 7,
                       textAlign: "center",
                       fontWeight: selectedDate === weeks[index] ? "bold" : "normal",
+=======
+                        selectedDate === weeks[index]
+                          ? "#FFFFFF"
+                          : isPastDate(weeks[index])
+                          ? "#A9A9A9"
+                          : "#242424",
+                      fontSize: 12,
+                      marginBottom: 7,
+                      textAlign: "center",
+                      fontFamily:
+                        selectedDate === weeks[index]
+                          ? "Pretendard-Bold"
+                          : "Pretendard-Regular",
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     }}
                   >
                     {new Date(weeks[index]).getDate()}
                   </Text>
+<<<<<<< HEAD
                   <View
+=======
+                  <FontAwesome name="circle" size={20} color={emoji[index]} />
+                  {/* <View
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     style={{
                       width: 10,
                       height: 10,
@@ -262,6 +444,7 @@ export default function HomeScreen({ navigation }) {
                       backgroundColor: getMoodColor(weeks[index]),
                       marginTop: 4,
                     }}
+<<<<<<< HEAD
                   />
                 </TouchableOpacity>
               ))}
@@ -309,27 +492,130 @@ export default function HomeScreen({ navigation }) {
                     alignItems: "center",
                     fontFamily: "Human-beomseok",
                     marginBottom: 16,
+=======
+                  /> */}
+                </TouchableOpacity>
+              ))}
+            </View>
+            {images.length > 0 || text ? (
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity
+                  style={styles.recordContainer}
+                  activeOpacity={0.5}
+                  onPress={() =>
+                    navigation.push("DetailHistory", { date: selectedDate })
+                  }
+                >
+                  <View style={styles.recordHeader}>
+                    <Text style={styles.recordTitle}>
+                      {`${new Date(selectedDate).getMonth() + 1}.${new Date(
+                        selectedDate
+                      ).getDate()} ${
+                        ["일", "월", "화", "수", "목", "금", "토"][
+                          new Date(selectedDate).getDay()
+                        ]
+                      }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
+                    </Text>
+                    <Text style={styles.dubogi}>더보기</Text>
+                  </View>
+                  <View style={styles.line} />
+                  <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                    {images.map((image) => (
+                      <View key={image.id}>
+                        <Image
+                          source={{ uri: image.uri }}
+                          style={styles.photo}
+                          resizeMode="cover"
+                        />
+                      </View>
+                    ))}
+                  </View>
+                  <Text style={styles.recordText}>
+                    {text.slice(0, 92).replace(/\n/g, " ")}...
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={{ flex: 1 }}>
+                <View
+                  style={{
+                    width: 312,
+                    height: 188,
+                    backgroundColor: "#FBFBFB",
+                    borderRadius: 8,
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    marginBottom: 36,
+                    alignItems: "center", // 네모 박스들을 중앙 정렬
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                   }}
                 >
-                  {"아직 기록하지 않았어요!"}
-                </Text>
+                  <Text
+                    style={{
+                      color: "#333333",
+                      fontSize: 14,
+                      marginBottom: 4,
+                      fontFamily: "Pretendard-Medium",
+                      textAlign: "left", // 왼쪽 정렬
+                      alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
+                    }}
+                  >
+                    {`${new Date(selectedDate).getMonth() + 1}.${new Date(
+                      selectedDate
+                    ).getDate()} ${
+                      ["일", "월", "화", "수", "목", "금", "토"][
+                        new Date(selectedDate).getDay()
+                      ]
+                    }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
+                  </Text>
+
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <WithLocalSvg asset={NoRecord} />
+                    <Text
+                      style={{
+                        color: "#6F6F6F",
+                        fontSize: 14,
+                        marginTop: 10,
+                        alignItems: "center",
+                        fontFamily: "Human-beomseok",
+                      }}
+                    >
+                      {"아직 기록하지 않았어요!"}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
+            )}
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
                 width: "100%",
+<<<<<<< HEAD
                 maxWidth: 350, 
               }}
             >
               <TouchableOpacity
                 style={styles.greenButton} 
+=======
+                maxWidth: 350,
+              }}
+            >
+              <TouchableOpacity
+                style={styles.greenButton}
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                 onPress={() =>
                   navigation.push("SymptomCheck", { date: selectedDate })
                 }
               >
+<<<<<<< HEAD
                 <Image
                   source={require("../assets/edit.png")}
                   style={styles.buttonIcon}
@@ -345,6 +631,35 @@ export default function HomeScreen({ navigation }) {
                   style={styles.buttonIcon}
                 />
                 <Text style={styles.buttonText}>{"음성기록"}</Text>
+=======
+                <WithLocalSvg asset={Edit} />
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontSize: 14,
+                    marginLeft: 8,
+                    fontFamily: "Pretendard-Medium",
+                  }}
+                >
+                  {"하루기록"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.yellowButton}
+                onPress={() => navigation.push("MainVoice")}
+              >
+                <WithLocalSvg asset={Mic} />
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontSize: 14,
+                    marginLeft: 8,
+                    fontFamily: "Pretendard-Medium",
+                  }}
+                >
+                  {"음성기록"}
+                </Text>
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
               </TouchableOpacity>
             </View>
           </View>
@@ -367,6 +682,17 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: "cover",
+  },
+  title: {
+    marginBottom: 5,
+    fontSize: 16,
+    fontFamily: "Pretendard-Regular",
+    color: "white",
+  },
+  boldTitle: {
+    fontSize: 18,
+    fontFamily: "Pretendard-Medium",
+    color: "white",
   },
   header: {
     backgroundColor: "#DFF0D8",
@@ -430,15 +756,44 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   recordContainer: {
-    marginTop: 20,
-    padding: 20,
-    borderRadius: 20,
-    backgroundColor: "#F7F7F7",
+    width: 312,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+    borderRadius: 8,
+    backgroundColor: "white",
+  },
+  recordHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 10,
   },
   recordTitle: {
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey700,
+  },
+  dubogi: {
+    fontSize: 12,
+    fontFamily: "Pretendard-Bold",
+    color: theme.grey400,
+  },
+  line: {
+    height: 1,
     marginBottom: 10,
+    backgroundColor: theme.grey250,
+  },
+  recordText: {
+    fontSize: 14,
+    fontFamily: "Human-beomseok",
+    color: theme.grey800,
+  },
+  photo: {
+    width: 75,
+    height: 75,
+    marginRight: 12,
+    borderRadius: 8,
   },
   noRecord: {
     alignItems: "center",
@@ -460,7 +815,11 @@ const styles = StyleSheet.create({
   greenButton: {
     flexDirection: "row",
     alignItems: "center",
+<<<<<<< HEAD
     backgroundColor: "#78BA7D",
+=======
+    backgroundColor: theme.green500,
+>>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
     borderRadius: 24,
     width: 177,
     height: 44,
@@ -479,6 +838,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 14,
+    marginLeft: 8,
+  },
+  buttonIcon: {
+    width: 24,
+    height: 24,
     marginLeft: 8,
   },
   buttonIcon: {
