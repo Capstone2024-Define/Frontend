@@ -18,6 +18,8 @@
       }
     },
     "android": {
+      "package": "com.yourcompany.capstone2024",  
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
