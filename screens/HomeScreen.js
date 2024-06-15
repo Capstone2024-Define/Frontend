@@ -10,9 +10,13 @@ import {
   Modal,
   Dimensions,
   ImageBackground,
+  ScrollView,
+  StatusBar,
 } from "react-native";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
+import HomeDayButton from "../component/HomeDayButton";
+import HomeVoiceButton from "../component/HomeVoiceButton";
 import { theme } from "../colors/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -60,6 +64,9 @@ export default function HomeScreen({ navigation }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
   const [moods, setMoods] = useState({});
+  const [images, setImages] = useState([]);
+  const [text, setText] = useState("");
+  const [emoji, setEmoji] = useState([]);
 
   useEffect(() => {
     const date = cvtDateString(new Date());
@@ -118,10 +125,6 @@ export default function HomeScreen({ navigation }) {
     fetchEmojiColors();
   }, [weeks]);
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedDate]);
-
   const cvtDateString = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -152,15 +155,6 @@ export default function HomeScreen({ navigation }) {
     return parseInt((weekDay - 1 + currentDate) / 7) + 1;
   };
 
-<<<<<<< HEAD
-  const fetchData = async () => {
-    // 서버에서 데이터를 받아오는 로직 예시
-    const data = {
-      "2024-06-09": "green",
-    };
-    setMoods(data);
-  };
-=======
   // const renderEmoji = (emoji, index) => (
   //   <TouchableOpacity
   //     key={index}
@@ -184,7 +178,6 @@ export default function HomeScreen({ navigation }) {
   //   };
   //   setMoods(data);
   // };
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
 
   const handleWeekChange = (direction) => {
     const current = new Date(selectedDate);
@@ -205,15 +198,9 @@ export default function HomeScreen({ navigation }) {
     );
   };
 
-<<<<<<< HEAD
-  const getMoodColor = (date) => {
-    return moods[date] || "#D3D3D3";
-  };
-=======
   // const getMoodColor = (date) => {
   //   return moods[date] || "#D3D3D3";
   // };
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
 
   const isPastDate = (date) => {
     const today = new Date();
@@ -221,8 +208,6 @@ export default function HomeScreen({ navigation }) {
     return today < compareDate;
   };
 
-<<<<<<< HEAD
-=======
   // 이모지 색 컬러
   const getEmojiColor = async (date) => {
     let emojiColor = theme.grey50;
@@ -249,18 +234,13 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
         source={require("../assets/background.png")}
         style={styles.backgroundImage}
       >
-<<<<<<< HEAD
-        <View>
-=======
         <View style={{ flex: 1 }}>
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
           <View
             style={{
               flexDirection: "row",
@@ -283,15 +263,7 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.title}>기록하는 중</Text>
               </View>
             </View>
-<<<<<<< HEAD
-            <Image
-              source={require("../assets/homerabbit.png")}
-              resizeMode={"stretch"}
-              style={{ width: 132, height: 142, marginTop: 12, marginBottom: -14 }}
-            />
-=======
             <WithLocalSvg asset={Rabbit} />
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
           </View>
           <View
             style={{
@@ -332,23 +304,10 @@ export default function HomeScreen({ navigation }) {
               </Text>
               <View style={{ flex: 1, alignSelf: "stretch" }}></View>
               <TouchableOpacity onPress={() => handleWeekChange(-1)}>
-<<<<<<< HEAD
-                <Image
-                  source={require("../assets/chevron_left.png")}
-                  style={{ width: 24, height: 24 }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleWeekChange(1)}>
-                <Image
-                  source={require("../assets/chevron_right.png")}
-                  style={{ width: 24, height: 24 }}
-                />
-=======
                 <WithLocalSvg asset={Left} style={{ marginRight: 10 }} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleWeekChange(1)}>
                 <WithLocalSvg asset={Right} />
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
               </TouchableOpacity>
             </View>
             <View
@@ -374,13 +333,9 @@ export default function HomeScreen({ navigation }) {
                     paddingVertical: 9,
                     paddingHorizontal: 4,
                     backgroundColor:
-<<<<<<< HEAD
-                      selectedDate === weeks[index] ? "#78BA7D" : "transparent",
-=======
                       selectedDate === weeks[index]
                         ? theme.green500
                         : "transparent",
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     borderRadius: selectedDate === weeks[index] ? 24 : 0,
                   }}
                   onPress={() => setSelectedDate(weeks[index])}
@@ -392,14 +347,10 @@ export default function HomeScreen({ navigation }) {
                       fontSize: 12,
                       marginBottom: 7,
                       textAlign: "center",
-<<<<<<< HEAD
-                      fontWeight: selectedDate === weeks[index] ? "bold" : "normal",
-=======
                       fontFamily:
                         selectedDate === weeks[index]
                           ? "Pretendard-Bold"
                           : "Pretendard-Regular",
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     }}
                   >
                     {day}
@@ -407,13 +358,6 @@ export default function HomeScreen({ navigation }) {
                   <Text
                     style={{
                       color:
-<<<<<<< HEAD
-                        selectedDate === weeks[index] ? "#FFFFFF" : isPastDate(weeks[index]) ? "#A9A9A9" : "#242424",
-                      fontSize: 12,
-                      marginBottom: 7,
-                      textAlign: "center",
-                      fontWeight: selectedDate === weeks[index] ? "bold" : "normal",
-=======
                         selectedDate === weeks[index]
                           ? "#FFFFFF"
                           : isPastDate(weeks[index])
@@ -426,17 +370,12 @@ export default function HomeScreen({ navigation }) {
                         selectedDate === weeks[index]
                           ? "Pretendard-Bold"
                           : "Pretendard-Regular",
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     }}
                   >
                     {new Date(weeks[index]).getDate()}
                   </Text>
-<<<<<<< HEAD
-                  <View
-=======
                   <FontAwesome name="circle" size={20} color={emoji[index]} />
                   {/* <View
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                     style={{
                       width: 10,
                       height: 10,
@@ -444,55 +383,6 @@ export default function HomeScreen({ navigation }) {
                       backgroundColor: getMoodColor(weeks[index]),
                       marginTop: 4,
                     }}
-<<<<<<< HEAD
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View
-              style={{
-                backgroundColor: "#FBFBFB",
-                borderRadius: 8,
-                paddingTop: 15,
-                paddingBottom: 37,
-                marginBottom: 36,
-                width: "100%", // 부모 뷰의 전체 너비를 사용
-                maxWidth: 350, // 최대 너비 설정
-                alignItems: "center", // 네모 박스들을 중앙 정렬
-              }}
-            >
-              <Text
-                style={{
-                  color: "#333333",
-                  fontSize: 14,
-                  marginBottom: 108,
-                  fontFamily: "Pretendard-Bold",
-                  textAlign: "left", // 왼쪽 정렬
-                  alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
-                  marginLeft: 17, // 왼쪽 패딩 추가
-                }}
-              >
-                {`${new Date(selectedDate).getMonth() + 1}.${new Date(
-                  selectedDate
-                ).getDate()} ${["일", "월", "화", "수", "목", "금", "토"][
-                  new Date(selectedDate).getDay()
-                ]}요일${isToday(selectedDate) ? " (오늘)" : ""}`}
-              </Text>
-              <View style={{ alignItems: "center" }}>
-                <Image
-                  source={require("../assets/homechecklist.png")}
-                  resizeMode={"stretch"}
-                  style={{ marginTop: -40, width: 67.1, height: 70 }}
-                />
-                <Text
-                  style={{
-                    color: "#6F6F6F",
-                    fontSize: 14,
-                    marginTop: 5,
-                    alignItems: "center",
-                    fontFamily: "Human-beomseok",
-                    marginBottom: 16,
-=======
                   /> */}
                 </TouchableOpacity>
               ))}
@@ -547,7 +437,6 @@ export default function HomeScreen({ navigation }) {
                     paddingHorizontal: 16,
                     marginBottom: 36,
                     alignItems: "center", // 네모 박스들을 중앙 정렬
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                   }}
                 >
                   <Text
@@ -598,40 +487,15 @@ export default function HomeScreen({ navigation }) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 width: "100%",
-<<<<<<< HEAD
-                maxWidth: 350, 
-              }}
-            >
-              <TouchableOpacity
-                style={styles.greenButton} 
-=======
                 maxWidth: 350,
               }}
             >
               <TouchableOpacity
                 style={styles.greenButton}
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
                 onPress={() =>
                   navigation.push("SymptomCheck", { date: selectedDate })
                 }
               >
-<<<<<<< HEAD
-                <Image
-                  source={require("../assets/edit.png")}
-                  style={styles.buttonIcon}
-                />
-                <Text style={styles.buttonText}>{"하루기록"}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.yellowButton} // 스타일 적용
-                onPress={() => navigation.push("MainVoice")}
-              >
-                <Image
-                  source={require("../assets/mic.png")}
-                  style={styles.buttonIcon}
-                />
-                <Text style={styles.buttonText}>{"음성기록"}</Text>
-=======
                 <WithLocalSvg asset={Edit} />
                 <Text
                   style={{
@@ -646,7 +510,7 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.yellowButton}
-                onPress={() => navigation.push("MainVoice")}
+                onPress={() => navigation.push("VoiceRecord")}
               >
                 <WithLocalSvg asset={Mic} />
                 <Text
@@ -659,7 +523,6 @@ export default function HomeScreen({ navigation }) {
                 >
                   {"음성기록"}
                 </Text>
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
               </TouchableOpacity>
             </View>
           </View>
@@ -815,11 +678,7 @@ const styles = StyleSheet.create({
   greenButton: {
     flexDirection: "row",
     alignItems: "center",
-<<<<<<< HEAD
-    backgroundColor: "#78BA7D",
-=======
     backgroundColor: theme.green500,
->>>>>>> 34e2739a16e44a4b0f56b8f6b7bff15ca58e7b89
     borderRadius: 24,
     width: 177,
     height: 44,
@@ -836,14 +695,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    marginLeft: 8,
-  },
-  buttonIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 8,
+    color: "white",
+    marginLeft: 5,
   },
   buttonIcon: {
     width: 24,
