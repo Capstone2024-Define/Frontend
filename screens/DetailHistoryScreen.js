@@ -124,7 +124,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.push("DetailModify", { date: date });
+          navigation.push("DetailModify", { date: date, checkList: checkList });
         }}
         iconColor={headerColor}
         line={true}

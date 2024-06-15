@@ -37,6 +37,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
+  const [checkList, setCheckList] = useState([]);
   const date = route.params.date;
 
   // 갤러리 권한
@@ -59,6 +60,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         setSchoolText(newRecord.school);
         setHospitalText(newRecord.hospital);
         setImages(newRecord.image);
+        setCheckList(newRecord.checkList);
         console.log(newRecord);
       } catch (e) {
         console.log("기록 로드 에러");
@@ -173,6 +175,7 @@ export default function DetailRecordScreen({ navigation, route }) {
             school: schoolText,
             hospital: hospitalText,
             image: images,
+            checkList: checkList,
           };
           console.log(newRecord);
 

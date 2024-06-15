@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
@@ -86,12 +87,19 @@ export default function SymptomCheckScreen({ route, navigation }) {
                   selectedChecklistItems.includes(item) &&
                     styles.checkboxSelected,
                 ]}
-              ></View>
+              >
+                {selectedChecklistItems.includes(item) && (
+                  <Image
+                    source={require("../assets/checkmark.png")}
+                    style={styles.checkmark}
+                  />
+                )}
+              </View>
               <Text style={styles.checklistText}>{item}</Text>
             </TouchableOpacity>
           ))}
         </View>
-        <View style={{ marginBottom: 30 }} />
+        <View style={{ marginBottom: 40 }} />
       </ScrollView>
       <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>
@@ -137,8 +145,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 14,
-    alignItems: "center",
-    marginBottom: 14,
   },
   checkbox: {
     width: 18,
@@ -146,9 +152,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFEFEF",
     borderRadius: 4,
     marginRight: 13,
+    justifyContent: "center",
+    alignItems: "center",
   },
   checkboxSelected: {
     backgroundColor: theme.green500,
+  },
+  checkmark: {
+    width: 11,
+    height: 8,
+    tintColor: "#fff",
   },
   checklistText: {
     color: "#242424",
