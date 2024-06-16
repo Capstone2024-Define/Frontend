@@ -27,6 +27,7 @@ export default function MainVoiceScreen({ route, navigation }) {
           title: "새녹음",
           headerShown: false,
         })}
+        initialParams={{ date: route.params.date }}
       />
       <Tab.Screen
         name="VoiceHistory"

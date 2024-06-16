@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -9,12 +9,22 @@ import {
   Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { TextInput } from "react-native-gesture-handler";
 import { theme } from "../colors/color";
 import { showToast } from "../component/Toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-export default function VoiceModifyScreen({ visible, onClose }) {
+export default function VoiceModifyScreen({
+  visible,
+  date,
+  time,
+  onClose,
+  onUpdateText,
+}) {
+  const [text, setText] = useState(""); // 내용
+  const [voiceList, setVoiceList] = useState([]); // 스토리지 내용
+
   // 내비게이션
   const navigation = useNavigation();
 
@@ -39,6 +49,58 @@ export default function VoiceModifyScreen({ visible, onClose }) {
     }
   }, [visible, slideAnim]);
 
+  // 기록 불러오기
+  useState(() => {
+    const fetchData = async () => {
+      try {
+        const rawVoice = await AsyncStorage.getItem("voice");
+        if (rawVoice) {
+          const data = JSON.parse(rawVoice);
+          setVoiceList(data);
+
+          // 목표하는 date와 time
+          const targetDate = date;
+          const targetTime = time;
+
+          // date와 time이 모두 일치하는 객체 필터링
+          const filtered = data.filter(
+            (item) => item.date === targetDate && item.time === targetTime
+          );
+
+          setText(filtered[0].text);
+        }
+      } catch (error) {
+        console.error("데이터 불러오기 실패:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // 수정 코드
+  const handleEdit = async () => {
+    // voiceList에서 date와 time이 일치하는 객체 찾기
+    const updatedList = voiceList.map((item) => {
+      if (item.date === date && item.time === time) {
+        return {
+          ...item,
+          text: text,
+        };
+      } else {
+        return item;
+      }
+    });
+
+    try {
+      // 수정된 배열을 AsyncStorage에 저장
+      await AsyncStorage.setItem("voice", JSON.stringify(updatedList));
+      setVoiceList(updatedList);
+      console.log(updatedList);
+    } catch (error) {
+      console.error("객체 수정 실패:", error);
+    }
+  };
+
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.modalBackground}>
@@ -54,6 +116,8 @@ export default function VoiceModifyScreen({ visible, onClose }) {
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => {
+                handleEdit();
+                onUpdateText(text);
                 onClose();
                 showToast("수정이 완료되었어요");
               }}
@@ -62,19 +126,8 @@ export default function VoiceModifyScreen({ visible, onClose }) {
             </TouchableOpacity>
           </View>
           <ScrollView>
-            <TextInput style={styles.text} multiline>
-              안녕하세요, 선생님. 우리 아이 학교 생활은 잘 하고 있는지
-              궁금해서요. 안녕하세요, 어머님. 우리 학생은 매우 열심히 공부하고
-              있고, 친구들과도 잘 지내고 있습니다. 다행이네요. 혹시 더 신경 써야
-              할 부분이 있을까요? 학업 성적은 좋지만, 최근에 수학 과목에서 조금
-              어려움을 겪고 있는 것 같아요. 집에서도 복습을 도와주시면 좋을 것
-              같습니다. 알겠습니다. 집에서도 수학 공부를 더 신경 쓰도록 할게요.
-              혹시 학교에서 제공하는 추가 보충 수업이 있나요? 네, 매주 화요일과
-              목요일에 방과후 보충 수업이 있습니다. 참여하면 도움이 될 거예요.
-              그럼 보충 수업에 참여할 수 있도록 하겠습니다. 감사합니다, 선생님.
-              네, 도와주셔서 감사합니다. 앞으로도 꾸준히 지켜보면서
-              지원하겠습니다. 정말 감사합니다. 앞으로도 잘 부탁드립니다. 네,
-              저도 잘 부탁드립니다. 좋은 하루 보내세요.
+            <TextInput style={styles.text} multiline onChangeText={setText}>
+              {text}
             </TextInput>
             <View style={{ marginBottom: 40 }} />
           </ScrollView>

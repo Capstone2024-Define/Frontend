@@ -2,8 +2,9 @@ import { StyleSheet, TouchableOpacity, View, Text, Image } from "react-native";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Voice from "../assets/graphic_eq.svg";
+import PropTypes from "prop-types";
 
-export default function VoiceButton({ time, text, onPress }) {
+export default function VoiceButton({ time, text = "", onPress }) {
   return (
     <View style={{ marginBottom: 8 }}>
       <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
@@ -16,7 +17,9 @@ export default function VoiceButton({ time, text, onPress }) {
               </View>
               <Text style={styles.dubogi}>더보기</Text>
             </View>
-            <Text style={styles.voiceText}>{text}...</Text>
+            <Text style={styles.voiceText}>
+              {text.slice(0, 29).replace(/\n/g, " ")}...
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -24,9 +27,10 @@ export default function VoiceButton({ time, text, onPress }) {
   );
 }
 
-VoiceButton.defaultProps = {
-  time: "오후 4:50",
-  text: "안녕하세요, 선생님. 우리 아이 학교 생활은 잘하고 있는",
+VoiceButton.propTypes = {
+  time: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  onPress: PropTypes.func.isRequired,
 };
 
 const styles = StyleSheet.create({

@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
@@ -46,7 +48,7 @@ export default function SymptomCheckScreen({ route, navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="leftArrow"
         title="되돌아보기"
@@ -101,10 +103,10 @@ export default function SymptomCheckScreen({ route, navigation }) {
         </View>
         <View style={{ marginBottom: 40 }} />
       </ScrollView>
-      <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+      {/* <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </SafeAreaView>
   );
 }
 

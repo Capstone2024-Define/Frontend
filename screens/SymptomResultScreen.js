@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, SafeAreaView } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 
@@ -28,7 +28,7 @@ export default function SymptomResultScreen({ route, navigation }) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="이전"
         title="되돌아보기 결과"
@@ -54,7 +54,7 @@ export default function SymptomResultScreen({ route, navigation }) {
         <Text style={styles.resultText}>오늘 지현님은</Text>
         <Text style={styles.resultTextHighlight}>{resultText}</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FEFDF9",
   },
   progressView: {
     flexDirection: "row",

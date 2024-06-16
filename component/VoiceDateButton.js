@@ -11,7 +11,7 @@ export default function VoiceDateButton({ place, date, time, text, onPress }) {
         <View style={styles.voiceContent}>
           <View style={styles.voiceContentHeader}>
             <View style={{ flexDirection: "row" }}>
-              {place === "학교" ? (
+              {place === "school" ? (
                 <WithLocalSvg width={20} height={20} asset={School} />
               ) : (
                 <WithLocalSvg width={20} height={20} asset={Hospital} />
@@ -21,18 +21,14 @@ export default function VoiceDateButton({ place, date, time, text, onPress }) {
             </View>
             <Text style={styles.dubogi}>더보기</Text>
           </View>
-          <Text style={styles.voiceText}>{text}...</Text>
+          <Text style={styles.voiceText}>
+            {text.slice(0, 29).replace(/\n/g, " ")}...
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 }
-
-VoiceDateButton.defaultProps = {
-  date: "5.10 토",
-  time: "오후 4:50",
-  text: "음성기록의 앞부분 한줄을 넘어가지 않습니",
-};
 
 const styles = StyleSheet.create({
   voiceButton: {

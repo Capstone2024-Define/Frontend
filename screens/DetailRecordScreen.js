@@ -6,6 +6,7 @@ import {
   Alert,
   Linking,
   Image,
+  SafeAreaView,
 } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { useState, useEffect } from "react";
@@ -35,13 +36,6 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
-  // const [totalText, setTotalText] = useState("");
-
-  // totalText 계산
-  // useEffect(() => {
-  //   setTotalText(homeText + schoolText + hospitalText);
-  //   console.log(`전체 텍스트 : ${totalText}`);
-  // }, [homeText, schoolText, hospitalText]);
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -131,7 +125,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Header
         left="이전"
         title="기록하기"
@@ -311,7 +305,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         ></View>
         <View style={{ marginBottom: 70 }}></View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  BackHandler,
 } from "react-native";
 import VoiceButton from "../component/VoiceButton";
 import Header from "../component/Header";
@@ -37,6 +38,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [remindVisible, setRemindVisible] = useState(false); // 되돌아보기 드롭다운 활성화
   const [totalText, setTotalText] = useState(""); // 서머리 요약을 위한 전체 텍스트
   const [summaryText, setSummaryText] = useState(""); // 서머리  결과
+  const [voiceList, setVoiceList] = useState([]); // 음성 기록
 
   // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
   useFocusEffect(
@@ -66,8 +68,8 @@ export default function DetailHistoryScreen({ navigation, route }) {
           }
           setTotalText(newTotalText);
 
-          console.log(newTotalText);
-          console.log(newRecord);
+          // console.log(newTotalText);
+          // console.log(newRecord);
         } catch (e) {
           console.log("기록 로드 에러");
         }
@@ -84,7 +86,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         try {
           const result = await summary(totalText);
           setSummaryText(result.summary);
-          console.log(result.summary);
+          // console.log(result.summary);
         } catch (error) {
           console.log("서머리 에러", error.response.data.error.errorCode);
         }
@@ -112,6 +114,39 @@ export default function DetailHistoryScreen({ navigation, route }) {
     }, [checkList])
   );
 
+  // 음성 기록
+  useFocusEffect(
+    useCallback(() => {
+      async function load() {
+        try {
+          const rawVoice = await AsyncStorage.getItem("voice");
+          const voices = JSON.parse(rawVoice);
+          if (voices) {
+            const filteredVoice = voices.filter((voice) => voice.date === date);
+            setVoiceList(filteredVoice);
+          }
+        } catch (e) {
+          console.log("기록 로드 에러");
+        }
+      }
+      load();
+    }, [])
+  );
+
+  // 시스템 뒤로가기 버튼 핸들러
+  useEffect(() => {
+    const onBackPress = () => {
+      navigation.popToTop();
+      return true;
+    };
+
+    BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    };
+  }, [navigation]);
+
   return (
     <>
       <Header
@@ -121,7 +156,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         ).getDate()}일`}
         right="수정"
         onLeftPress={() => {
-          navigation.pop();
+          navigation.popToTop();
         }}
         onRightPress={() => {
           navigation.push("DetailModify", { date: date, checkList: checkList });
@@ -217,13 +252,23 @@ export default function DetailHistoryScreen({ navigation, route }) {
               <Text style={styles.recordText}>{schoolText}</Text>
             )}
           </View>
-          <VoiceButton
-            onPress={() =>
-              navigation.navigate("DetailVoice", {
-                detail: true,
-              })
-            }
-          />
+          {voiceList.map((voice, index) =>
+            voice.place === "school" ? (
+              <VoiceButton
+                key={`school-${index}`}
+                time={voice.time}
+                text={voice.text}
+                onPress={() =>
+                  navigation.navigate("DetailVoice", {
+                    detail: false,
+                    place: "school",
+                    date: date,
+                    time: voice.time,
+                  })
+                }
+              />
+            ) : null
+          )}
           <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -237,6 +282,23 @@ export default function DetailHistoryScreen({ navigation, route }) {
               <Text style={styles.recordText}>{hospitalText}</Text>
             )}
           </View>
+          {voiceList.map((voice, index) =>
+            voice.place === "hospital" ? (
+              <VoiceButton
+                key={`hospital-${index}`}
+                time={voice.time}
+                text={voice.text}
+                onPress={() =>
+                  navigation.navigate("DetailVoice", {
+                    detail: false,
+                    place: "hospital",
+                    date: date,
+                    time: voice.time,
+                  })
+                }
+              />
+            ) : null
+          )}
 
           <View style={{ marginBottom: 70 }} />
         </View>

@@ -10,13 +10,9 @@ import {
   Modal,
   Dimensions,
   ImageBackground,
-  ScrollView,
-  StatusBar,
 } from "react-native";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
-import HomeDayButton from "../component/HomeDayButton";
-import HomeVoiceButton from "../component/HomeVoiceButton";
 import { theme } from "../colors/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -28,6 +24,7 @@ import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Calender from "../assets/calendar.svg";
 import NoRecord from "../assets/norecord.svg";
+import { StatusBar } from "expo-status-bar";
 
 // 화면 크기 가져오기
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -63,7 +60,6 @@ export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
-  const [moods, setMoods] = useState({});
   const [images, setImages] = useState([]);
   const [text, setText] = useState("");
   const [emoji, setEmoji] = useState([]);
@@ -107,23 +103,29 @@ export default function HomeScreen({ navigation }) {
     }, [selectedDate])
   );
 
-  useEffect(() => {
-    const fetchEmojiColors = async () => {
-      const newEmoji = [];
-      for (let i = 0; i < weeks.length; i++) {
-        try {
-          const color = await getEmojiColor(weeks[i]);
-          newEmoji.push(color);
-        } catch (error) {
-          console.error("fetchEmojiColors 에러", error);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchEmojiColors = async () => {
+        const newEmoji = [];
+        for (let i = 0; i < weeks.length; i++) {
+          try {
+            const color = await getEmojiColor(weeks[i]);
+            newEmoji.push(color);
+          } catch (error) {
+            console.error("fetchEmojiColors 에러", error);
+          }
         }
-      }
-      //console.log(newEmoji);
-      setEmoji(newEmoji);
-    };
+        //console.log(newEmoji);
+        setEmoji(newEmoji);
+      };
 
-    fetchEmojiColors();
-  }, [weeks]);
+      fetchEmojiColors();
+    }, [weeks])
+  );
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [selectedDate]);
 
   const cvtDateString = (date) => {
     const year = date.getFullYear();
@@ -155,30 +157,6 @@ export default function HomeScreen({ navigation }) {
     return parseInt((weekDay - 1 + currentDate) / 7) + 1;
   };
 
-  // const renderEmoji = (emoji, index) => (
-  //   <TouchableOpacity
-  //     key={index}
-  //     onPress={() => setMoods({ ...moods, [selectedDate]: emoji })}
-  //   >
-  //     <Text
-  //       style={[
-  //         styles.emoji,
-  //         moods[selectedDate] === emoji ? styles.selectedEmoji : null,
-  //       ]}
-  //     >
-  //       {emoji}
-  //     </Text>
-  //   </TouchableOpacity>
-  // );
-
-  // const fetchData = async () => {
-  //   // 서버에서 데이터를 받아오는 로직 예시
-  //   const data = {
-  //     "2024-06-09": "green",
-  //   };
-  //   setMoods(data);
-  // };
-
   const handleWeekChange = (direction) => {
     const current = new Date(selectedDate);
     const newDate = new Date(
@@ -197,10 +175,6 @@ export default function HomeScreen({ navigation }) {
       today.getDate() === compareDate.getDate()
     );
   };
-
-  // const getMoodColor = (date) => {
-  //   return moods[date] || "#D3D3D3";
-  // };
 
   const isPastDate = (date) => {
     const today = new Date();
@@ -234,6 +208,34 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  // const renderEmoji = (emoji, index) => (
+  //   <TouchableOpacity
+  //     key={index}
+  //     onPress={() => setMoods({ ...moods, [selectedDate]: emoji })}
+  //   >
+  //     <Text
+  //       style={[
+  //         styles.emoji,
+  //         moods[selectedDate] === emoji ? styles.selectedEmoji : null,
+  //       ]}
+  //     >
+  //       {emoji}
+  //     </Text>
+  //   </TouchableOpacity>
+  // );
+
+  // const fetchData = async () => {
+  //   // 서버에서 데이터를 받아오는 로직 예시
+  //   const data = {
+  //     "2024-06-09": "green",
+  //   };
+  //   setMoods(data);
+  // };
+
+  // const getMoodColor = (date) => {
+  //   return moods[date] || "#D3D3D3";
+  // };
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -263,6 +265,11 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.title}>기록하는 중</Text>
               </View>
             </View>
+            {/* <Image
+              source={require("../assets/homerabbit.png")}
+              resizeMode={"stretch"}
+              style={{ width: 132, height: 142, marginTop: 12, marginBottom: -14 }}
+            /> */}
             <WithLocalSvg asset={Rabbit} />
           </View>
           <View
@@ -304,6 +311,16 @@ export default function HomeScreen({ navigation }) {
               </Text>
               <View style={{ flex: 1, alignSelf: "stretch" }}></View>
               <TouchableOpacity onPress={() => handleWeekChange(-1)}>
+                {/* <Image
+                  source={require("../assets/chevron_left.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleWeekChange(1)}>
+                <Image
+                  source={require("../assets/chevron_right.png")}
+                  style={{ width: 24, height: 24 }}
+                />  */}
                 <WithLocalSvg asset={Left} style={{ marginRight: 10 }} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleWeekChange(1)}>
@@ -383,6 +400,53 @@ export default function HomeScreen({ navigation }) {
                       backgroundColor: getMoodColor(weeks[index]),
                       marginTop: 4,
                     }}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View
+              style={{
+                backgroundColor: "#FBFBFB",
+                borderRadius: 8,
+                paddingTop: 15,
+                paddingBottom: 37,
+                marginBottom: 36,
+                width: "100%", // 부모 뷰의 전체 너비를 사용
+                maxWidth: 350, // 최대 너비 설정
+                alignItems: "center", // 네모 박스들을 중앙 정렬
+              }}
+            >
+              <Text
+                style={{
+                  color: "#333333",
+                  fontSize: 14,
+                  marginBottom: 108,
+                  fontFamily: "Pretendard-Bold",
+                  textAlign: "left", // 왼쪽 정렬
+                  alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
+                  marginLeft: 17, // 왼쪽 패딩 추가
+                }}
+              >
+                {`${new Date(selectedDate).getMonth() + 1}.${new Date(
+                  selectedDate
+                ).getDate()} ${["일", "월", "화", "수", "목", "금", "토"][
+                  new Date(selectedDate).getDay()
+                ]}요일${isToday(selectedDate) ? " (오늘)" : ""}`}
+              </Text>
+              <View style={{ alignItems: "center" }}>
+                <Image
+                  source={require("../assets/homechecklist.png")}
+                  resizeMode={"stretch"}
+                  style={{ marginTop: -40, width: 67.1, height: 70 }}
+                />
+                <Text
+                  style={{
+                    color: "#6F6F6F",
+                    fontSize: 14,
+                    marginTop: 5,
+                    alignItems: "center",
+                    fontFamily: "Human-beomseok",
+                    marginBottom: 16,
                   /> */}
                 </TouchableOpacity>
               ))}
@@ -510,7 +574,9 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.yellowButton}
-                onPress={() => navigation.push("MainVoice")}
+                onPress={() =>
+                  navigation.push("MainVoice", { date: selectedDate })
+                }
               >
                 <WithLocalSvg asset={Mic} />
                 <Text
@@ -695,8 +761,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "white",
-    marginLeft: 5,
+    color: "#FFFFFF",
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  buttonIcon: {
+    width: 24,
+    height: 24,
+    marginLeft: 8,
   },
   buttonIcon: {
     width: 24,

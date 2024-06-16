@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,21 @@ import {
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
+import { Audio } from "expo-av";
+import axios from "axios";
+import * as FileSystem from "expo-file-system";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const VoiceRecordScreen = ({ navigation, route }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
   const [mode, setMode] = useState("school");
+  const [recording, setRecording] = useState(null);
+  const recordingRef = useRef(null);
+
+  // 기록 관련
+  const today = route.params.date; // 날짜
 
   useEffect(() => {
     return () => {
@@ -22,19 +31,105 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     };
   }, [intervalId]);
 
-  const startRecording = () => {
-    setIsRecording(true);
-    const id = setInterval(() => {
-      setRecordingTime((prev) => prev + 1);
-    }, 1000);
-    setIntervalId(id);
+  const startRecording = async () => {
+    try {
+      await Audio.requestPermissionsAsync();
+
+      // 오디오 모드 설정
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
+      recordingRef.current = recording;
+      setRecording(recording);
+      setIsRecording(true);
+      const id = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+      setIntervalId(id);
+      console.log("Recording started");
+    } catch (err) {
+      console.error("Failed to start recording", err);
+    }
   };
 
-  const stopRecording = () => {
-    setIsRecording(false);
-    clearInterval(intervalId);
-    setIntervalId(null);
-    setRecordingTime(0);
+  const stopRecording = async () => {
+    try {
+      console.log("Stopping recording..");
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+      console.log("Recording stopped and stored at", uri);
+
+      const info = await FileSystem.getInfoAsync(uri);
+      console.log("Recording file info:", info);
+
+      if (info.size > 0) {
+        sendToNaverSTT(uri);
+      } else {
+        console.error("Recording file is empty");
+      }
+      setIsRecording(false);
+      clearInterval(intervalId);
+      setIntervalId(null);
+      setRecordingTime(0);
+      setRecording(null);
+    } catch (error) {
+      console.error("Failed to stop recording", error);
+    }
+  };
+
+  const sendToNaverSTT = async (fileUri) => {
+    try {
+      const fileData = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Base64 데이터를 ArrayBuffer로 변환
+      const binaryData = Uint8Array.from(atob(fileData), (c) =>
+        c.charCodeAt(0)
+      );
+
+      const url = "https://naveropenapi.apigw.ntruss.com/recog/v1/stt?lang=Kor";
+      const headers = {
+        "Content-Type": "application/octet-stream",
+        "X-NCP-APIGW-API-KEY-ID": "tnu2l7l5pe", // 네이버 클라우드 API 키
+        "X-NCP-APIGW-API-KEY": "Ng7ni9swMdivuktz74C8lAH4NxkP02XW1X9typnt", // 네이버 클라우드 API 시크릿
+      };
+
+      const response = await axios.post(url, binaryData.buffer, {
+        headers: headers,
+        responseType: "json",
+      });
+
+      console.log("Response from Naver STT:", response.data);
+      // 녹음 결과 페이지로 이동
+      // navigation.push("VoiceResultScreen", { transcript: response.data.text });
+
+      //await AsyncStorage.clear();
+      const time = getTime();
+      // 스토리지에 결과 저장
+      const newVoice = {
+        date: today,
+        place: mode,
+        time: time,
+        text: response.data.text,
+      };
+      console.log(newVoice);
+
+      // 스토리지 저장
+      await save(newVoice);
+    } catch (err) {
+      console.error("Failed to send to Naver STT", err);
+      if (err.response) {
+        console.log("Response data:", err.response.data);
+        console.log("Response status:", err.response.status);
+        console.log("Response headers:", err.response.headers);
+      }
+    }
   };
 
   const formatTime = (time) => {
@@ -43,8 +138,48 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  // 스토리지에 저장
+  const save = async (toSave) => {
+    try {
+      // 기존 저장된 기록 불러오기
+      const rawVoiceList = await AsyncStorage.getItem("voice");
+      let voiceList = [];
+      if (rawVoiceList) {
+        try {
+          voiceList = JSON.parse(rawVoiceList);
+        } catch (parseError) {
+          console.error("JSON 파싱 에러:", parseError);
+        }
+      }
+
+      console.log("기존 기록 내용:", voiceList);
+
+      // 새로운 기록 추가
+      voiceList.push(toSave);
+      console.log("새로운 기록이 추가된 리스트:", voiceList);
+
+      // 기록 저장
+      await AsyncStorage.setItem("voice", JSON.stringify(voiceList));
+      console.log("기록 저장 성공:", voiceList);
+    } catch (error) {
+      console.error("기록 저장 에러:", error);
+    }
+  };
+
+  // 녹음 시간 구하기
+  const getTime = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const period = hours >= 12 ? "오후" : "오전";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    return `${period} ${formattedHours}:${formattedMinutes}`;
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: theme.yellow25 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="leftArrow"
         title="음성기록"
@@ -53,11 +188,10 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         }}
         onRightPress={() =>
           navigation.push("SymptomResult", {
-            // selectedCount: selectedChecklistItems.length,
             date: route.params.date,
           })
         }
-        line={false}
+        line={true}
       />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.descriptionContainer}>
@@ -156,7 +290,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         <View style={styles.progressLeft} />
         <View style={styles.progressRight} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -164,18 +298,18 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: theme.yellow25,
-    marginTop: 30,
+    paddingTop: 25,
   },
   descriptionContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 8,
     marginHorizontal: 24,
   },
   descriptionText: {
     color: "#242424",
-    fontSize: 18,
+    fontSize: 17.5,
     width: 127,
     fontFamily: "Pretendard-Medium",
   },
@@ -206,10 +340,12 @@ const styles = StyleSheet.create({
   activeModeText: {
     color: "#FFFFFF",
     fontSize: 14,
+    fontFamily: "Pretendard-Medium",
   },
   inactiveModeText: {
     color: "#A5A5A5",
     fontSize: 14,
+    fontFamily: "Pretendard-Medium",
   },
   recordingHint: {
     color: "#A5A5A5",
@@ -224,13 +360,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 50,
+    marginTop: 100,
   },
   timer: {
     color: "#8B8B8B",
     fontSize: 36,
     fontFamily: "Pretendard-Medium",
-    marginBottom: 30,
   },
   timerRecording: {
     color: "#000000",
@@ -240,10 +375,9 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     marginRight: 8,
-    marginBottom: 30,
   },
   waveformContainer: {
-    flex: 1,
+    height: 152,
     alignItems: "center",
   },
   waveformLine: {
@@ -251,16 +385,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#78BA7D",
     marginTop: 30,
-    marginBottom: 20,
+    marginBottom: 100,
   },
   waveformImage: {
     width: "100%",
     resizeMode: "contain",
-    marginBottom: 50,
+    marginBottom: 100,
   },
   buttonContainer: {
     alignItems: "center",
-    marginBottom: 80,
+    marginBottom: 93,
   },
   recordButtonStart: {
     flexDirection: "row",

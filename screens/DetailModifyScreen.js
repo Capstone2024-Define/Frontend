@@ -10,7 +10,7 @@ import {
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
 import { showToast } from "../component/Toast";
@@ -23,6 +23,7 @@ import Hospital from "../assets/stethoscope.svg";
 import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -38,6 +39,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
   const [checkList, setCheckList] = useState([]);
+  const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const date = route.params.date;
 
   // 갤러리 권한
@@ -146,6 +148,25 @@ export default function DetailRecordScreen({ navigation, route }) {
       console.log("기록 저장 에러");
     }
   };
+
+  // 음성 기록
+  useFocusEffect(
+    useCallback(() => {
+      async function load() {
+        try {
+          const rawVoice = await AsyncStorage.getItem("voice");
+          const voices = JSON.parse(rawVoice);
+          if (voices) {
+            const filteredVoice = voices.filter((voice) => voice.date === date);
+            setVoiceList(filteredVoice);
+          }
+        } catch (e) {
+          console.log("기록 로드 에러");
+        }
+      }
+      load();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -278,14 +299,23 @@ export default function DetailRecordScreen({ navigation, route }) {
           >
             {schoolText}
           </TextInput>
-
-          <VoiceButton
-            onPress={() =>
-              navigation.navigate("DetailVoice", {
-                detail: true,
-              })
-            }
-          />
+          {voiceList.map((voice, index) =>
+            voice.place === "school" ? (
+              <VoiceButton
+                key={`school-${index}`}
+                time={voice.time}
+                text={voice.text}
+                onPress={() =>
+                  navigation.navigate("DetailVoice", {
+                    detail: false,
+                    place: "school",
+                    date: date,
+                    time: voice.time,
+                  })
+                }
+              />
+            ) : null
+          )}
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -311,12 +341,24 @@ export default function DetailRecordScreen({ navigation, route }) {
           >
             {hospitalText}
           </TextInput>
+          {voiceList.map((voice, index) =>
+            voice.place === "hospital" ? (
+              <VoiceButton
+                key={`hospital-${index}`}
+                time={voice.time}
+                text={voice.text}
+                onPress={() =>
+                  navigation.navigate("DetailVoice", {
+                    detail: false,
+                    place: "hospital",
+                    date: date,
+                    time: voice.time,
+                  })
+                }
+              />
+            ) : null
+          )}
         </View>
-        <View
-          style={{
-            alignItems: "flex-end",
-          }}
-        ></View>
         <View style={{ marginBottom: 70 }}></View>
       </ScrollView>
     </View>
