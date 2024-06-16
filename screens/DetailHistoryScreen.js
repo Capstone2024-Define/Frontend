@@ -24,6 +24,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import summary from "./SummaryAPI";
+import SmallTag from "../component/SmallTag";
 
 export default function DetailHistoryScreen({ navigation, route }) {
   // 상세 기록 state
@@ -33,6 +34,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [images, setImages] = useState([]);
   const [date, setDate] = useState(route.params.date);
   const [checkList, setCheckList] = useState([]);
+  const [symptomList, setSymptomList] = useState([]);
   const [headerColor, setHeaderColor] = useState(theme.green500);
 
   const [remindVisible, setRemindVisible] = useState(false); // 되돌아보기 드롭다운 활성화
@@ -54,6 +56,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           setImages(newRecord.image);
           setDate(newRecord.date);
           setCheckList(newRecord.checkList);
+          setSymptomList(newRecord.symptomList);
 
           // totalText
           let newTotalText = "";
@@ -101,17 +104,17 @@ export default function DetailHistoryScreen({ navigation, route }) {
   // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
     useCallback(() => {
-      if (checkList) {
-        const selectedCount = checkList.length;
+      if (symptomList) {
+        const selectedCount = symptomList.length;
         if (selectedCount <= 3) {
-          setHeaderColor(theme.pink);
+          setHeaderColor(theme.green);
         } else if (selectedCount <= 9) {
           setHeaderColor(theme.yellow);
         } else {
-          setHeaderColor(theme.green);
+          setHeaderColor(theme.pink);
         }
       }
-    }, [checkList])
+    }, [symptomList])
   );
 
   // 음성 기록
@@ -180,16 +183,27 @@ export default function DetailHistoryScreen({ navigation, route }) {
             </View>
           ))}
         </ScrollView>
-        <View style={styles.subContainer}>
-          <View style={{ marginVertical: 24 }}>
-            <View style={{ flexDirection: "row", marginBottom: 12 }}>
-              <WithLocalSvg width={20} height={20} asset={Note} />
-              <Text style={styles.title}>기록을 요약했어요</Text>
+        {summaryText ? (
+          <View style={styles.subContainer}>
+            <View style={{ marginBottom: 16 }}>
+              <View style={{ flexDirection: "row", marginBottom: 12 }}>
+                <WithLocalSvg width={20} height={20} asset={Note} />
+                <Text style={styles.title}>기록을 요약했어요</Text>
+              </View>
+              <Text style={{ ...styles.subText }}>{summaryText}</Text>
             </View>
-            <Text style={styles.subText}>{summaryText}</Text>
           </View>
-        </View>
-
+        ) : null}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tagContainer}
+        >
+          {symptomList.map((symptom, index) => (
+            <SmallTag key={index} text={symptom} />
+          ))}
+          <View style={{ width: 35 }} />
+        </ScrollView>
         <View style={styles.line} />
         <View
           style={{
@@ -327,6 +341,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
+    marginBottom: 24,
   },
   title: {
     marginLeft: 8,
@@ -339,6 +354,10 @@ const styles = StyleSheet.create({
     color: theme.grey700,
     fontFamily: "Human-beomseok",
     lineHeight: 19.6,
+  },
+  tagContainer: {
+    marginLeft: 24,
+    marginBottom: 16,
   },
   line: {
     width: "100%",

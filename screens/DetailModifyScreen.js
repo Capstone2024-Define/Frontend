@@ -39,6 +39,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
   const [checkList, setCheckList] = useState([]);
+  const [symptomList, setSymptomList] = useState([]);
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const date = route.params.date;
 
@@ -63,6 +64,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         setHospitalText(newRecord.hospital);
         setImages(newRecord.image);
         setCheckList(newRecord.checkList);
+        setSymptomList(newRecord.symptomList);
         console.log(newRecord);
       } catch (e) {
         console.log("기록 로드 에러");
@@ -197,6 +199,7 @@ export default function DetailRecordScreen({ navigation, route }) {
             hospital: hospitalText,
             image: images,
             checkList: checkList,
+            symptomList: symptomList,
           };
           console.log(newRecord);
 

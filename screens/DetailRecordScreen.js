@@ -153,6 +153,7 @@ export default function DetailRecordScreen({ navigation, route }) {
             hospital: hospitalText,
             image: images,
             checkList: route.params.checkList,
+            symptomList: route.params.symptomList,
           };
           console.log(newRecord);
 

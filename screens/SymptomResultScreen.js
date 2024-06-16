@@ -11,20 +11,20 @@ const resultImages = {
 
 export default function SymptomResultScreen({ route, navigation }) {
   const { selectedCount } = route.params;
-  console.log(selectedCount);
+  //console.log(selectedCount);
 
   let resultText = "";
   let resultImage = null;
 
   if (selectedCount <= 3) {
-    resultText = "아쉬워요!";
-    resultImage = resultImages["아쉬워요"];
+    resultText = "최고예요!";
+    resultImage = resultImages["최고예요"];
   } else if (selectedCount <= 9) {
     resultText = "보통이에요!";
     resultImage = resultImages["보통이에요"];
   } else {
-    resultText = "최고예요!";
-    resultImage = resultImages["최고예요"];
+    resultText = "아쉬워요!";
+    resultImage = resultImages["아쉬워요"];
   }
 
   return (
@@ -37,11 +37,10 @@ export default function SymptomResultScreen({ route, navigation }) {
           navigation.pop();
         }}
         onRightPress={() => {
-          navigation.push("DetailRecord", {
+          navigation.push("SymptomCheckParent", {
             date: route.params.date,
-            checkList: route.params.checkList,
+            symptomList: route.params.symptomList,
           });
-          console.log(route.params.checkList);
         }}
         line={false}
       />
@@ -71,28 +70,27 @@ const styles = StyleSheet.create({
     height: 4,
   },
   progressLeft: {
-    width: "66%",
+    width: "33%",
     backgroundColor: theme.green500,
   },
   progressRight: {
-    width: "34%",
+    width: "67%",
     backgroundColor: theme.grey150,
   },
   resultImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
+    width: 250,
+    height: 250,
   },
   resultText: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#242424",
     fontFamily: "Pretendard-Medium",
-    fontFamily: "Pretendard-Bold",
   },
   resultTextHighlight: {
-    fontSize: 18,
+    fontSize: 16,
     color: theme.green500,
     fontFamily: "Pretendard-Bold",
     marginTop: 4,
+    marginBottom: 40,
   },
 });

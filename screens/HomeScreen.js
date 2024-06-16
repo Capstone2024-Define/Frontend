@@ -10,9 +10,12 @@ import {
   Modal,
   Dimensions,
   ImageBackground,
+  StatusBar,
 } from "react-native";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
+import HomeDayButton from "../component/HomeDayButton";
+import HomeVoiceButton from "../component/HomeVoiceButton";
 import { theme } from "../colors/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -24,10 +27,6 @@ import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Calender from "../assets/calendar.svg";
 import NoRecord from "../assets/norecord.svg";
-import { StatusBar } from "expo-status-bar";
-
-// 화면 크기 가져오기
-const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 // 캘린더 모달창
 const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
@@ -96,6 +95,9 @@ export default function HomeScreen({ navigation }) {
             //console.log(newRecord);
           } catch (e) {
             console.log("기록 로드 에러");
+            // 기록 없는거니까 텍스트랑 이미지 비움
+            setText("");
+            setImages([]);
           }
         }
         load();
@@ -190,14 +192,14 @@ export default function HomeScreen({ navigation }) {
       const rawRecord = await AsyncStorage.getItem(date);
       if (rawRecord !== null) {
         const record = JSON.parse(rawRecord);
-        if (record.checkList) {
-          const selectedCount = record.checkList.length;
+        if (record.symptomList) {
+          const selectedCount = record.symptomList.length;
           if (selectedCount <= 3) {
-            emojiColor = theme.pink;
+            emojiColor = theme.green;
           } else if (selectedCount <= 9) {
             emojiColor = theme.yellow;
           } else {
-            emojiColor = theme.green;
+            emojiColor = theme.pink;
           }
         }
       }
@@ -761,14 +763,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    marginLeft: 8,
-  },
-  buttonIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 8,
+    color: "white",
+    marginLeft: 5,
   },
   buttonIcon: {
     width: 24,

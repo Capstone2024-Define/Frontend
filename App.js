@@ -27,6 +27,7 @@ import VoiceRecordScreen from "./screens/VoiceRecordScreen";
 import SymptomResultScreen from "./screens/SymptomResultScreen";
 import DetailNoneScreen from "./screens/DetailNoneScreen";
 import { useFonts } from "expo-font"; // 폰트 관련
+import SymptomCheckParent from "./screens/SymptomCheckParent";
 // import VoiceTestScreen from "./screens/VoiceTestScreen";
 
 // 스택 내비게이터 생성
@@ -76,6 +77,14 @@ export default function App() {
               component={SymptomResultScreen}
               options={{
                 title: "측정 결과",
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="SymptomCheckParent"
+              component={SymptomCheckParent}
+              options={{
+                title: "되돌아보기",
                 headerShown: false,
               }}
             />
@@ -136,11 +145,6 @@ export default function App() {
               component={DetailNoneScreen}
               options={{ headerShown: false }}
             />
-            {/* <Stack.Screen
-              name="VoiceTest"
-              component={VoiceTestScreen}
-              options={{ headerShown: false }}
-            /> */}
           </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>
