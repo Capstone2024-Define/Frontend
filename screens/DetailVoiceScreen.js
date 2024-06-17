@@ -53,7 +53,7 @@ const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalBackground}>
-          {detail ? (
+          {!detail ? (
             <Animated.View
               style={[
                 styles.modal3,

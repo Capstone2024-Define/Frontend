@@ -139,7 +139,7 @@ export default function VoiceHistoryScreen({ navigation }) {
                     text={content.text}
                     onPress={() =>
                       navigation.push("DetailVoice", {
-                        detail: false,
+                        detail: true,
                         place: content.place,
                         date: content.date,
                         time: content.time,

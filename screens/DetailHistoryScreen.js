@@ -137,18 +137,18 @@ export default function DetailHistoryScreen({ navigation, route }) {
   );
 
   // 시스템 뒤로가기 버튼 핸들러
-  useEffect(() => {
-    const onBackPress = () => {
-      navigation.popToTop();
-      return true;
-    };
+  // useEffect(() => {
+  //   const onBackPress = () => {
+  //     navigation.popToTop();
+  //     return true;
+  //   };
 
-    BackHandler.addEventListener("hardwareBackPress", onBackPress);
+  //   BackHandler.addEventListener("hardwareBackPress", onBackPress);
 
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-    };
-  }, [navigation]);
+  //   return () => {
+  //     BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+  //   };
+  // }, [navigation]);
 
   return (
     <>
@@ -273,7 +273,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 time={voice.time}
                 text={voice.text}
                 onPress={() =>
-                  navigation.navigate("DetailVoice", {
+                  navigation.push("DetailVoice", {
                     detail: false,
                     place: "school",
                     date: date,
@@ -303,7 +303,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 time={voice.time}
                 text={voice.text}
                 onPress={() =>
-                  navigation.navigate("DetailVoice", {
+                  navigation.push("DetailVoice", {
                     detail: false,
                     place: "hospital",
                     date: date,
