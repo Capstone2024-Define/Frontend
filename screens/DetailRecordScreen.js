@@ -118,6 +118,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   // 저장
   const save = async (toSave) => {
     try {
+      await AsyncStorage.clear();
       await AsyncStorage.setItem(date, JSON.stringify(toSave));
     } catch (error) {
       console.log("기록 저장 에러");
