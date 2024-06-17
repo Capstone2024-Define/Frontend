@@ -21,6 +21,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   const [mode, setMode] = useState("school");
   const [recording, setRecording] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [transcriptArray, setTranscriptArray] = useState([]);
   const recordingRef = useRef(null);
 
   // 기록 관련
@@ -33,6 +34,11 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   }, [intervalId]);
 
   const startRecording = async () => {
+    if (isRecording || recordingRef.current) {
+      console.warn("A recording is already in progress.");
+      return;
+    }
+
     try {
       await Audio.requestPermissionsAsync();
 
@@ -60,6 +66,11 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   };
 
   const stopRecording = async () => {
+    if (!isRecording) {
+      console.warn("No recording in progress to stop.");
+      return;
+    }
+
     try {
       console.log("Stopping recording..");
       await recordingRef.current.stopAndUnloadAsync();
@@ -70,10 +81,13 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       console.log("Recording file info:", info);
 
       if (info.size > 0) {
+        const transcript = await sendToNaverSTT(uri);
+        setTranscriptArray((prevArray) => [...prevArray, transcript]);
         setIsPaused(true);
         setIsRecording(false);
         clearInterval(intervalId);
         setIntervalId(null);
+        recordingRef.current = null;
       } else {
         console.error("Recording file is empty");
       }
@@ -82,10 +96,9 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     }
   };
 
-  const sendToNaverSTT = async () => {
+  const sendToNaverSTT = async (fileUri) => {
     try {
-      const uri = recordingRef.current.getURI();
-      const fileData = await FileSystem.readAsStringAsync(uri, {
+      const fileData = await FileSystem.readAsStringAsync(fileUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
@@ -107,23 +120,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       });
 
       console.log("Response from Naver STT:", response.data);
-      // 녹음 결과 페이지로 이동
-      // navigation.push("VoiceResultScreen", { transcript: response.data.text });
-
-      //await AsyncStorage.clear();
-      const time = getTime();
-      // 스토리지에 결과 저장
-      const newVoice = {
-        date: today,
-        place: mode,
-        time: time,
-        text: response.data.text,
-      };
-      console.log(newVoice);
-
-      // 스토리지 저장
-      await save(newVoice);
-      setIsPaused(false); // 완료 후 초기 상태로 설정
+      return response.data.text;
     } catch (err) {
       console.error("Failed to send to Naver STT", err);
       if (err.response) {
@@ -131,7 +128,26 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         console.log("Response status:", err.response.status);
         console.log("Response headers:", err.response.headers);
       }
+      return "";
     }
+  };
+
+  const handleComplete = async () => {
+    const finalTranscript = transcriptArray.join(" ");
+    const time = getTime();
+    const newVoice = {
+      date: today,
+      place: mode,
+      time: time,
+      text: finalTranscript,
+    };
+    console.log(newVoice);
+
+    // 스토리지 저장
+    await save(newVoice);
+    setTranscriptArray([]);
+    setRecordingTime(0);
+    setIsPaused(false);
   };
 
   const formatTime = (time) => {
@@ -251,14 +267,15 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.waveformContainer}>
           {isRecording ? (
-            <>
-              <Image
-                source={require("../assets/wave.png")}
-                style={styles.waveformImage}
-              />
-            </>
+            <Image
+              source={require("../assets/record_play.gif")}
+              style={styles.waveformImage}
+            />
           ) : (
-            <View style={styles.waveformLine} />
+            <Image
+              source={require("../assets/record_stop.png")}
+              style={styles.waveformImage}
+            />
           )}
         </View>
         <View style={styles.buttonContainer}>
@@ -274,10 +291,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
                 />
                 <Text style={styles.recordButtonTextStart}>녹음재개</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={sendToNaverSTT}
-                style={styles.completeButton}
-              >
+              <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
                 <Text style={styles.completeButtonText}>완료</Text>
               </TouchableOpacity>
             </>
@@ -404,13 +418,6 @@ const styles = StyleSheet.create({
   waveformContainer: {
     height: 152,
     alignItems: "center",
-  },
-  waveformLine: {
-    width: "100%",
-    height: 1,
-    backgroundColor: "#78BA7D",
-    marginTop: 30,
-    marginBottom: 100,
   },
   waveformImage: {
     width: "100%",
