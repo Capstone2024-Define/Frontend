@@ -20,6 +20,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   const [intervalId, setIntervalId] = useState(null);
   const [mode, setMode] = useState("school");
   const [recording, setRecording] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   const recordingRef = useRef(null);
 
   // 기록 관련
@@ -47,6 +48,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       recordingRef.current = recording;
       setRecording(recording);
       setIsRecording(true);
+      setIsPaused(false);
       const id = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
@@ -68,23 +70,22 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       console.log("Recording file info:", info);
 
       if (info.size > 0) {
-        sendToNaverSTT(uri);
+        setIsPaused(true);
+        setIsRecording(false);
+        clearInterval(intervalId);
+        setIntervalId(null);
       } else {
         console.error("Recording file is empty");
       }
-      setIsRecording(false);
-      clearInterval(intervalId);
-      setIntervalId(null);
-      setRecordingTime(0);
-      setRecording(null);
     } catch (error) {
       console.error("Failed to stop recording", error);
     }
   };
 
-  const sendToNaverSTT = async (fileUri) => {
+  const sendToNaverSTT = async () => {
     try {
-      const fileData = await FileSystem.readAsStringAsync(fileUri, {
+      const uri = recordingRef.current.getURI();
+      const fileData = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
@@ -122,6 +123,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
 
       // 스토리지 저장
       await save(newVoice);
+      setIsPaused(false); // 완료 후 초기 상태로 설정
     } catch (err) {
       console.error("Failed to send to Naver STT", err);
       if (err.response) {
@@ -260,30 +262,53 @@ const VoiceRecordScreen = ({ navigation, route }) => {
           )}
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            onPress={isRecording ? stopRecording : startRecording}
-            style={
-              isRecording ? styles.recordButtonStop : styles.recordButtonStart
-            }
-          >
-            <Image
-              source={
-                isRecording
-                  ? require("../assets/pause.png")
-                  : require("../assets/graphic_eq.png")
-              }
-              style={styles.recordIcon}
-            />
-            <Text
+          {isPaused ? (
+            <>
+              <TouchableOpacity
+                onPress={startRecording}
+                style={styles.recordButtonStart}
+              >
+                <Image
+                  source={require("../assets/graphic_eq.png")}
+                  style={styles.recordIcon}
+                />
+                <Text style={styles.recordButtonTextStart}>녹음재개</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={sendToNaverSTT}
+                style={styles.completeButton}
+              >
+                <Text style={styles.completeButtonText}>완료</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              onPress={isRecording ? stopRecording : startRecording}
               style={
                 isRecording
-                  ? styles.recordButtonTextStop
-                  : styles.recordButtonTextStart
+                  ? styles.recordButtonStop
+                  : styles.recordButtonStart
               }
             >
-              {isRecording ? "녹음정지" : "녹음시작"}
-            </Text>
-          </TouchableOpacity>
+              <Image
+                source={
+                  isRecording
+                    ? require("../assets/pause.png")
+                    : require("../assets/graphic_eq.png")
+                }
+                style={styles.recordIcon}
+              />
+              <Text
+                style={
+                  isRecording
+                    ? styles.recordButtonTextStop
+                    : styles.recordButtonTextStart
+                }
+              >
+                {isRecording ? "녹음정지" : "녹음시작"}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </SafeAreaView>
       <View style={{ flexDirection: "row" }}>
@@ -430,6 +455,37 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     marginRight: 8,
+  },
+  resumeButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#78BA7D",
+    borderRadius: 24,
+    paddingVertical: 13,
+    marginBottom: 16,
+    marginHorizontal: 106,
+    width: 147,
+    height: 44,
+  },
+  resumeButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+  },
+  completeButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "#F5DE8F",
+    borderRadius: 24,
+    borderWidth: 1,
+    paddingVertical: 15,
+    marginBottom: 33,
+    marginHorizontal: 131,
+  },
+  completeButtonText: {
+    color: "#F5DE8F",
+    fontSize: 14,
   },
   progressLeft: {
     width: "50%",
