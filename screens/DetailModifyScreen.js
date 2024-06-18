@@ -24,6 +24,7 @@ import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import summary from "./SummaryAPI";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -41,6 +42,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [checkList, setCheckList] = useState([]);
   const [symptomList, setSymptomList] = useState([]);
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
+  const [totalText, setTotalText] = useState("");
   const date = route.params.date;
 
   // 갤러리 권한
@@ -65,6 +67,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         setImages(newRecord.image);
         setCheckList(newRecord.checkList);
         setSymptomList(newRecord.symptomList);
+        setSummaryText;
         console.log(newRecord);
       } catch (e) {
         console.log("기록 로드 에러");
@@ -72,6 +75,20 @@ export default function DetailRecordScreen({ navigation, route }) {
     }
     load();
   }, []);
+
+  useEffect(() => {
+    let newTotalText = "";
+    if (homeText) {
+      newTotalText += homeText;
+    }
+    if (schoolText) {
+      newTotalText += ` ${schoolText}`;
+    }
+    if (hospitalText) {
+      newTotalText += ` ${hospitalText}`;
+    }
+    setTotalText(newTotalText);
+  }, [homeText, schoolText, hospitalText]);
 
   // 이미지 업로드
   const uploadImage = async () => {
@@ -170,6 +187,33 @@ export default function DetailRecordScreen({ navigation, route }) {
     }, [])
   );
 
+  // 기록 저장
+  const setStorage = async () => {
+    try {
+      // 서머리
+      const result = await summary(totalText);
+      console.log(result.summary);
+
+      // 객체 설정
+      const newRecord = {
+        date: date,
+        home: homeText,
+        school: schoolText,
+        hospital: hospitalText,
+        image: images,
+        checkList: checkList,
+        symptomList: symptomList,
+        summaryText: result.summary,
+      };
+      console.log("기록하기: ", newRecord);
+
+      // 스토리지 저장
+      await save(newRecord);
+    } catch (error) {
+      console.log("저장 에러", error.response.data.error.errorCode);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -180,31 +224,32 @@ export default function DetailRecordScreen({ navigation, route }) {
           navigation.pop();
         }}
         onRightPress={async () => {
+          await setStorage();
           navigation.pop();
           showToast("기록이 완료되었어요");
 
-          // DB에 저장
-          console.log(homeText);
-          console.log(schoolText);
-          console.log(hospitalText);
-          for (let i = 0; i < images.length; i++) {
-            console.log(i, images[i].uri);
-          }
+          // // DB에 저장
+          // console.log(homeText);
+          // console.log(schoolText);
+          // console.log(hospitalText);
+          // for (let i = 0; i < images.length; i++) {
+          //   console.log(i, images[i].uri);
+          // }
 
-          // 객체 설정
-          const newRecord = {
-            date: date,
-            home: homeText,
-            school: schoolText,
-            hospital: hospitalText,
-            image: images,
-            checkList: checkList,
-            symptomList: symptomList,
-          };
-          console.log(newRecord);
+          // // 객체 설정
+          // const newRecord = {
+          //   date: date,
+          //   home: homeText,
+          //   school: schoolText,
+          //   hospital: hospitalText,
+          //   image: images,
+          //   checkList: checkList,
+          //   symptomList: symptomList,
+          // };
+          // console.log(newRecord);
 
-          // 스토리지 저장
-          await save(newRecord);
+          // // 스토리지 저장
+          // await save(newRecord);
         }}
         line={true}
       />

@@ -22,6 +22,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { WithLocalSvg } from "react-native-svg/css";
 import Rabbit from "../assets/homeRabbit.svg";
 import Edit from "../assets/edit.svg";
+import Edit_green from "../assets/edit_green.svg";
 import Mic from "../assets/mic.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
@@ -60,8 +61,9 @@ export default function HomeScreen({ navigation }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
   const [images, setImages] = useState([]);
-  const [text, setText] = useState("");
+  const [totalText, setTotalText] = useState("");
   const [emoji, setEmoji] = useState([]);
+  const [summaryText, setSummaryText] = useState("");
 
   useEffect(() => {
     const date = cvtDateString(new Date());
@@ -89,14 +91,15 @@ export default function HomeScreen({ navigation }) {
             if (newRecord.hospital) {
               newTotalText += ` ${newRecord.hospital}`;
             }
-            setText(newTotalText);
+            setTotalText(newTotalText);
             setImages(newRecord.image);
+            setSummaryText(newRecord.summaryText);
 
             //console.log(newRecord);
           } catch (e) {
             console.log("기록 로드 에러");
             // 기록 없는거니까 텍스트랑 이미지 비움
-            setText("");
+            setTotalText("");
             setImages([]);
           }
         }
@@ -349,7 +352,7 @@ export default function HomeScreen({ navigation }) {
                   style={{
                     flex: 1,
                     alignItems: "center",
-                    paddingVertical: 9,
+                    paddingVertical: 7,
                     paddingHorizontal: 4,
                     backgroundColor:
                       selectedDate === weeks[index]
@@ -393,7 +396,7 @@ export default function HomeScreen({ navigation }) {
                   >
                     {new Date(weeks[index]).getDate()}
                   </Text>
-                  <FontAwesome name="circle" size={20} color={emoji[index]} />
+                  <FontAwesome name="circle" size={25} color={emoji[index]} />
                   {/* <View
                     style={{
                       width: 10,
@@ -453,7 +456,7 @@ export default function HomeScreen({ navigation }) {
                 </TouchableOpacity>
               ))}
             </View>
-            {images.length > 0 || text ? (
+            {images.length > 0 || totalText ? (
               <View style={{ flex: 1 }}>
                 <TouchableOpacity
                   style={styles.recordContainer}
@@ -487,7 +490,10 @@ export default function HomeScreen({ navigation }) {
                     ))}
                   </View>
                   <Text style={styles.recordText}>
-                    {text.slice(0, 92).replace(/\n/g, " ")}...
+                    {summaryText && summaryText !== ""
+                      ? summaryText.slice(0, 92).replace(/\n/g, " ")
+                      : totalText.slice(0, 92).replace(/\n/g, " ")}
+                    ...
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -556,24 +562,45 @@ export default function HomeScreen({ navigation }) {
                 maxWidth: 350,
               }}
             >
-              <TouchableOpacity
-                style={styles.greenButton}
-                onPress={() =>
-                  navigation.push("SymptomCheck", { date: selectedDate })
-                }
-              >
-                <WithLocalSvg asset={Edit} />
-                <Text
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: 14,
-                    marginLeft: 8,
-                    fontFamily: "Pretendard-Medium",
-                  }}
+              {images.length > 0 || totalText ? (
+                <TouchableOpacity
+                  style={styles.whiteButton}
+                  onPress={() =>
+                    navigation.push("DetailModify", { date: selectedDate })
+                  }
                 >
-                  {"하루기록"}
-                </Text>
-              </TouchableOpacity>
+                  <WithLocalSvg asset={Edit_green} />
+                  <Text
+                    style={{
+                      color: theme.green500,
+                      fontSize: 14,
+                      marginLeft: 8,
+                      fontFamily: "Pretendard-Medium",
+                    }}
+                  >
+                    {"수정하기"}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.greenButton}
+                  onPress={() =>
+                    navigation.push("SymptomCheck", { date: selectedDate })
+                  }
+                >
+                  <WithLocalSvg asset={Edit} />
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: 14,
+                      marginLeft: 8,
+                      fontFamily: "Pretendard-Medium",
+                    }}
+                  >
+                    {"하루기록"}
+                  </Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 style={styles.yellowButton}
                 onPress={() =>
@@ -748,6 +775,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.green500,
     borderRadius: 24,
+    width: 177,
+    height: 44,
+    justifyContent: "center",
+    marginRight: 16,
+  },
+  whiteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 24,
+    borderColor: theme.green500,
+    borderWidth: 1,
     width: 177,
     height: 44,
     justifyContent: "center",

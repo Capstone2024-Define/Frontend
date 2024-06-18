@@ -25,6 +25,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import summary from "./SummaryAPI";
 import SmallTag from "../component/SmallTag";
+import { Entypo } from "@expo/vector-icons";
 
 export default function DetailHistoryScreen({ navigation, route }) {
   // 상세 기록 state
@@ -57,6 +58,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           setDate(newRecord.date);
           setCheckList(newRecord.checkList);
           setSymptomList(newRecord.symptomList);
+          setSummaryText(newRecord.summaryText);
 
           // totalText
           let newTotalText = "";
@@ -83,23 +85,23 @@ export default function DetailHistoryScreen({ navigation, route }) {
   );
 
   // 네이버 summary api
-  useFocusEffect(
-    useCallback(() => {
-      const handleSummary = async () => {
-        try {
-          const result = await summary(totalText);
-          setSummaryText(result.summary);
-          // console.log(result.summary);
-        } catch (error) {
-          console.log("서머리 에러", error.response.data.error.errorCode);
-        }
-      };
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const handleSummary = async () => {
+  //       try {
+  //         const result = await summary(totalText);
+  //         setSummaryText(result.summary);
+  //         // console.log(result.summary);
+  //       } catch (error) {
+  //         console.log("서머리 에러", error.response.data.error.errorCode);
+  //       }
+  //     };
 
-      if (totalText) {
-        handleSummary();
-      }
-    }, [totalText])
-  );
+  //     if (totalText) {
+  //       handleSummary();
+  //     }
+  //   }, [totalText])
+  // );
 
   // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
@@ -220,9 +222,17 @@ export default function DetailHistoryScreen({ navigation, route }) {
               onPress={() => setRemindVisible(!remindVisible)}
             >
               {!remindVisible ? (
-                <WithLocalSvg width={24} height={24} asset={DropDown} />
+                <Entypo
+                  name="chevron-small-down"
+                  size={24}
+                  color={theme.grey300}
+                />
               ) : (
-                <WithLocalSvg width={24} height={24} asset={DropUp} />
+                <Entypo
+                  name="chevron-small-up"
+                  size={24}
+                  color={theme.grey300}
+                />
               )}
             </TouchableOpacity>
           </View>

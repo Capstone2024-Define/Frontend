@@ -187,23 +187,23 @@ export default function DetailVoiceScreen({ navigation, route }) {
   );
 
   // 네이버 summary api
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const handleSummary = async () => {
-  //       try {
-  //         const result = await summary(text);
-  //         setSummaryText(result.summary);
-  //         // console.log(result.summary);
-  //       } catch (error) {
-  //         console.log("서머리 에러", error.response.data.error.errorCode);
-  //       }
-  //     };
+  useFocusEffect(
+    useCallback(() => {
+      const handleSummary = async () => {
+        try {
+          const result = await summary(text);
+          setSummaryText(result.summary);
+          // console.log(result.summary);
+        } catch (error) {
+          console.log("서머리 에러", error.response.data.error.errorCode);
+        }
+      };
 
-  //     if (text) {
-  //       handleSummary();
-  //     }
-  //   }, [text])
-  // );
+      if (text) {
+        handleSummary();
+      }
+    }, [text])
+  );
 
   // 기록 삭제 함수
   const remove = async () => {

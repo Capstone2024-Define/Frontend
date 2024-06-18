@@ -74,7 +74,7 @@ export default function VoiceHistoryScreen({ navigation }) {
       <Header
         left="leftArrow"
         title="음성기록"
-        onLeftPress={() => navigation.popToTop()}
+        onLeftPress={() => navigation.pop()}
         line={true}
       />
       <View
@@ -126,29 +126,31 @@ export default function VoiceHistoryScreen({ navigation }) {
           </View>
         </View>
         <ScrollView style={styles.scroll}>
-          {filteredContents
-            .slice()
-            .reverse()
-            .map((content, index) =>
-              content.place === filter || filter === "all" ? (
-                <View key={index}>
-                  <VoiceDateButton
-                    place={content.place}
-                    date={getDate(content.date)}
-                    time={content.time}
-                    text={content.text}
-                    onPress={() =>
-                      navigation.push("DetailVoice", {
-                        detail: true,
-                        place: content.place,
-                        date: content.date,
-                        time: content.time,
-                      })
-                    }
-                  />
-                </View>
-              ) : null
-            )}
+          {filteredContents &&
+            filteredContents.length > 0 &&
+            filteredContents
+              .slice()
+              .reverse()
+              .map((content, index) =>
+                content.place === filter || filter === "all" ? (
+                  <View key={index}>
+                    <VoiceDateButton
+                      place={content.place}
+                      date={getDate(content.date)}
+                      time={content.time}
+                      text={content.text}
+                      onPress={() =>
+                        navigation.push("DetailVoice", {
+                          detail: true,
+                          place: content.place,
+                          date: content.date,
+                          time: content.time,
+                        })
+                      }
+                    />
+                  </View>
+                ) : null
+              )}
           <View style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>

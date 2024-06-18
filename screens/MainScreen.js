@@ -15,6 +15,7 @@ import HomeGreen from "../assets/home_green.svg";
 import InfoGreen from "../assets/info_green.svg";
 import CalendarGreen from "../assets/calendar_green.svg";
 import MyGreen from "../assets/person_green.svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 

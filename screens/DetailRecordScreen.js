@@ -21,6 +21,7 @@ import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import summary from "./SummaryAPI";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -36,6 +37,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
+  const [totalText, setTotalText] = useState("");
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -45,6 +47,37 @@ export default function DetailRecordScreen({ navigation, route }) {
   // 이미지 객체 id 설정 위한 변수
   const [id, setId] = useState(0);
   let k = 0;
+
+  // 네이버 summary api
+  // useEffect(() => {
+
+  //   const handleSummary = async () => {
+  //     try {
+  //       const result = await summary(totalText);
+  //       setSummaryText(result.summary);
+  //       // console.log(result.summary);
+  //     } catch (error) {
+  //       console.log("서머리 에러", error.response.data.error.errorCode);
+  //     }
+  //   };
+  //   if (totalText) {
+  //     handleSummary();
+  //   }
+  // }, [totalText]);
+
+  useEffect(() => {
+    let newTotalText = "";
+    if (homeText) {
+      newTotalText += homeText;
+    }
+    if (schoolText) {
+      newTotalText += ` ${schoolText}`;
+    }
+    if (hospitalText) {
+      newTotalText += ` ${hospitalText}`;
+    }
+    setTotalText(newTotalText);
+  }, [homeText, schoolText, hospitalText]);
 
   // 이미지 업로드
   const uploadImage = async () => {
@@ -118,10 +151,37 @@ export default function DetailRecordScreen({ navigation, route }) {
   // 저장
   const save = async (toSave) => {
     try {
-      await AsyncStorage.clear();
+      //await AsyncStorage.clear();
       await AsyncStorage.setItem(date, JSON.stringify(toSave));
     } catch (error) {
       console.log("기록 저장 에러");
+    }
+  };
+
+  // 네이버 summary api
+  const setStorage = async () => {
+    try {
+      // 서머리
+      const result = await summary(totalText);
+      console.log(result.summary);
+
+      // 객체 설정
+      const newRecord = {
+        date: date,
+        home: homeText,
+        school: schoolText,
+        hospital: hospitalText,
+        image: images,
+        checkList: route.params.checkList,
+        symptomList: route.params.symptomList,
+        summaryText: result.summary,
+      };
+      console.log("기록하기: ", newRecord);
+
+      // 스토리지 저장
+      await save(newRecord);
+    } catch (error) {
+      console.log("저장 에러", error.response.data.error.errorCode);
     }
   };
 
@@ -135,31 +195,33 @@ export default function DetailRecordScreen({ navigation, route }) {
           navigation.pop();
         }}
         onRightPress={async () => {
+          await setStorage();
           navigation.popToTop();
           showToast("기록이 완료되었어요");
 
-          // DB에 저장
-          console.log(homeText);
-          console.log(schoolText);
-          console.log(hospitalText);
-          for (let i = 0; i < images.length; i++) {
-            console.log(i, images[i].uri);
-          }
+          // // DB에 저장
+          // console.log(homeText);
+          // console.log(schoolText);
+          // console.log(hospitalText);
+          // for (let i = 0; i < images.length; i++) {
+          //   console.log(i, images[i].uri);
+          // }
 
-          // 객체 설정
-          const newRecord = {
-            date: date,
-            home: homeText,
-            school: schoolText,
-            hospital: hospitalText,
-            image: images,
-            checkList: route.params.checkList,
-            symptomList: route.params.symptomList,
-          };
-          console.log(newRecord);
+          // // 객체 설정
+          // const newRecord = {
+          //   date: date,
+          //   home: homeText,
+          //   school: schoolText,
+          //   hospital: hospitalText,
+          //   image: images,
+          //   checkList: route.params.checkList,
+          //   symptomList: route.params.symptomList,
+          //   summaryText: summaryText,
+          // };
+          // console.log(newRecord);
 
-          // 스토리지 저장
-          await save(newRecord);
+          // // 스토리지 저장
+          // await save(newRecord);
         }}
         line={false}
       />

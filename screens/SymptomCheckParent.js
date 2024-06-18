@@ -102,9 +102,9 @@ export default function SymptomCheckParent({ route, navigation }) {
         </View>
         <View style={{ marginBottom: 40 }} />
       </ScrollView>
-      <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+      {/* <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </SafeAreaView>
   );
 }
