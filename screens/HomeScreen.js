@@ -213,34 +213,6 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  // const renderEmoji = (emoji, index) => (
-  //   <TouchableOpacity
-  //     key={index}
-  //     onPress={() => setMoods({ ...moods, [selectedDate]: emoji })}
-  //   >
-  //     <Text
-  //       style={[
-  //         styles.emoji,
-  //         moods[selectedDate] === emoji ? styles.selectedEmoji : null,
-  //       ]}
-  //     >
-  //       {emoji}
-  //     </Text>
-  //   </TouchableOpacity>
-  // );
-
-  // const fetchData = async () => {
-  //   // 서버에서 데이터를 받아오는 로직 예시
-  //   const data = {
-  //     "2024-06-09": "green",
-  //   };
-  //   setMoods(data);
-  // };
-
-  // const getMoodColor = (date) => {
-  //   return moods[date] || "#D3D3D3";
-  // };
-
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -270,11 +242,6 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.title}>기록하는 중</Text>
               </View>
             </View>
-            {/* <Image
-              source={require("../assets/homerabbit.png")}
-              resizeMode={"stretch"}
-              style={{ width: 132, height: 142, marginTop: 12, marginBottom: -14 }}
-            /> */}
             <WithLocalSvg asset={Rabbit} />
           </View>
           <View
@@ -316,16 +283,6 @@ export default function HomeScreen({ navigation }) {
               </Text>
               <View style={{ flex: 1, alignSelf: "stretch" }}></View>
               <TouchableOpacity onPress={() => handleWeekChange(-1)}>
-                {/* <Image
-                  source={require("../assets/chevron_left.png")}
-                  style={{ width: 24, height: 24 }}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleWeekChange(1)}>
-                <Image
-                  source={require("../assets/chevron_right.png")}
-                  style={{ width: 24, height: 24 }}
-                />  */}
                 <WithLocalSvg asset={Left} style={{ marginRight: 10 }} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleWeekChange(1)}>
@@ -346,115 +303,63 @@ export default function HomeScreen({ navigation }) {
                 paddingHorizontal: 16, // 내부 패딩
               }}
             >
-              {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={{
-                    flex: 1,
-                    alignItems: "center",
-                    paddingVertical: 7,
-                    paddingHorizontal: 4,
-                    backgroundColor:
-                      selectedDate === weeks[index]
-                        ? theme.green500
-                        : "transparent",
-                    borderRadius: selectedDate === weeks[index] ? 24 : 0,
-                  }}
-                  onPress={() => setSelectedDate(weeks[index])}
-                >
-                  <Text
+              {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => {
+                const isDisabled = isPastDate(weeks[index]); // 현재 날짜 이후인지 확인
+                return (
+                  <TouchableOpacity
+                    key={index}
                     style={{
-                      color:
-                        selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
-                      fontSize: 12,
-                      marginBottom: 7,
-                      textAlign: "center",
-                      fontFamily:
+                      flex: 1,
+                      alignItems: "center",
+                      paddingVertical: 7,
+                      paddingHorizontal: 4,
+                      backgroundColor:
                         selectedDate === weeks[index]
-                          ? "Pretendard-Bold"
-                          : "Pretendard-Regular",
+                          ? theme.green500
+                          : "transparent",
+                      borderRadius: selectedDate === weeks[index] ? 24 : 0,
                     }}
+                    onPress={() => !isDisabled && setSelectedDate(weeks[index])} // 비활성화된 날짜는 터치 불가
+                    disabled={isDisabled} // 비활성화된 날짜는 터치 불가
                   >
-                    {day}
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        selectedDate === weeks[index]
-                          ? "#FFFFFF"
-                          : isPastDate(weeks[index])
-                          ? "#A9A9A9"
-                          : "#242424",
-                      fontSize: 12,
-                      marginBottom: 7,
-                      textAlign: "center",
-                      fontFamily:
-                        selectedDate === weeks[index]
-                          ? "Pretendard-Bold"
-                          : "Pretendard-Regular",
-                    }}
-                  >
-                    {new Date(weeks[index]).getDate()}
-                  </Text>
-                  <FontAwesome name="circle" size={25} color={emoji[index]} />
-                  {/* <View
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 5,
-                      backgroundColor: getMoodColor(weeks[index]),
-                      marginTop: 4,
-                    }}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View
-              style={{
-                backgroundColor: "#FBFBFB",
-                borderRadius: 8,
-                paddingTop: 15,
-                paddingBottom: 37,
-                marginBottom: 36,
-                width: "100%", // 부모 뷰의 전체 너비를 사용
-                maxWidth: 350, // 최대 너비 설정
-                alignItems: "center", // 네모 박스들을 중앙 정렬
-              }}
-            >
-              <Text
-                style={{
-                  color: "#333333",
-                  fontSize: 14,
-                  marginBottom: 108,
-                  fontFamily: "Pretendard-Bold",
-                  textAlign: "left", // 왼쪽 정렬
-                  alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
-                  marginLeft: 17, // 왼쪽 패딩 추가
-                }}
-              >
-                {`${new Date(selectedDate).getMonth() + 1}.${new Date(
-                  selectedDate
-                ).getDate()} ${["일", "월", "화", "수", "목", "금", "토"][
-                  new Date(selectedDate).getDay()
-                ]}요일${isToday(selectedDate) ? " (오늘)" : ""}`}
-              </Text>
-              <View style={{ alignItems: "center" }}>
-                <Image
-                  source={require("../assets/homechecklist.png")}
-                  resizeMode={"stretch"}
-                  style={{ marginTop: -40, width: 67.1, height: 70 }}
-                />
-                <Text
-                  style={{
-                    color: "#6F6F6F",
-                    fontSize: 14,
-                    marginTop: 5,
-                    alignItems: "center",
-                    fontFamily: "Human-beomseok",
-                    marginBottom: 16,
-                  /> */}
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={{
+                        color:
+                          selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
+                        fontSize: 12,
+                        marginBottom: 7,
+                        textAlign: "center",
+                        fontFamily:
+                          selectedDate === weeks[index]
+                            ? "Pretendard-Bold"
+                            : "Pretendard-Regular",
+                      }}
+                    >
+                      {day}
+                    </Text>
+                    <Text
+                      style={{
+                        color:
+                          selectedDate === weeks[index]
+                            ? "#FFFFFF"
+                            : isPastDate(weeks[index])
+                            ? "#A9A9A9"
+                            : "#242424",
+                        fontSize: 12,
+                        marginBottom: 7,
+                        textAlign: "center",
+                        fontFamily:
+                          selectedDate === weeks[index]
+                            ? "Pretendard-Bold"
+                            : "Pretendard-Regular",
+                      }}
+                    >
+                      {new Date(weeks[index]).getDate()}
+                    </Text>
+                    <FontAwesome name="circle" size={25} color={emoji[index]} />
+                  </TouchableOpacity>
+                );
+              })}
             </View>
             {images.length > 0 || totalText ? (
               <View style={{ flex: 1 }}>
