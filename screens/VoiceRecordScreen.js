@@ -13,6 +13,7 @@ import { Audio } from "expo-av";
 import axios from "axios";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showToast } from "../component/Toast";
 
 const VoiceRecordScreen = ({ navigation, route }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -81,7 +82,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       console.log("Recording file info:", info);
 
       if (info.size > 0) {
-        const transcript = await sendToNaverSTT(uri);
+        const transcript = await sendToGoogleSTT(uri);
         setTranscriptArray((prevArray) => [...prevArray, transcript]);
         setIsPaused(true);
         setIsRecording(false);
@@ -96,38 +97,54 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     }
   };
 
-  const sendToNaverSTT = async (fileUri) => {
+  // 음성 다시 듣기
+  // const { sound } = await Audio.Sound.createAsync({ uri: fileUri });
+  // await sound.playAsync();
+
+  const sendToGoogleSTT = async (fileUri) => {
     try {
       const fileData = await FileSystem.readAsStringAsync(fileUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      // Base64 데이터를 ArrayBuffer로 변환
-      const binaryData = Uint8Array.from(atob(fileData), (c) =>
-        c.charCodeAt(0)
-      );
-
-      const url = "https://naveropenapi.apigw.ntruss.com/recog/v1/stt?lang=Kor";
-      const headers = {
-        "Content-Type": "application/octet-stream",
-        "X-NCP-APIGW-API-KEY-ID": "tnu2l7l5pe", // 네이버 클라우드 API 키
-        "X-NCP-APIGW-API-KEY": "Ng7ni9swMdivuktz74C8lAH4NxkP02XW1X9typnt", // 네이버 클라우드 API 시크릿
+      // API 요청 본문 구성
+      const requestBody = {
+        audio: {
+          content: fileData,
+        },
+        config: {
+          encoding: "AMR",
+          sampleRateHertz: 8000,
+          languageCode: "ko-KR",
+          enableAutomaticPunctuation: true,
+        },
       };
 
-      const response = await axios.post(url, binaryData.buffer, {
-        headers: headers,
-        responseType: "json",
-      });
+      // API 요청 보내기
+      const response = await axios.post(
+        "https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDpZWLbf5duRAjcGtgC6DKz4BolApSGfPo",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      console.log("Response from Naver STT:", response.data);
-      return response.data.text;
-    } catch (err) {
-      console.error("Failed to send to Naver STT", err);
-      if (err.response) {
-        console.log("Response data:", err.response.data);
-        console.log("Response status:", err.response.status);
-        console.log("Response headers:", err.response.headers);
+      console.log("Response from Google STT:", response.data);
+
+      if (response.data && response.data.results) {
+        const transcription = response.data.results
+          .map((result) => result.alternatives[0].transcript)
+          .join("\n");
+
+        return transcription;
+      } else {
+        console.error("Unexpected response format:", response.data);
+        return "";
       }
+    } catch (err) {
+      console.error("Failed to send to Google STT", err);
       return "";
     }
   };
@@ -148,6 +165,8 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     setTranscriptArray([]);
     setRecordingTime(0);
     setIsPaused(false);
+    showToast("기록이 완료되었어요");
+    navigation.navigate("VoiceHistory");
   };
 
   const formatTime = (time) => {
@@ -170,15 +189,15 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         }
       }
 
-      console.log("기존 기록 내용:", voiceList);
+      //console.log("기존 기록 내용:", voiceList);
 
       // 새로운 기록 추가
       voiceList.push(toSave);
-      console.log("새로운 기록이 추가된 리스트:", voiceList);
+      //console.log("새로운 기록이 추가된 리스트:", voiceList);
 
       // 기록 저장
       await AsyncStorage.setItem("voice", JSON.stringify(voiceList));
-      console.log("기록 저장 성공:", voiceList);
+      //console.log("기록 저장 성공:", voiceList);
     } catch (error) {
       console.error("기록 저장 에러:", error);
     }
@@ -255,13 +274,15 @@ const VoiceRecordScreen = ({ navigation, route }) => {
           {"녹음을 하면 글로 기록이 되고\n기록된 내용은 상세기록에 추가돼요"}
         </Text>
         <View style={styles.timerContainer}>
-          {isRecording && (
-            <Image
-              source={require("../assets/recordgreen.png")}
-              style={styles.timerIcon}
-            />
+          {(isRecording || isPaused) && (
+            <View style={styles.indicator(isRecording)} />
           )}
-          <Text style={[styles.timer, isRecording && styles.timerRecording]}>
+          <Text
+            style={[
+              styles.timer,
+              !isRecording && !isPaused && styles.timerInitial,
+            ]}
+          >
             {formatTime(recordingTime)}
           </Text>
         </View>
@@ -285,10 +306,6 @@ const VoiceRecordScreen = ({ navigation, route }) => {
                 onPress={startRecording}
                 style={styles.recordButtonStart}
               >
-                <Image
-                  source={require("../assets/graphic_eq.png")}
-                  style={styles.recordIcon}
-                />
                 <Text style={styles.recordButtonTextStart}>녹음재개</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -402,19 +419,28 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   timer: {
-    color: "#8B8B8B",
+    color: "#333333",
     fontSize: 36,
     fontFamily: "Pretendard-Medium",
   },
   timerRecording: {
     color: "#000000",
-    marginLeft: 8,
+  },
+  timerInitial: {
+    color: "#8B8B8B",
   },
   timerIcon: {
     width: 15,
     height: 15,
     marginRight: 8,
   },
+  indicator: (isRecording) => ({
+    width: 15,
+    height: 15,
+    borderRadius: 15 / 2,
+    backgroundColor: isRecording ? "#FF7070" : "#A5A5A5",
+    marginRight: 12,
+  }),
   waveformContainer: {
     height: 120,
     alignItems: "center",
@@ -496,6 +522,20 @@ const styles = StyleSheet.create({
   completeButtonText: {
     color: "#F5DE8F",
     fontSize: 14,
+  },
+  completeIndicator: {
+    width: 15,
+    height: 15,
+    borderRadius: 15 / 2,
+    backgroundColor: "#FF7070",
+    marginRight: 8,
+  },
+  resumeIndicator: {
+    width: 15,
+    height: 15,
+    borderRadius: 15 / 2,
+    backgroundColor: "#333333",
+    marginRight: 8,
   },
   progressLeft: {
     width: "50%",
