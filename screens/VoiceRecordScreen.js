@@ -131,7 +131,10 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         }
       );
 
-      console.log("Response from Google STT:", response.data);
+      console.log(
+        "Response from Google STT:",
+        response.data.results[0].alternatives[0].transcript
+      );
 
       if (response.data && response.data.results) {
         const transcription = response.data.results
@@ -158,7 +161,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       time: time,
       text: finalTranscript,
     };
-    console.log(newVoice);
+    //console.log(newVoice);
 
     // 스토리지 저장
     await save(newVoice);
