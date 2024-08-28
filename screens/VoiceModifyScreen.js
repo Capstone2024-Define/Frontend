@@ -112,7 +112,7 @@ export default function VoiceModifyScreen({
             <TouchableOpacity activeOpacity={0.5} onPress={onClose}>
               <Ionicons name="close" size={24} color="black" />
             </TouchableOpacity>
-            <Text style={styles.headerText}>음성기록편집</Text>
+            <Text style={styles.headerText}>음성기록수정</Text>
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => {
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "92%",
     backgroundColor: "white",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     paddingHorizontal: 24,
   },
   header: {

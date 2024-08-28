@@ -77,25 +77,9 @@ export default function VoiceHistoryScreen({ navigation }) {
         onLeftPress={() => navigation.pop()}
         line={true}
       />
-      <View
-        // 헤더 선이 자꾸 안그어져서 임시로 그냥 선그음
-        style={{
-          width: "100%",
-          height: 1,
-          backgroundColor: theme.yellow100,
-          marginTop: -1,
-        }}
-      />
       <View style={styles.subContainer}>
         <View style={styles.headerContainer}>
-          <View style={{ flexDirection: "row" }}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="내용으로 검색할수있어요"
-              placeholderTextColor={theme.grey400}
-              onChangeText={setSearch}
-              onSubmitEditing={handleSearch}
-            />
+          <View style={styles.textInput}>
             <TouchableOpacity
               activeOpacity={0.5}
               style={styles.search}
@@ -103,6 +87,13 @@ export default function VoiceHistoryScreen({ navigation }) {
             >
               <WithLocalSvg width={24} height={24} asset={Search} />
             </TouchableOpacity>
+            <TextInput
+              style={{ flex: 1, fontSize: 12, fontFamily: "Pretendard-Medium" }}
+              placeholder="내용으로 검색할수있어요"
+              placeholderTextColor={theme.grey400}
+              onChangeText={setSearch}
+              onSubmitEditing={handleSearch}
+            />
           </View>
           <View style={styles.filterView}>
             <FilterButton
@@ -177,20 +168,15 @@ const styles = StyleSheet.create({
     paddingTop: 28,
   },
   textInput: {
+    flexDirection: "row",
+    alignItems: "center",
     width: 312,
     paddingVertical: 8,
-    paddingLeft: 50,
-    paddingRight: 16,
+    paddingHorizontal: 16,
     backgroundColor: theme.grey100,
     borderRadius: 24,
-    fontSize: 12,
-    fontFamily: "Pretendard-Medium",
   },
-  search: {
-    position: "absolute",
-    top: 10, // 이미지의 상단에서 10포인트 떨어진 위치
-    right: 270,
-  },
+  search: { marginRight: 10 },
 
   filterView: {
     flexDirection: "row",

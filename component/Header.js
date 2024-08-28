@@ -54,7 +54,7 @@ export default function Header({
           </View>
         </TouchableOpacity>
       </View>
-      <View style={line && styles.line} />
+      {/* <View style={line && styles.line} /> */}
     </View>
   );
 }
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     height: 60,
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: theme.yellow50,
+    backgroundColor: "white",
     paddingVertical: 18,
     paddingHorizontal: 24,
   },

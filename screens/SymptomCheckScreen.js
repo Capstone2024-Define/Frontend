@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#78BA7D",
   },
   symptomButtonText: {
-    color: "#333333",
+    color: theme.grey500,
     fontSize: 14,
     fontFamily: "Pretendard-Medium",
   },

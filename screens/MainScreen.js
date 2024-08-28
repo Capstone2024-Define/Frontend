@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
-import summary from "./SummaryAPI";
-import { getDetail, saveDetail } from "./ServerConnect";
 import HomeScreen from "./HomeScreen";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
@@ -15,7 +13,8 @@ import HomeGreen from "../assets/home_green.svg";
 import InfoGreen from "../assets/info_green.svg";
 import CalendarGreen from "../assets/calendar_green.svg";
 import MyGreen from "../assets/person_green.svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ChatGray from "../assets/chat_gray.svg";
+import axios from "axios";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,49 +23,59 @@ const SvgIcon = ({ asset }) => (
 );
 
 function InfoScreen() {
-  // 서버 연결 테스트
-  const [fetchedDetail, setFetchedDetail] = useState(null);
+  // GET
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const navigation = useNavigation();
-  const date = new Date(2024, 6, 2);
+  useEffect(() => {
+    // GET 요청
+    axios
+      .get("http://192.168.64.1:8080/api/detail/alldetail")
+      .then((response) => {
+        setData(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log("Get 에러: ", error);
+        setError(error);
+        setLoading(false);
+      });
+  }, []);
 
-  // 서버 연동 테스트
-  const handleSaveDetail = () => {
-    saveDetail({
-      date: date,
-      user_id: 1000,
-      detail_home: "홈",
-      detail_school: "학교",
-      detail_hospital: "병원",
-    });
-  };
-
-  const handleGetDetail = () => {
-    getDetail({ date: date, user_id: 1000 }).then((data) =>
-      setFetchedDetail(data)
-    );
-    console(fetchedDetail);
+  // POST 요청 핸들러
+  const handlePost = () => {
+    axios
+      .post("http://192.168.64.1:8080/api/detail", {
+        date: "2024-07-22",
+        userCode: 1001,
+        detail_home: "home test",
+        detail_school: "school test",
+        detail_hospital: "hospital test",
+      })
+      .then((response) => {
+        console.log("Post 응답:", response.data);
+      })
+      .catch((error) => {
+        console.error("Post 에러:", error);
+      });
   };
 
   return (
+    <View style={styles.container}>
+      <Button title="Send POST request" onPress={handlePost} />
+      {error && <Text>Error: {error.message}</Text>}
+      {data && <Text>Data: {JSON.stringify(data)}</Text>}
+    </View>
+  );
+}
+
+function ChatScreen() {
+  const navigation = useNavigation();
+
+  return (
     <View style={styles.defaultScreen}>
-      <Text>정보</Text>
-      <View style={{ marginTop: 30 }} />
-      <Button
-        title="Save User"
-        onPress={handleSaveDetail}
-        color={theme.grey150}
-      />
-      <Button
-        title="Get User"
-        onPress={handleGetDetail}
-        color={theme.grey150}
-      />
-      {fetchedDetail && (
-        <View>
-          <Text>{fetchedDetail}</Text>
-        </View>
-      )}
+      <Text>챗봇페이지</Text>
     </View>
   );
 }
@@ -77,6 +86,7 @@ function CalendarScreen() {
   return (
     <View style={styles.defaultScreen}>
       <Text>캘린더</Text>
+      <Button title="정보입력" onPress={() => navigation.push("StartInfo")} />
     </View>
   );
 }
@@ -131,6 +141,19 @@ export default function MainScreen() {
               <SvgIcon asset={InfoGreen} />
             ) : (
               <SvgIcon asset={InfoGray} />
+            ),
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          title: "챗봇",
+          tabBarIcon: ({ color }) =>
+            color === theme.green500 ? (
+              <SvgIcon asset={InfoGreen} />
+            ) : (
+              <SvgIcon asset={ChatGray} />
             ),
         }}
       />

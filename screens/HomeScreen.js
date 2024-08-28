@@ -19,13 +19,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { WithLocalSvg } from "react-native-svg/css";
 import Rabbit from "../assets/homeRabbit.svg";
-import Edit from "../assets/edit.svg";
+import Edit_white from "../assets/notes_white.svg";
 import Edit_green from "../assets/edit_green.svg";
 import Mic from "../assets/mic.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
-import Calender from "../assets/calendar.svg";
+import Calender from "../assets/calendarNew.svg";
 import NoRecord from "../assets/norecord.svg";
+import { Shadow } from "react-native-shadow-2";
 
 // 캘린더 모달창
 const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
@@ -183,7 +184,7 @@ export default function HomeScreen({ navigation }) {
 
   // 이모지 색 컬러
   const getEmojiColor = async (date) => {
-    let emojiColor = theme.grey50;
+    let emojiColor = theme.grey150;
 
     try {
       const rawRecord = await AsyncStorage.getItem(date);
@@ -219,7 +220,7 @@ export default function HomeScreen({ navigation }) {
               flexDirection: "row",
               marginTop: 17,
               marginLeft: 29,
-              marginRight: 16,
+              marginRight: 6,
               justifyContent: "space-between",
             }}
           >
@@ -227,7 +228,7 @@ export default function HomeScreen({ navigation }) {
               style={{
                 flex: 1,
                 justifyContent: "flex-end",
-                marginBottom: 18,
+                marginBottom: 12,
               }}
             >
               <Text style={styles.title}>{"오늘도 같이 기록해볼까요?"}</Text>
@@ -241,10 +242,10 @@ export default function HomeScreen({ navigation }) {
           <View
             style={{
               flex: 1,
-              backgroundColor: "#FEFCF4",
+              backgroundColor: "white",
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
-              paddingTop: 24,
+              paddingTop: 16,
               paddingBottom: 14,
               paddingHorizontal: 24,
               alignItems: "center", // 네모 박스들을 중앙 정렬
@@ -265,8 +266,9 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
               <Text
                 style={{
-                  color: "#555555",
+                  color: theme.grey700,
                   fontSize: 14,
+                  lineHeight: 20,
                   marginLeft: 8,
                   fontFamily: "Pretendard-Medium",
                 }}
@@ -283,89 +285,169 @@ export default function HomeScreen({ navigation }) {
                 <WithLocalSvg asset={Right} />
               </TouchableOpacity>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                backgroundColor: "#FFFFFF",
-                borderRadius: 16,
-                paddingVertical: 8,
-                marginBottom: 16,
-                width: "100%", // 부모 뷰의 전체 너비를 사용
-                maxWidth: 350, // 최대 너비 설정
-                paddingHorizontal: 16, // 내부 패딩
-              }}
-            >
-              {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => {
-                const isDisabled = isPastDate(weeks[index]); // 현재 날짜 이후인지 확인
-                return (
+            <Shadow distance={8} startColor="#EFEFEFE6" endColor="#EFEFEF00">
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: 8,
+                  paddingVertical: 8,
+                  width: 309, // 부모 뷰의 전체 너비를 사용
+                  maxWidth: 350, // 최대 너비 설정
+                  paddingHorizontal: 7, // 내부 패딩
+                }}
+              >
+                {["일", "월", "화", "수", "목", "금", "토"].map(
+                  (day, index) => {
+                    const isDisabled = isPastDate(weeks[index]); // 현재 날짜 이후인지 확인
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        style={{
+                          flex: 1,
+                          alignItems: "center",
+                          paddingVertical: 5,
+                          marginHorizontal: 3,
+                          backgroundColor:
+                            selectedDate === weeks[index]
+                              ? theme.green500
+                              : "transparent",
+                          borderRadius: selectedDate === weeks[index] ? 24 : 0,
+                        }}
+                        onPress={() =>
+                          !isDisabled && setSelectedDate(weeks[index])
+                        } // 비활성화된 날짜는 터치 불가
+                        disabled={isDisabled} // 비활성화된 날짜는 터치 불가
+                      >
+                        <Text
+                          style={{
+                            color:
+                              selectedDate === weeks[index]
+                                ? "#FFFFFF"
+                                : "#242424",
+                            fontSize: 12,
+                            lineHeight: 20,
+                            marginBottom: 4,
+                            textAlign: "center",
+                            fontFamily:
+                              selectedDate === weeks[index]
+                                ? "Pretendard-Bold"
+                                : "Pretendard-Regular",
+                          }}
+                        >
+                          {day}
+                        </Text>
+                        <Text
+                          style={{
+                            color:
+                              selectedDate === weeks[index]
+                                ? "#FFFFFF"
+                                : isPastDate(weeks[index])
+                                ? "#A9A9A9"
+                                : "#242424",
+                            fontSize: 12,
+                            marginBottom: 4,
+                            textAlign: "center",
+                            fontFamily:
+                              selectedDate === weeks[index]
+                                ? "Pretendard-Bold"
+                                : "Pretendard-Regular",
+                          }}
+                        >
+                          {new Date(weeks[index]).getDate()}
+                        </Text>
+                        <FontAwesome
+                          name="circle"
+                          size={25}
+                          color={emoji[index]}
+                        />
+                      </TouchableOpacity>
+                    );
+                  }
+                )}
+              </View>
+            </Shadow>
+            <View style={{ marginBottom: 16 }} />
+
+            {images.length > 0 || totalText ? (
+              <View style={{ flex: 1 }}>
+                <Shadow
+                  distance={8}
+                  startColor="#EFEFEFE6"
+                  endColor="#EFEFEF00"
+                >
                   <TouchableOpacity
-                    key={index}
+                    style={styles.recordContainer}
+                    activeOpacity={0.5}
+                    onPress={() =>
+                      navigation.push("DetailHistory", { date: selectedDate })
+                    }
+                  >
+                    <View style={styles.recordHeader}>
+                      <Text style={styles.recordTitle}>
+                        {`${new Date(selectedDate).getMonth() + 1}.${new Date(
+                          selectedDate
+                        ).getDate()} ${
+                          ["일", "월", "화", "수", "목", "금", "토"][
+                            new Date(selectedDate).getDay()
+                          ]
+                        }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
+                      </Text>
+                      <Text style={styles.dubogi}>더보기</Text>
+                    </View>
+                    <View style={styles.line} />
+                    <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                      {images.map((image) => (
+                        <View key={image.id}>
+                          <Image
+                            source={{ uri: image.uri }}
+                            style={styles.photo}
+                            resizeMode="cover"
+                          />
+                        </View>
+                      ))}
+                    </View>
+                    <Text style={styles.recordText}>
+                      {summaryText && summaryText !== ""
+                        ? summaryText.slice(0, 92).replace(/\n/g, " ")
+                        : totalText.slice(0, 92).replace(/\n/g, " ")}
+                      ...
+                    </Text>
+                  </TouchableOpacity>
+                </Shadow>
+                <View style={{ marginBottom: 16 }} />
+              </View>
+            ) : (
+              <View style={{ flex: 1 }}>
+                <Shadow
+                  distance={8}
+                  startColor="#EFEFEFE6"
+                  endColor="#EFEFEF00"
+                >
+                  <View
                     style={{
-                      flex: 1,
-                      alignItems: "center",
-                      paddingVertical: 7,
-                      paddingHorizontal: 4,
-                      backgroundColor:
-                        selectedDate === weeks[index]
-                          ? theme.green500
-                          : "transparent",
-                      borderRadius: selectedDate === weeks[index] ? 24 : 0,
+                      width: 312,
+                      height: 188,
+                      backgroundColor: "white",
+                      borderRadius: 8,
+                      paddingVertical: 12,
+                      paddingHorizontal: 16,
+                      marginBottom: 36,
+                      alignItems: "center", // 네모 박스들을 중앙 정렬
                     }}
-                    onPress={() => !isDisabled && setSelectedDate(weeks[index])} // 비활성화된 날짜는 터치 불가
-                    disabled={isDisabled} // 비활성화된 날짜는 터치 불가
                   >
                     <Text
                       style={{
-                        color:
-                          selectedDate === weeks[index] ? "#FFFFFF" : "#242424",
-                        fontSize: 12,
-                        marginBottom: 7,
-                        textAlign: "center",
-                        fontFamily:
-                          selectedDate === weeks[index]
-                            ? "Pretendard-Bold"
-                            : "Pretendard-Regular",
+                        color: "#333333",
+                        fontSize: 14,
+                        marginBottom: 4,
+                        fontFamily: "Pretendard-Medium",
+                        textAlign: "left", // 왼쪽 정렬
+                        alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
                       }}
                     >
-                      {day}
-                    </Text>
-                    <Text
-                      style={{
-                        color:
-                          selectedDate === weeks[index]
-                            ? "#FFFFFF"
-                            : isPastDate(weeks[index])
-                            ? "#A9A9A9"
-                            : "#242424",
-                        fontSize: 12,
-                        marginBottom: 7,
-                        textAlign: "center",
-                        fontFamily:
-                          selectedDate === weeks[index]
-                            ? "Pretendard-Bold"
-                            : "Pretendard-Regular",
-                      }}
-                    >
-                      {new Date(weeks[index]).getDate()}
-                    </Text>
-                    <FontAwesome name="circle" size={25} color={emoji[index]} />
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-            {images.length > 0 || totalText ? (
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity
-                  style={styles.recordContainer}
-                  activeOpacity={0.5}
-                  onPress={() =>
-                    navigation.push("DetailHistory", { date: selectedDate })
-                  }
-                >
-                  <View style={styles.recordHeader}>
-                    <Text style={styles.recordTitle}>
                       {`${new Date(selectedDate).getMonth() + 1}.${new Date(
                         selectedDate
                       ).getDate()} ${
@@ -374,82 +456,29 @@ export default function HomeScreen({ navigation }) {
                         ]
                       }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
                     </Text>
-                    <Text style={styles.dubogi}>더보기</Text>
-                  </View>
-                  <View style={styles.line} />
-                  <View style={{ flexDirection: "row", marginBottom: 10 }}>
-                    {images.map((image) => (
-                      <View key={image.id}>
-                        <Image
-                          source={{ uri: image.uri }}
-                          style={styles.photo}
-                          resizeMode="cover"
-                        />
-                      </View>
-                    ))}
-                  </View>
-                  <Text style={styles.recordText}>
-                    {summaryText && summaryText !== ""
-                      ? summaryText.slice(0, 92).replace(/\n/g, " ")
-                      : totalText.slice(0, 92).replace(/\n/g, " ")}
-                    ...
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{ flex: 1 }}>
-                <View
-                  style={{
-                    width: 312,
-                    height: 188,
-                    backgroundColor: "#FBFBFB",
-                    borderRadius: 8,
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    marginBottom: 36,
-                    alignItems: "center", // 네모 박스들을 중앙 정렬
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#333333",
-                      fontSize: 14,
-                      marginBottom: 4,
-                      fontFamily: "Pretendard-Medium",
-                      textAlign: "left", // 왼쪽 정렬
-                      alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
-                    }}
-                  >
-                    {`${new Date(selectedDate).getMonth() + 1}.${new Date(
-                      selectedDate
-                    ).getDate()} ${
-                      ["일", "월", "화", "수", "목", "금", "토"][
-                        new Date(selectedDate).getDay()
-                      ]
-                    }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
-                  </Text>
 
-                  <View
-                    style={{
-                      flex: 1,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <WithLocalSvg asset={NoRecord} />
-                    <Text
+                    <View
                       style={{
-                        color: "#6F6F6F",
-                        fontSize: 14,
-                        marginTop: 10,
+                        flex: 1,
                         alignItems: "center",
-                        fontFamily: "Human-beomseok",
+                        justifyContent: "center",
                       }}
                     >
-                      {"아직 기록하지 않았어요!"}
-                    </Text>
+                      <WithLocalSvg asset={NoRecord} />
+                      <Text
+                        style={{
+                          color: "#6F6F6F",
+                          fontSize: 14,
+                          marginVertical: 10,
+                          alignItems: "center",
+                          fontFamily: "Human-beomseok",
+                        }}
+                      >
+                        {"아직 기록하지 않았어요!"}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                </Shadow>
               </View>
             )}
             <View
@@ -487,7 +516,7 @@ export default function HomeScreen({ navigation }) {
                     navigation.push("SymptomCheck", { date: selectedDate })
                   }
                 >
-                  <WithLocalSvg asset={Edit} />
+                  <WithLocalSvg asset={Edit_white} />
                   <Text
                     style={{
                       color: "#FFFFFF",
@@ -542,13 +571,15 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 5,
-    fontSize: 16,
-    fontFamily: "Pretendard-Regular",
+    fontSize: 18,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Medium",
     color: "white",
   },
   boldTitle: {
-    fontSize: 18,
-    fontFamily: "Pretendard-Medium",
+    fontSize: 22,
+    lineHeight: 28,
+    fontFamily: "Pretendard-Bold",
     color: "white",
   },
   header: {
@@ -616,7 +647,6 @@ const styles = StyleSheet.create({
     width: 312,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    marginBottom: 16,
     borderRadius: 8,
     backgroundColor: "white",
   },

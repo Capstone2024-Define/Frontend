@@ -398,8 +398,8 @@ const styles = StyleSheet.create({
   modal2: {
     width: "100%",
     height: 156,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     paddingTop: 28,
     paddingBottom: 56,
     paddingHorizontal: 35,
@@ -414,8 +414,8 @@ const styles = StyleSheet.create({
   modal3: {
     width: "100%",
     height: 95,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     paddingTop: 28,
     paddingBottom: 43,
     paddingHorizontal: 35,

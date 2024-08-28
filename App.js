@@ -28,6 +28,7 @@ import SymptomResultScreen from "./screens/SymptomResultScreen";
 import DetailNoneScreen from "./screens/DetailNoneScreen";
 import { useFonts } from "expo-font"; // 폰트 관련
 import SymptomCheckParent from "./screens/SymptomCheckParent";
+import StartInfoScreen from "./screens/StartInfoScreen";
 // import VoiceTestScreen from "./screens/VoiceTestScreen";
 
 // 스택 내비게이터 생성
@@ -143,6 +144,11 @@ export default function App() {
             <Stack.Screen
               name="DetailNone"
               component={DetailNoneScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="StartInfo"
+              component={StartInfoScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

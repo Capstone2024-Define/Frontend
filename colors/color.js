@@ -2,6 +2,7 @@ export const theme = {
   green50: "#F2F8F2",
   green100: "#D5EAD7",
   green300: "#A5D1A9",
+  green400: "#94C898",
   green500: "#79BA7E",
   green800: "#436645",
 
@@ -23,8 +24,11 @@ export const theme = {
   grey600: "#555555",
   grey700: "#333333",
   grey800: "#242424",
+  grey900: "#171717",
 
   green: "#BDE776",
   yellow: "#FFD47F",
   pink: "#EF9DA2",
+
+  red: "#F05757",
 };
