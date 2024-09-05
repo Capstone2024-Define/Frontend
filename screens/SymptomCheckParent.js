@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function SymptomCheckParent({ route, navigation }) {
   const [selectedChecklistItems, setSelectedChecklistItems] = useState([]);
@@ -65,8 +66,15 @@ export default function SymptomCheckParent({ route, navigation }) {
         line={false}
       />
       <View style={styles.progressView}>
-        <View style={styles.progressLeft}></View>
-        <View style={styles.progressRight}></View>
+        <LinearGradient
+          colors={["#79BA7E", "#AFCA85"]}
+          style={{ width: "66%" }}
+          start={{ x: 1, y: 0 }} // 그라데이션의 시작 지점 (오른쪽)
+          end={{ x: 0, y: 0 }} // 그라데이션의 끝 지점 (왼쪽)
+        >
+          <View style={styles.progressLeft} />
+        </LinearGradient>
+        <View style={styles.progressRight} />
       </View>
       <ScrollView style={styles.container}>
         <Text style={styles.headerText}>
@@ -117,7 +125,7 @@ const styles = StyleSheet.create({
   },
   progressLeft: {
     width: "66%",
-    backgroundColor: theme.green500,
+    backgroundColor: "transparent",
   },
   progressRight: {
     width: "34%",

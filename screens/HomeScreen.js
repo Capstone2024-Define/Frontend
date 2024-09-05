@@ -26,7 +26,8 @@ import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Calender from "../assets/calendarNew.svg";
 import NoRecord from "../assets/norecord.svg";
-import { Shadow } from "react-native-shadow-2";
+import { Shadow } from "react-native-shadow-2"; // 그림자 라이브러리
+import { LinearGradient } from "expo-linear-gradient"; // 그라데이션 라이브러리
 
 // 캘린더 모달창
 const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
@@ -285,7 +286,7 @@ export default function HomeScreen({ navigation }) {
                 <WithLocalSvg asset={Right} />
               </TouchableOpacity>
             </View>
-            <Shadow distance={8} startColor="#EFEFEFE6" endColor="#EFEFEF00">
+            <Shadow distance={6} startColor="#EFEFEFE6" endColor="#EFEFEF00">
               <View
                 style={{
                   flexDirection: "row",
@@ -303,67 +304,77 @@ export default function HomeScreen({ navigation }) {
                   (day, index) => {
                     const isDisabled = isPastDate(weeks[index]); // 현재 날짜 이후인지 확인
                     return (
-                      <TouchableOpacity
+                      <LinearGradient
                         key={index}
+                        colors={
+                          selectedDate === weeks[index]
+                            ? ["#79BA7E", "#AFCA85"] // 선택된 날짜일 때 그라데이션 색상
+                            : ["transparent", "transparent"] // 선택되지 않은 날짜일 때 투명
+                        }
                         style={{
                           flex: 1,
+                          justifyContent: "center",
                           alignItems: "center",
                           paddingVertical: 5,
-                          marginHorizontal: 3,
-                          backgroundColor:
-                            selectedDate === weeks[index]
-                              ? theme.green500
-                              : "transparent",
-                          borderRadius: selectedDate === weeks[index] ? 24 : 0,
+                          marginHorizontal: 2.5,
+                          borderRadius: 24,
                         }}
-                        onPress={() =>
-                          !isDisabled && setSelectedDate(weeks[index])
-                        } // 비활성화된 날짜는 터치 불가
-                        disabled={isDisabled} // 비활성화된 날짜는 터치 불가
                       >
-                        <Text
+                        <TouchableOpacity
+                          key={index}
                           style={{
-                            color:
-                              selectedDate === weeks[index]
-                                ? "#FFFFFF"
-                                : "#242424",
-                            fontSize: 12,
-                            lineHeight: 20,
-                            marginBottom: 4,
-                            textAlign: "center",
-                            fontFamily:
-                              selectedDate === weeks[index]
-                                ? "Pretendard-Bold"
-                                : "Pretendard-Regular",
+                            alignItems: "center",
+                            backgroundColor: "transparent",
                           }}
+                          onPress={() =>
+                            !isDisabled && setSelectedDate(weeks[index])
+                          } // 비활성화된 날짜는 터치 불가
+                          disabled={isDisabled} // 비활성화된 날짜는 터치 불가
                         >
-                          {day}
-                        </Text>
-                        <Text
-                          style={{
-                            color:
-                              selectedDate === weeks[index]
-                                ? "#FFFFFF"
-                                : isPastDate(weeks[index])
-                                ? "#A9A9A9"
-                                : "#242424",
-                            fontSize: 12,
-                            marginBottom: 4,
-                            textAlign: "center",
-                            fontFamily:
-                              selectedDate === weeks[index]
-                                ? "Pretendard-Bold"
-                                : "Pretendard-Regular",
-                          }}
-                        >
-                          {new Date(weeks[index]).getDate()}
-                        </Text>
-                        <FontAwesome
-                          name="circle"
-                          size={25}
-                          color={emoji[index]}
-                        />
-                      </TouchableOpacity>
+                          <Text
+                            style={{
+                              color:
+                                selectedDate === weeks[index]
+                                  ? "#FFFFFF"
+                                  : "#242424",
+                              fontSize: 12,
+                              lineHeight: 20,
+                              marginBottom: 4,
+                              textAlign: "center",
+                              fontFamily:
+                                selectedDate === weeks[index]
+                                  ? "Pretendard-Bold"
+                                  : "Pretendard-Regular",
+                            }}
+                          >
+                            {day}
+                          </Text>
+                          <Text
+                            style={{
+                              color:
+                                selectedDate === weeks[index]
+                                  ? "#FFFFFF"
+                                  : isPastDate(weeks[index])
+                                  ? theme.grey400
+                                  : "#242424",
+                              fontSize: 12,
+                              marginBottom: 4,
+                              textAlign: "center",
+                              fontFamily:
+                                selectedDate === weeks[index]
+                                  ? "Pretendard-Bold"
+                                  : "Pretendard-Regular",
+                            }}
+                          >
+                            {new Date(weeks[index]).getDate()}
+                          </Text>
+                          <FontAwesome
+                            name="circle"
+                            size={25}
+                            color={emoji[index]}
+                          />
+                        </TouchableOpacity>
+                      </LinearGradient>
                     );
                   }
                 )}
@@ -374,7 +385,7 @@ export default function HomeScreen({ navigation }) {
             {images.length > 0 || totalText ? (
               <View style={{ flex: 1 }}>
                 <Shadow
-                  distance={8}
+                  distance={6}
                   startColor="#EFEFEFE6"
                   endColor="#EFEFEF00"
                 >
@@ -422,7 +433,7 @@ export default function HomeScreen({ navigation }) {
             ) : (
               <View style={{ flex: 1 }}>
                 <Shadow
-                  distance={8}
+                  distance={6}
                   startColor="#EFEFEFE6"
                   endColor="#EFEFEF00"
                 >
@@ -510,13 +521,41 @@ export default function HomeScreen({ navigation }) {
                   </Text>
                 </TouchableOpacity>
               ) : (
+                <LinearGradient
+                  colors={["#79BA7E", "#AFCA85"]}
+                  style={styles.gradientGButton}
+                >
+                  <TouchableOpacity
+                    style={styles.greenButton}
+                    onPress={() =>
+                      navigation.push("SymptomCheck", { date: selectedDate })
+                    }
+                  >
+                    <WithLocalSvg asset={Edit_white} />
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontSize: 14,
+                        marginLeft: 8,
+                        fontFamily: "Pretendard-Medium",
+                      }}
+                    >
+                      {"하루기록"}
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              )}
+              <LinearGradient
+                colors={["#FCD754", "#FCE28E"]}
+                style={styles.gradientYButton}
+              >
                 <TouchableOpacity
-                  style={styles.greenButton}
+                  style={styles.yellowButton}
                   onPress={() =>
-                    navigation.push("SymptomCheck", { date: selectedDate })
+                    navigation.push("MainVoice", { date: selectedDate })
                   }
                 >
-                  <WithLocalSvg asset={Edit_white} />
+                  <WithLocalSvg asset={Mic} />
                   <Text
                     style={{
                       color: "#FFFFFF",
@@ -525,28 +564,10 @@ export default function HomeScreen({ navigation }) {
                       fontFamily: "Pretendard-Medium",
                     }}
                   >
-                    {"하루기록"}
+                    {"음성기록"}
                   </Text>
                 </TouchableOpacity>
-              )}
-              <TouchableOpacity
-                style={styles.yellowButton}
-                onPress={() =>
-                  navigation.push("MainVoice", { date: selectedDate })
-                }
-              >
-                <WithLocalSvg asset={Mic} />
-                <Text
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: 14,
-                    marginLeft: 8,
-                    fontFamily: "Pretendard-Medium",
-                  }}
-                >
-                  {"음성기록"}
-                </Text>
-              </TouchableOpacity>
+              </LinearGradient>
             </View>
           </View>
         </View>
@@ -699,15 +720,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  greenButton: {
-    flexDirection: "row",
+  gradientGButton: {
     alignItems: "center",
-    backgroundColor: theme.green500,
+    justifyContent: "center",
     borderRadius: 24,
     width: 177,
     height: 44,
-    justifyContent: "center",
     marginRight: 16,
+    padding: 1,
+  },
+  greenButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
   },
   whiteButton: {
     flexDirection: "row",
@@ -721,14 +747,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 16,
   },
-  yellowButton: {
-    flexDirection: "row",
+  gradientYButton: {
     alignItems: "center",
-    backgroundColor: "#F5DE8F",
+    justifyContent: "center",
     borderRadius: 24,
     width: 119,
     height: 44,
+  },
+  yellowButton: {
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "transparent",
   },
   buttonText: {
     color: "white",

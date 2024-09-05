@@ -13,6 +13,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { WithLocalSvg } from "react-native-svg/css";
 import Calendar from "../assets/calender.svg";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function StartInfoScreen({ navigation }) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
@@ -152,6 +153,7 @@ export default function StartInfoScreen({ navigation }) {
                     name.length > 10 && { borderColor: theme.red },
                   ]}
                   placeholderTextColor={theme.grey400}
+                  value={name}
                   onChangeText={setName}
                   returnKeyType="done"
                 />
@@ -253,40 +255,57 @@ export default function StartInfoScreen({ navigation }) {
                   else if (page == 2) setPage(1);
                 }}
               >
-                <View
-                  style={[
-                    styles.button,
-                    nickName.length >= 1 &&
-                      nickName.length <= 10 && {
-                        backgroundColor: theme.green500,
-                      },
-                  ]}
+                <LinearGradient
+                  colors={["#79BA7E", "#AFCA85"]}
+                  style={styles.gradientButton}
                 >
-                  <Text style={[styles.title, { color: "white" }]}>다음</Text>
-                </View>
+                  <View
+                    style={[
+                      styles.button,
+                      nickName.length >= 1 &&
+                        nickName.length <= 10 && {
+                          backgroundColor: "transparent",
+                        },
+                    ]}
+                  >
+                    <Text style={[styles.title, { color: "white" }]}>다음</Text>
+                  </View>
+                </LinearGradient>
               </TouchableOpacity>
             )
           : !isKeyboardVisible && (
               <TouchableOpacity
                 activeOpacity={0.5}
                 disabled={
-                  !(name.length >= 1 && name.length <= 10 && birth && gender)
-                }
-                onPress={() => {}}
-              >
-                <View
-                  style={[
-                    styles.button,
+                  !(
                     name.length >= 1 &&
-                      name.length <= 10 &&
-                      birth &&
-                      gender && { backgroundColor: theme.green500 },
-                  ]}
+                    name.length <= 10 &&
+                    birth.length == 14 &&
+                    gender
+                  )
+                }
+                onPress={() => {
+                  console.log("시작하기");
+                }}
+              >
+                <LinearGradient
+                  colors={["#79BA7E", "#AFCA85"]}
+                  style={styles.gradientButton}
                 >
-                  <Text style={[styles.title, { color: "white" }]}>
-                    시작하기
-                  </Text>
-                </View>
+                  <View
+                    style={[
+                      styles.button,
+                      name.length >= 1 &&
+                        name.length <= 10 &&
+                        birth.length == 14 &&
+                        gender && { backgroundColor: "transparent" },
+                    ]}
+                  >
+                    <Text style={[styles.title, { color: "white" }]}>
+                      시작하기
+                    </Text>
+                  </View>
+                </LinearGradient>
               </TouchableOpacity>
             )}
       </View>
@@ -362,6 +381,13 @@ const styles = StyleSheet.create({
     color: theme.grey900,
     borderWidth: 1,
     borderColor: "white",
+  },
+  gradientButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 312,
+    height: 56,
+    borderRadius: 16,
   },
   button: {
     alignItems: "center",

@@ -1,13 +1,16 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   Image,
-  BackHandler,
+  SafeAreaView,
+  Animated,
+  TouchableWithoutFeedback,
+  Modal,
+  Alert,
 } from "react-native";
 import VoiceButton from "../component/VoiceButton";
 import Header from "../component/Header";
@@ -15,17 +18,126 @@ import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Note from "../assets/notes.svg";
 import Check from "../assets/check.svg";
-import DropDown from "../assets/keyboard_arrow_down.svg";
-import DropUp from "../assets/keyboard_arrow_up.svg";
 import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import summary from "./SummaryAPI";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SmallTag from "../component/SmallTag";
 import { Entypo } from "@expo/vector-icons";
+import Edit from "../assets/modal_blackEdit.svg";
+import Delete from "../assets/modal_redDelete.svg";
+
+const PopUp = ({ visible, onClose, date, checkList, setVisible }) => {
+  // 이동 위한 내비게이션 추가
+  const navigation = useNavigation();
+
+  // 애니메이션
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
+  return (
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalBackground}>
+          <Animated.View
+            style={[styles.modal, { transform: [{ translateY: slideAnim }] }]}
+          >
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                setVisible(false);
+                navigation.push("DetailModify", {
+                  date: date,
+                  checkList: checkList,
+                });
+              }}
+              style={{
+                flexDirection: "row",
+                paddingVertical: 3,
+                marginBottom: 20,
+              }}
+            >
+              <WithLocalSvg asset={Edit} style={{ marginRight: 12 }} />
+              <Text style={{ ...styles.modalText, color: theme.grey800 }}>
+                수정하기
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                Alert.alert(
+                  "삭제",
+                  "정말로 삭제하시겠어요?",
+                  [
+                    { text: "취소", style: "cancel" },
+                    {
+                      text: "삭제",
+                      onPress: () => {
+                        navigation.pop();
+                        // 서버연결되면 삭제 내용 구현
+                      },
+                      style: "destructive",
+                    },
+                  ],
+                  {
+                    // 안드로이드에서 Alert 박스 바깥 영역을 터치하거나
+                    // Back버튼 눌렀을 때 Alert가 닫히도록 설정(cancelable)
+                    // onDismiss는 Alert가 닫힐 때 호출되는 함수
+                    cancelable: true,
+                    onDismiss: () => {},
+                  }
+                );
+              }}
+              style={{
+                flexDirection: "row",
+                paddingVertical: 3,
+                marginBottom: 23,
+              }}
+            >
+              <WithLocalSvg asset={Delete} style={{ marginRight: 12 }} />
+              <Text style={{ ...styles.modalText, color: "#F05757" }}>
+                삭제하기
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={onClose}
+              style={styles.button}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  lineHeight: 20,
+                  fontFamily: "Pretendard-Medium",
+                  color: "white",
+                }}
+              >
+                닫기
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
+};
 
 export default function DetailHistoryScreen({ navigation, route }) {
   // 상세 기록 state
@@ -42,6 +154,8 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [totalText, setTotalText] = useState(""); // 서머리 요약을 위한 전체 텍스트
   const [summaryText, setSummaryText] = useState(""); // 서머리  결과
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
+
+  const [visible, setVisible] = useState(false); // 모달 상태
 
   // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
   useFocusEffect(
@@ -73,35 +187,15 @@ export default function DetailHistoryScreen({ navigation, route }) {
           }
           setTotalText(newTotalText);
 
-          // console.log(newTotalText);
           // console.log(newRecord);
         } catch (e) {
           console.log("기록 로드 에러");
         }
       }
       load();
-      console.log(`전체 텍스트: ${totalText}`);
+      // console.log(`전체 텍스트: ${totalText}`);
     }, [])
   );
-
-  // 네이버 summary api
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const handleSummary = async () => {
-  //       try {
-  //         const result = await summary(totalText);
-  //         setSummaryText(result.summary);
-  //         // console.log(result.summary);
-  //       } catch (error) {
-  //         console.log("서머리 에러", error.response.data.error.errorCode);
-  //       }
-  //     };
-
-  //     if (totalText) {
-  //       handleSummary();
-  //     }
-  //   }, [totalText])
-  // );
 
   // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
@@ -138,33 +232,19 @@ export default function DetailHistoryScreen({ navigation, route }) {
     }, [])
   );
 
-  // 시스템 뒤로가기 버튼 핸들러
-  // useEffect(() => {
-  //   const onBackPress = () => {
-  //     navigation.popToTop();
-  //     return true;
-  //   };
-
-  //   BackHandler.addEventListener("hardwareBackPress", onBackPress);
-
-  //   return () => {
-  //     BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-  //   };
-  // }, [navigation]);
-
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header
         left="leftArrow"
         title={`${new Date(date).getMonth() + 1}월 ${new Date(
           date
         ).getDate()}일`}
-        right="수정"
+        right="circle"
         onLeftPress={() => {
           navigation.popToTop();
         }}
         onRightPress={() => {
-          navigation.push("DetailModify", { date: date, checkList: checkList });
+          setVisible(true);
         }}
         iconColor={headerColor}
         line={true}
@@ -327,7 +407,14 @@ export default function DetailHistoryScreen({ navigation, route }) {
           <View style={{ marginBottom: 70 }} />
         </View>
       </ScrollView>
-    </>
+      <PopUp
+        visible={visible}
+        onClose={() => setVisible(false)}
+        date={date}
+        checkList={checkList}
+        setVisible={setVisible}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -427,5 +514,35 @@ const styles = StyleSheet.create({
     color: theme.grey800,
     fontFamily: "Human-beomseok",
     lineHeight: 19.6,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "#1212125C",
+  },
+  modal: {
+    width: "100%",
+    height: 184,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingTop: 22,
+    paddingBottom: 15,
+    paddingHorizontal: 24,
+    backgroundColor: "white",
+  },
+  modalText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Medium",
+  },
+  button: {
+    width: "100%",
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 24,
+    paddingHorizontal: 36,
+    paddingVertical: 12,
+    backgroundColor: theme.grey200,
   },
 });

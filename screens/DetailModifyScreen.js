@@ -67,8 +67,8 @@ export default function DetailRecordScreen({ navigation, route }) {
         setImages(newRecord.image);
         setCheckList(newRecord.checkList);
         setSymptomList(newRecord.symptomList);
-        setSummaryText;
-        console.log(newRecord);
+        setId(newRecord.image[newRecord.image.length - 1].id + 1); // id 안겹치게
+        //console.log(newRecord);
       } catch (e) {
         console.log("기록 로드 에러");
       }
@@ -205,7 +205,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         symptomList: symptomList,
         summaryText: result.summary,
       };
-      console.log("기록하기: ", newRecord);
+      // console.log("기록하기: ", newRecord);
 
       // 스토리지 저장
       await save(newRecord);

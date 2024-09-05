@@ -14,6 +14,10 @@ import axios from "axios";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showToast } from "../component/Toast";
+import { LinearGradient } from "expo-linear-gradient";
+import { WithLocalSvg } from "react-native-svg/css";
+import Pause from "../assets/pause.svg";
+import Mic from "../assets/mic_white.svg";
 
 const VoiceRecordScreen = ({ navigation, route }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -309,6 +313,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
                 onPress={startRecording}
                 style={styles.recordButtonStart}
               >
+                <WithLocalSvg asset={Mic} style={styles.recordIcon} />
                 <Text style={styles.recordButtonTextStart}>녹음재개</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -325,14 +330,11 @@ const VoiceRecordScreen = ({ navigation, route }) => {
                 isRecording ? styles.recordButtonStop : styles.recordButtonStart
               }
             >
-              <Image
-                source={
-                  isRecording
-                    ? require("../assets/pause.png")
-                    : require("../assets/graphic_eq.png")
-                }
-                style={styles.recordIcon}
-              />
+              {isRecording ? (
+                <WithLocalSvg asset={Pause} style={styles.recordIcon} />
+              ) : (
+                <WithLocalSvg asset={Mic} style={styles.recordIcon} />
+              )}
               <Text
                 style={
                   isRecording
@@ -347,8 +349,12 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         </View>
       </SafeAreaView>
       <View style={{ flexDirection: "row" }}>
-        <View style={styles.progressLeft} />
-        <View style={styles.progressRight} />
+        <LinearGradient colors={["#79BA7E", "#AFCA85"]} style={styles.progress}>
+          <View
+            style={{ ...styles.progress, backgroundColor: "transparent" }}
+          />
+        </LinearGradient>
+        <View style={{ ...styles.progress, backgroundColor: theme.grey150 }} />
       </View>
     </SafeAreaView>
   );
@@ -472,22 +478,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#79BA7E",
     borderRadius: 24,
-    paddingVertical: 13,
+    paddingVertical: 12,
     width: 147,
     height: 44,
   },
   recordButtonTextStart: {
     color: "#FFFFFF",
     fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "Pretendard-Medium",
+    marginTop: -1, // 이유는 모르겠는데 수평이 안맞아서 추가
   },
   recordButtonTextStop: {
     color: "#79BA7E",
     fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "Pretendard-Medium",
+    marginTop: -1, // 이유는 모르겠는데 수평이 안맞아서 추가
   },
   recordIcon: {
     width: 18,
@@ -540,15 +551,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#333333",
     marginRight: 8,
   },
-  progressLeft: {
+  progress: {
     width: "50%",
     height: 4,
-    backgroundColor: theme.green500,
-  },
-  progressRight: {
-    width: "50%",
-    height: 4,
-    backgroundColor: theme.grey150,
   },
 });
 

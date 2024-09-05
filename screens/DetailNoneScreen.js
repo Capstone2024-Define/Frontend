@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, SafeAreaView } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
-import Edit from "../assets/edit.svg";
+import Edit from "../assets/notes_white.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import VoiceButton from "../component/VoiceButton";
@@ -10,6 +10,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function DetailNoneScreen({ route, navigation }) {
   console.log(route.params.date);
@@ -54,16 +55,22 @@ export default function DetailNoneScreen({ route, navigation }) {
               {`${month}월 ${day}일`}의 하루기록을 해주세요!
             </Text>
           </View>
+
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() =>
               navigation.push("SymptomCheck", { date: route.params.date })
             }
           >
-            <View style={styles.buttonView}>
-              <WithLocalSvg width={18} height={18} asset={Edit} />
-              <Text style={styles.buttonText}>하루기록</Text>
-            </View>
+            <LinearGradient
+              colors={["#79BA7E", "#AFCA85"]}
+              style={styles.gradientButton}
+            >
+              <View style={styles.buttonView}>
+                <WithLocalSvg width={18} height={18} asset={Edit} />
+                <Text style={styles.buttonText}>하루기록</Text>
+              </View>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
         <View style={styles.subContainer}>
@@ -137,15 +144,19 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Regular",
     color: theme.grey400,
   },
-  buttonView: {
+  gradientButton: {
     width: 110,
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 18,
     paddingVertical: 12,
-    backgroundColor: theme.green500,
     borderRadius: 24,
+  },
+  buttonView: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   buttonText: {
     marginLeft: 8,

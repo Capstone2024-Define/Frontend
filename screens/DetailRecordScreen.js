@@ -22,6 +22,7 @@ import Hospital from "../assets/stethoscope.svg";
 import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summary from "./SummaryAPI";
+import { LinearGradient } from "expo-linear-gradient";
 
 // 상세 기록 DB
 // 날짜(date), 유저아이디(user_id)
@@ -225,7 +226,14 @@ export default function DetailRecordScreen({ navigation, route }) {
         }}
         line={false}
       />
-      <View style={styles.progress} />
+      <LinearGradient
+        colors={["#79BA7E", "#AFCA85"]}
+        style={{ width: "100%", height: 4 }}
+        start={{ x: 1, y: 0 }} // 그라데이션의 시작 지점 (오른쪽)
+        end={{ x: 0, y: 0 }} // 그라데이션의 끝 지점 (왼쪽)
+      >
+        <View style={styles.progress} />
+      </LinearGradient>
       <ScrollView style={styles.scroll}>
         <View style={styles.subContainer}>
           <Text style={styles.guideText}>좀더 자세히{"\n"}기록해볼까요?</Text>
@@ -381,7 +389,7 @@ const styles = StyleSheet.create({
   progress: {
     width: "100%",
     height: 4,
-    backgroundColor: theme.green500,
+    backgroundColor: "transparent",
   },
   scroll: {},
   subContainer: {

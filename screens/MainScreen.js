@@ -14,6 +14,7 @@ import InfoGreen from "../assets/info_green.svg";
 import CalendarGreen from "../assets/calendar_green.svg";
 import MyGreen from "../assets/person_green.svg";
 import ChatGray from "../assets/chat_gray.svg";
+import ChatGreen from "../assets/chat_green.svg";
 import axios from "axios";
 
 const Tab = createBottomTabNavigator();
@@ -151,7 +152,7 @@ export default function MainScreen() {
           title: "챗봇",
           tabBarIcon: ({ color }) =>
             color === theme.green500 ? (
-              <SvgIcon asset={InfoGreen} />
+              <SvgIcon asset={ChatGreen} />
             ) : (
               <SvgIcon asset={ChatGray} />
             ),

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
+import { LinearGradient } from "expo-linear-gradient";
 
 const symptoms = {
   행동조작: ["불순응", "반항", "떼쓰기"],
@@ -86,7 +87,14 @@ const SymptomCheckScreen = ({ route, navigation }) => {
         line={false}
       />
       <View style={styles.progressBar}>
-        <View style={styles.progressBarActive} />
+        <LinearGradient
+          colors={["#79BA7E", "#AFCA85"]}
+          style={{ width: "33%" }}
+          start={{ x: 1, y: 0 }} // 그라데이션의 시작 지점 (오른쪽)
+          end={{ x: 0, y: 0 }} // 그라데이션의 끝 지점 (왼쪽)
+        >
+          <View style={styles.progressBarActive} />
+        </LinearGradient>
         <View style={styles.progressBarInactive} />
       </View>
       <View style={{ backgroundColor: "#FFFFFF", flex: 1 }}>
@@ -113,7 +121,7 @@ const styles = StyleSheet.create({
   },
   progressBarActive: {
     width: "33%",
-    backgroundColor: theme.green500,
+    backgroundColor: "transparent",
   },
   progressBarInactive: {
     width: "67%",

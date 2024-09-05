@@ -1,7 +1,5 @@
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { theme } from "../colors/color";
-import { WithLocalSvg } from "react-native-svg/css";
-import Back from "../assets/arrow_back_ios.svg";
 import { FontAwesome } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -50,7 +48,30 @@ export default function Header({
               alignItems: "flex-end",
             }}
           >
-            <Text style={styles.right}>{right}</Text>
+            {right === "circle" ? (
+              <View style={styles.space2}>
+                <FontAwesome
+                  name="circle"
+                  size={3.5}
+                  color={theme.green500}
+                  style={{ marginVertical: 1.2 }}
+                />
+                <FontAwesome
+                  name="circle"
+                  size={3.5}
+                  color={theme.green500}
+                  style={{ marginVertical: 1.2 }}
+                />
+                <FontAwesome
+                  name="circle"
+                  size={3.5}
+                  color={theme.green500}
+                  style={{ marginVertical: 1.2 }}
+                />
+              </View>
+            ) : (
+              <Text style={styles.right}>{right}</Text>
+            )}
           </View>
         </TouchableOpacity>
       </View>
@@ -72,6 +93,11 @@ const styles = StyleSheet.create({
   },
   space: {
     width: 40,
+  },
+  space2: {
+    width: 27,
+    alignItems: "center",
+    justifyContent: "center",
   },
   left: {
     fontSize: 16,

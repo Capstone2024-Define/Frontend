@@ -17,6 +17,7 @@ import { WithLocalSvg } from "react-native-svg/css";
 import Search from "../assets/search.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function VoiceHistoryScreen({ navigation }) {
   const [filter, setFilter] = useState("all"); // all, school, hospital
@@ -146,8 +147,12 @@ export default function VoiceHistoryScreen({ navigation }) {
         </ScrollView>
       </View>
       <View style={{ flexDirection: "row" }}>
-        <View style={styles.progressLeft} />
-        <View style={styles.progressRight} />
+        <View style={{ ...styles.progress, backgroundColor: theme.grey150 }} />
+        <LinearGradient colors={["#79BA7E", "#AFCA85"]} style={styles.progress}>
+          <View
+            style={{ ...styles.progress, backgroundColor: "transparent" }}
+          />
+        </LinearGradient>
       </View>
     </SafeAreaView>
   );
@@ -182,14 +187,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 16,
   },
-  progressLeft: {
+  progress: {
     width: "50%",
     height: 4,
-    backgroundColor: theme.grey150,
-  },
-  progressRight: {
-    width: "50%",
-    height: 4,
-    backgroundColor: theme.green500,
   },
 });

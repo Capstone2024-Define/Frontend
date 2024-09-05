@@ -20,13 +20,23 @@ import { WithLocalSvg } from "react-native-svg/css";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import Note from "../assets/notes.svg";
+import Edit from "../assets/modal_blackEdit.svg";
+import Delete from "../assets/modal_redDelete.svg";
+import TodayRecord from "../assets/modal_blackNotes.svg";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summary from "./SummaryAPI";
 
 // 음성녹음 창에서 올때는 이 날 기록보기, 삭제하기를 띄움
 // 기록 창에서 올때는 삭제하기만 띄움
-const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
+const Modal2 = ({
+  visible,
+  detail,
+  onClose,
+  onRemove,
+  onShowRecord,
+  setVisible1,
+}) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
 
@@ -63,6 +73,23 @@ const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {
+                  onClose();
+                  setVisible1(true);
+                }}
+                style={{
+                  flexDirection: "row",
+                  paddingVertical: 3,
+                  marginBottom: 20,
+                }}
+              >
+                <WithLocalSvg asset={Edit} style={{ marginRight: 12 }} />
+                <Text style={{ ...styles.modalText, color: theme.grey800 }}>
+                  수정하기
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
                   Alert.alert(
                     "삭제",
                     "정말로 삭제하시겠어요?",
@@ -86,9 +113,31 @@ const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
                     }
                   );
                 }}
+                style={{
+                  flexDirection: "row",
+                  paddingVertical: 3,
+                  marginBottom: 23,
+                }}
               >
-                <Text style={{ ...styles.modal2Text, marginBottom: 0 }}>
+                <WithLocalSvg asset={Delete} style={{ marginRight: 12 }} />
+                <Text style={{ ...styles.modalText, color: "#F05757" }}>
                   삭제하기
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={onClose}
+                style={styles.button}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Medium",
+                    color: "white",
+                  }}
+                >
+                  닫기
                 </Text>
               </TouchableOpacity>
             </Animated.View>
@@ -104,8 +153,33 @@ const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
                 onPress={() => {
                   onShowRecord();
                 }}
+                style={{
+                  flexDirection: "row",
+                  paddingVertical: 3,
+                  marginBottom: 20,
+                }}
               >
-                <Text style={styles.modal2Text}>이 날 기록 보기</Text>
+                <WithLocalSvg asset={TodayRecord} style={{ marginRight: 12 }} />
+                <Text style={{ ...styles.modalText, color: theme.grey800 }}>
+                  이 날 하루기록보기
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
+                  onClose();
+                  setVisible1(true);
+                }}
+                style={{
+                  flexDirection: "row",
+                  paddingVertical: 3,
+                  marginBottom: 20,
+                }}
+              >
+                <WithLocalSvg asset={Edit} style={{ marginRight: 12 }} />
+                <Text style={{ ...styles.modalText, color: theme.grey800 }}>
+                  수정하기
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.5}
@@ -133,8 +207,32 @@ const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
                     }
                   );
                 }}
+                style={{
+                  flexDirection: "row",
+                  paddingVertical: 3,
+                  marginBottom: 23,
+                }}
               >
-                <Text style={styles.modal2Text}>삭제하기</Text>
+                <WithLocalSvg asset={Delete} style={{ marginRight: 12 }} />
+                <Text style={{ ...styles.modalText, color: "#F05757" }}>
+                  삭제하기
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={onClose}
+                style={styles.button}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Medium",
+                    color: "white",
+                  }}
+                >
+                  닫기
+                </Text>
               </TouchableOpacity>
             </Animated.View>
           )}
@@ -145,9 +243,8 @@ const Modal2 = ({ visible, detail, onClose, onRemove, onShowRecord }) => {
 };
 
 export default function DetailVoiceScreen({ navigation, route }) {
-  // 모달창 상태
   const [visible1, setVisible1] = useState(false);
-  const [visible2, setVisible2] = useState(false);
+  const [visible2, setVisible2] = useState(false); // 모달창 상태
   const [text, setText] = useState("");
   const [summaryText, setSummaryText] = useState("");
   const [voiceList, setVoiceList] = useState([]); // 스토리지 내용
@@ -254,12 +351,12 @@ export default function DetailVoiceScreen({ navigation, route }) {
           <Ionicons name="close" size={24} color={theme.grey800} />
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => setVisible1(true)}
           >
             <Text style={styles.headerText}>수정</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => setVisible2(true)}
@@ -268,19 +365,19 @@ export default function DetailVoiceScreen({ navigation, route }) {
               <FontAwesome
                 name="circle"
                 size={3.5}
-                color={theme.grey400}
+                color={theme.green500}
                 style={{ marginVertical: 1.2 }}
               />
               <FontAwesome
                 name="circle"
                 size={3.5}
-                color={theme.grey400}
+                color={theme.green500}
                 style={{ marginVertical: 1.2 }}
               />
               <FontAwesome
                 name="circle"
                 size={3.5}
-                color={theme.grey400}
+                color={theme.green500}
                 style={{ marginVertical: 1.2 }}
               />
             </View>
@@ -319,6 +416,7 @@ export default function DetailVoiceScreen({ navigation, route }) {
         onClose={() => setVisible2(false)}
         onRemove={remove}
         onShowRecord={showRecord}
+        setVisible1={setVisible1}
       />
     </SafeAreaView>
   );
@@ -395,30 +493,41 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     backgroundColor: "#1212125C",
   },
+  modalText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Medium",
+  },
+  // 음성기록에서 뜨는 모달
   modal2: {
     width: "100%",
-    height: 156,
+    height: 236,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingTop: 28,
-    paddingBottom: 56,
-    paddingHorizontal: 35,
+    paddingTop: 22,
+    paddingBottom: 17,
+    paddingHorizontal: 24,
     backgroundColor: "white",
   },
-  modal2Text: {
-    marginBottom: 24,
-    fontSize: 16,
-    fontFamily: "Pretendard-Medium",
-    color: theme.grey700,
-  },
+  // 하루기록 -> 음성기록(이날 기록보기가 안뜸)
   modal3: {
     width: "100%",
-    height: 95,
+    height: 184,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingTop: 28,
-    paddingBottom: 43,
-    paddingHorizontal: 35,
+    paddingTop: 22,
+    paddingBottom: 15,
+    paddingHorizontal: 24,
     backgroundColor: "white",
+  },
+  button: {
+    width: "100%",
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 24,
+    paddingHorizontal: 36,
+    paddingVertical: 12,
+    backgroundColor: theme.grey200,
   },
 });

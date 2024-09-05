@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Image, SafeAreaView } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
+import { LinearGradient } from "expo-linear-gradient";
 
 const resultImages = {
   최고예요: require("../assets/high.png"), // 최고예요 이미지 경로
@@ -45,7 +46,14 @@ export default function SymptomResultScreen({ route, navigation }) {
         line={false}
       />
       <View style={styles.progressView}>
-        <View style={styles.progressLeft}></View>
+        <LinearGradient
+          colors={["#79BA7E", "#AFCA85"]}
+          style={{ width: "33%" }}
+          start={{ x: 1, y: 0 }} // 그라데이션의 시작 지점 (오른쪽)
+          end={{ x: 0, y: 0 }} // 그라데이션의 끝 지점 (왼쪽)
+        >
+          <View style={styles.progressLeft}></View>
+        </LinearGradient>
         <View style={styles.progressRight}></View>
       </View>
       <View style={styles.container}>
@@ -71,7 +79,7 @@ const styles = StyleSheet.create({
   },
   progressLeft: {
     width: "33%",
-    backgroundColor: theme.green500,
+    backgroundColor: "transparent",
   },
   progressRight: {
     width: "67%",
