@@ -22,6 +22,7 @@ export default function StartInfoScreen({ navigation }) {
   const [name, setName] = useState("");
   const [birth, setBirth] = useState("");
   const [gender, setGender] = useState("");
+  const [valid, setValid] = useState(true); // 날짜 유효성 검사
 
   useEffect(() => {
     console.log("닉네임: ", nickName);
@@ -64,8 +65,46 @@ export default function StartInfoScreen({ navigation }) {
     } else if (formatBirth.length >= 10 && formatBirth.length <= 11) {
       formatBirth = formatBirth.slice(0, 9);
     }
-
     setBirth(formatBirth);
+
+    // 생년월일 유효성 검사
+    const isValidDate = validateDate(formatBirth);
+    if (isValidDate) {
+      setValid(true);
+    } else {
+      setValid(false);
+    }
+  };
+
+  // 유효한 날짜인지 확인하는 함수
+  const validateDate = (birth) => {
+    const [year, month, day] = birth
+      .split(" / ")
+      .map((num) => parseInt(num, 10));
+
+    // 입력된 값이 숫자가 아닌 경우 유효하지 않음
+    if (isNaN(year) || isNaN(month) || isNaN(day)) return false;
+
+    // 1. 월이 1~12 범위에 있는지 확인
+    if (month < 1 || month > 12) return false;
+
+    // 2. 해당 월의 마지막 날짜 구하기
+    const lastDayOfMonth = new Date(year, month, 0).getDate();
+    if (day < 1 || day > lastDayOfMonth) return false;
+
+    // 3. 현재 날짜 이전인지 확인
+    const enteredDate = new Date(year, month - 1, day); // 월은 0부터 시작하므로 -1
+    const currentDate = new Date();
+
+    if (enteredDate >= currentDate) return false; // 현재 또는 미래 날짜는 유효하지 않음
+
+    // 4. 연, 월, 일이 유효한지 최종 확인
+    const isValid =
+      enteredDate.getFullYear() === year &&
+      enteredDate.getMonth() === month - 1 && // 월은 다시 -1 확인
+      enteredDate.getDate() === day;
+
+    return isValid;
   };
 
   return (
@@ -167,7 +206,13 @@ export default function StartInfoScreen({ navigation }) {
                 </Text>
                 <TextInput
                   placeholder="2024 / 07 / 27"
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    !valid && birth.length >= 1 && { borderColor: theme.red },
+                    valid &&
+                      birth.length >= 1 &&
+                      birth.length < 14 && { borderColor: theme.red },
+                  ]}
                   placeholderTextColor={theme.grey400}
                   onChangeText={handleBirthChange}
                   returnKeyType="done"
@@ -175,6 +220,14 @@ export default function StartInfoScreen({ navigation }) {
                   value={birth}
                   maxLength={14} // YYYY / MM / DD 의 최대 길이: 14자
                 />
+                {!valid && birth.length >= 1 && (
+                  <Text style={styles.warn}>유효한 날짜를 입력해주세요!</Text>
+                )}
+                {valid && birth.length >= 1 && birth.length < 14 && (
+                  <Text style={styles.warn}>
+                    날짜를 형식에 맞게 입력해주세요!
+                  </Text>
+                )}
                 {/* <View style={styles.input}>
                   <View
                     style={{

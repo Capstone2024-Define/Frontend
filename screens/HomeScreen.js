@@ -503,22 +503,29 @@ export default function HomeScreen({ navigation }) {
             >
               {images.length > 0 || totalText ? (
                 <TouchableOpacity
-                  style={styles.whiteButton}
+                  style={{ borderRadius: 24 }}
                   onPress={() =>
                     navigation.push("DetailModify", { date: selectedDate })
                   }
                 >
-                  <WithLocalSvg asset={Edit_green} />
-                  <Text
-                    style={{
-                      color: theme.green500,
-                      fontSize: 14,
-                      marginLeft: 8,
-                      fontFamily: "Pretendard-Medium",
-                    }}
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={{ padding: 1, borderRadius: 24 }}
                   >
-                    {"수정하기"}
-                  </Text>
+                    <View style={styles.whiteButton}>
+                      <WithLocalSvg asset={Edit_green} />
+                      <Text
+                        style={{
+                          color: theme.green500,
+                          fontSize: 14,
+                          marginLeft: 8,
+                          fontFamily: "Pretendard-Medium",
+                        }}
+                      >
+                        {"수정하기"}
+                      </Text>
+                    </View>
+                  </LinearGradient>
                 </TouchableOpacity>
               ) : (
                 <LinearGradient
@@ -740,12 +747,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     borderRadius: 24,
-    borderColor: theme.green500,
-    borderWidth: 1,
     width: 177,
     height: 44,
     justifyContent: "center",
-    marginRight: 16,
   },
   gradientYButton: {
     alignItems: "center",

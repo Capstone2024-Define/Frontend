@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -14,7 +7,6 @@ import DetailRecordScreen from "./screens/DetailRecordScreen";
 import MainScreen from "./screens/MainScreen";
 import DetailHistoryScreen from "./screens/DetailHistoryScreen";
 import DetailModifyScreen from "./screens/DetailModifyScreen";
-import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "./component/Toast";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -29,7 +21,7 @@ import DetailNoneScreen from "./screens/DetailNoneScreen";
 import { useFonts } from "expo-font"; // 폰트 관련
 import SymptomCheckParent from "./screens/SymptomCheckParent";
 import StartInfoScreen from "./screens/StartInfoScreen";
-// import VoiceTestScreen from "./screens/VoiceTestScreen";
+import ProfileModifyScreen from "./screens/ProfileModifyScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -149,6 +141,11 @@ export default function App() {
             <Stack.Screen
               name="StartInfo"
               component={StartInfoScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ProfileModify"
+              component={ProfileModifyScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

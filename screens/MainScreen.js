@@ -3,18 +3,20 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import HomeScreen from "./HomeScreen";
+import CalendarScreen from "./CalendarScreen";
+import MyPageScreen from "./MyPageScreen";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import HomeGray from "../assets/home_gray.svg";
 import InfoGray from "../assets/info_gray.svg";
 import CalendarGray from "../assets/calendar_gray.svg";
 import MyGray from "../assets/person_gray.svg";
-import HomeGreen from "../assets/home_green.svg";
-import InfoGreen from "../assets/info_green.svg";
-import CalendarGreen from "../assets/calendar_green.svg";
-import MyGreen from "../assets/person_green.svg";
+import HomeGreen from "../assets/home_gradient.svg";
+import InfoGreen from "../assets/info_gradient.svg";
+import CalendarGreen from "../assets/calendar_gradient.svg";
+import MyGreen from "../assets/my_gradient.svg";
 import ChatGray from "../assets/chat_gray.svg";
-import ChatGreen from "../assets/chat_green.svg";
+import ChatGreen from "../assets/chat_gradient.svg";
 import axios from "axios";
 
 const Tab = createBottomTabNavigator();
@@ -28,6 +30,8 @@ function InfoScreen() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     // GET 요청
@@ -64,6 +68,7 @@ function InfoScreen() {
 
   return (
     <View style={styles.container}>
+      <Button title="정보입력" onPress={() => navigation.push("StartInfo")} />
       <Button title="Send POST request" onPress={handlePost} />
       {error && <Text>Error: {error.message}</Text>}
       {data && <Text>Data: {JSON.stringify(data)}</Text>}
@@ -77,25 +82,6 @@ function ChatScreen() {
   return (
     <View style={styles.defaultScreen}>
       <Text>챗봇페이지</Text>
-    </View>
-  );
-}
-
-function CalendarScreen() {
-  const navigation = useNavigation();
-
-  return (
-    <View style={styles.defaultScreen}>
-      <Text>캘린더</Text>
-      <Button title="정보입력" onPress={() => navigation.push("StartInfo")} />
-    </View>
-  );
-}
-
-function MyPageScreen() {
-  return (
-    <View style={styles.defaultScreen}>
-      <Text>마이페이지</Text>
     </View>
   );
 }
@@ -189,6 +175,11 @@ export default function MainScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingVertical: 30,
+    justifyContent: "space-between",
+  },
   tabBarText: {
     fontSize: 12,
     fontFamily: "Pretendard-Medium",

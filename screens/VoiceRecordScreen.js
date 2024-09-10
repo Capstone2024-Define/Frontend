@@ -38,6 +38,29 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     };
   }, [intervalId]);
 
+  // 녹음 중에 뒤로 나가면 녹음 멈추게함
+  useEffect(() => {
+    return () => {
+      // 컴포넌트가 언마운트 될 때 호출
+      if (recordingRef.current) {
+        console.log("Stopping recording on unmount...");
+        stopRecordingAndUnload(); // 녹음 중지 및 정리
+      }
+    };
+  }, []);
+
+  const stopRecordingAndUnload = async () => {
+    try {
+      if (recordingRef.current) {
+        await recordingRef.current.stopAndUnloadAsync();
+        recordingRef.current = null;
+        console.log("Recording stopped and unloaded");
+      }
+    } catch (error) {
+      console.error("Error while stopping and unloading recording", error);
+    }
+  };
+
   const startRecording = async () => {
     if (isRecording || recordingRef.current) {
       console.warn("A recording is already in progress.");
@@ -71,7 +94,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   };
 
   const stopRecording = async () => {
-    if (!isRecording) {
+    if (!isRecording || !recordingRef.current) {
       console.warn("No recording in progress to stop.");
       return;
     }
@@ -309,13 +332,21 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         <View style={styles.buttonContainer}>
           {isPaused ? (
             <>
-              <TouchableOpacity
-                onPress={startRecording}
+              <LinearGradient
+                colors={["#79BA7E", "#AFCA85"]}
                 style={styles.recordButtonStart}
               >
-                <WithLocalSvg asset={Mic} style={styles.recordIcon} />
-                <Text style={styles.recordButtonTextStart}>녹음재개</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={startRecording}
+                  style={{
+                    ...styles.recordButtonStart,
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  <WithLocalSvg asset={Mic} style={styles.recordIcon} />
+                  <Text style={styles.recordButtonTextStart}>녹음재개</Text>
+                </TouchableOpacity>
+              </LinearGradient>
               <TouchableOpacity
                 onPress={handleComplete}
                 style={styles.completeButton}
@@ -324,27 +355,44 @@ const VoiceRecordScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             </>
           ) : (
-            <TouchableOpacity
-              onPress={isRecording ? stopRecording : startRecording}
-              style={
-                isRecording ? styles.recordButtonStop : styles.recordButtonStart
-              }
-            >
+            <>
               {isRecording ? (
-                <WithLocalSvg asset={Pause} style={styles.recordIcon} />
+                <TouchableOpacity
+                  onPress={stopRecording}
+                  style={{ borderRadius: 24 }}
+                >
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={{ padding: 1, borderRadius: 24 }}
+                  >
+                    <View style={styles.recordButtonStop}>
+                      <WithLocalSvg asset={Pause} style={styles.recordIcon} />
+                      <Text style={styles.recordButtonTextStop}>
+                        {"녹음정지"}
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
               ) : (
-                <WithLocalSvg asset={Mic} style={styles.recordIcon} />
+                <LinearGradient
+                  colors={["#79BA7E", "#AFCA85"]}
+                  style={styles.recordButtonStart}
+                >
+                  <TouchableOpacity
+                    onPress={startRecording}
+                    style={{
+                      ...styles.recordButtonStart,
+                      backgroundColor: "transparent",
+                    }}
+                  >
+                    <WithLocalSvg asset={Mic} style={styles.recordIcon} />
+                    <Text style={styles.recordButtonTextStart}>
+                      {"녹음시작"}
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
               )}
-              <Text
-                style={
-                  isRecording
-                    ? styles.recordButtonTextStop
-                    : styles.recordButtonTextStart
-                }
-              >
-                {isRecording ? "녹음정지" : "녹음시작"}
-              </Text>
-            </TouchableOpacity>
+            </>
           )}
         </View>
       </SafeAreaView>
@@ -468,7 +516,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#78BA7D",
     borderRadius: 24,
     paddingVertical: 13,
     width: 147,
@@ -479,10 +526,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#79BA7E",
     borderRadius: 24,
-    paddingVertical: 12,
     width: 147,
     height: 44,
   },
@@ -525,7 +569,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "#F5DE8F",
+    borderColor: "#F5DF8F",
     borderRadius: 24,
     borderWidth: 1,
     paddingVertical: 11,
@@ -534,7 +578,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   completeButtonText: {
-    color: "#F5DE8F",
+    color: "#F5DF8F",
     fontSize: 14,
   },
   completeIndicator: {
