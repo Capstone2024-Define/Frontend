@@ -22,13 +22,14 @@ import { useFonts } from "expo-font"; // 폰트 관련
 import SymptomCheckParent from "./screens/SymptomCheckParent";
 import StartInfoScreen from "./screens/StartInfoScreen";
 import ProfileModifyScreen from "./screens/ProfileModifyScreen";
+import AlarmPage from "./screens/AlarmPage";
+import AlarmSettingsPage from "./screens/AlarmSettingsPage";  // AlarmSettingsPage 추가
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   // 폰트 - 엑스포 방법
-  // Medium -> 500
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
     "Pretendard-Bold": require("./assets/fonts/Pretendard-Bold.ttf"),
@@ -146,6 +147,16 @@ export default function App() {
             <Stack.Screen
               name="ProfileModify"
               component={ProfileModifyScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AlarmPage"
+              component={AlarmPage}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AlarmSettingsPage" 
+              component={AlarmSettingsPage}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

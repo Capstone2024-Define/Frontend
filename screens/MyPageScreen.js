@@ -61,6 +61,7 @@ export default function MyPageScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.5}
             style={{ justifyContent: "center", alignItems: "center" }}
+            onPress={() => navigation.push("AlarmPage")} // 알림 설정 페이지로 이동
           >
             <WithLocalSvg asset={Notice} />
             <Text style={styles.s_text}>알림 설정하기</Text>
