@@ -37,7 +37,8 @@ export default function AlarmPage({ navigation }) {
       {/* 설명 텍스트 부분 */}
       <View style={styles.body}>
         <Text style={styles.infoText}>
-          잊지 않고 기록할 수 있도록 {"\n"} 예약한 요일 및 시간에 푸시 알림을 보내드려요
+          잊지 않고 기록할 수 있도록 {"\n"}예약한 요일 및 시간에 푸시 알림을
+          보내드려요
         </Text>
       </View>
 
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
   title: {
     color: "#242424",
     fontSize: 16,
+    fontFamily: "Pretendard-Medium",
   },
   body: {
     flex: 1, // 내용이 버튼 위로 스크롤되도록 설정
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: "#555555",
     fontSize: 14,
+    fontFamily: "Pretendard-Regular",
   },
   footer: {
     paddingHorizontal: 24,
@@ -99,11 +102,12 @@ const styles = StyleSheet.create({
   addButton: {
     alignItems: "center",
     borderRadius: 16,
-    paddingVertical: 21,
+    paddingVertical: 16,
     width: "100%",
   },
   addButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
+    fontFamily: "Pretendard-Bold",
   },
 });

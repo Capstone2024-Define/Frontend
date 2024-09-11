@@ -14,7 +14,15 @@ export default function AlarmSettingsPage({ navigation }) {
   const [selectedHour, setSelectedHour] = useState("12");
   const [selectedMinute, setSelectedMinute] = useState("30");
   const [selectedAmPm, setSelectedAmPm] = useState("am");
-  const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]); // 요일 상태
+  const [selectedDays, setSelectedDays] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]); // 요일 상태
 
   const toggleDaySelection = (index) => {
     const updatedDays = [...selectedDays];
@@ -62,7 +70,6 @@ export default function AlarmSettingsPage({ navigation }) {
             onValueChange={(itemValue) => setSelectedMinute(itemValue)}
             style={styles.picker}
           >
-            
             {Array.from({ length: 60 }, (_, i) => (
               <Picker.Item key={i} label={`${i}`} value={`${i}`} />
             ))}
@@ -110,7 +117,11 @@ export default function AlarmSettingsPage({ navigation }) {
         colors={["#79BA7E", "#AFCA85"]}
         style={styles.confirmButton}
       >
-        <TouchableOpacity onPress={() => { /* 알림 설정 로직 추가 */ }}>
+        <TouchableOpacity
+          onPress={() => {
+            /* 알림 설정 로직 추가 */
+          }}
+        >
           <Text style={styles.confirmButtonText}>확인</Text>
         </TouchableOpacity>
       </LinearGradient>
@@ -164,7 +175,7 @@ const styles = StyleSheet.create({
   timePickerMainRow: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor:"#FBFBFB",
+    backgroundColor: "#FBFBFB",
     paddingTop: 14,
     paddingBottom: 4,
     marginBottom: 4,
