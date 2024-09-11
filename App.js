@@ -155,7 +155,7 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="AlarmSettingsPage" 
+              name="AlarmSettingsPage"  
               component={AlarmSettingsPage}
               options={{ headerShown: false }}
             />
