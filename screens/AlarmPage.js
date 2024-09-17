@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient"; // 그라데이션 라이
 import { WithLocalSvg } from "react-native-svg/css";
 import Back from "../assets/arrow_back_ios.svg";
 import Delete from "../assets/delete.svg";
+import Check from "../assets/check_white.svg";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { theme } from "../colors/color";
@@ -19,7 +20,7 @@ import { theme } from "../colors/color";
 export default function AlarmPage({ navigation }) {
   const [alarms, setAlarms] = useState([]);
   const [state, setState] = useState(false); // true -> 삭제 모드
-  const [select, setSelect] = useState(false); // true -> 삭제 대상
+  const [selectedAlarms, setSelectedAlarms] = useState([]);
   const days = ["일", "월", "화", "수", "목", "금", "토"];
 
   // 알람 기록 로드
@@ -50,6 +51,45 @@ export default function AlarmPage({ navigation }) {
     navigation.navigate("AlarmSettingsPage");
   };
 
+  // 삭제 알람 선택
+  const handlePress = (index) => {
+    if (state) {
+      setSelectedAlarms((prevSelected) => {
+        if (prevSelected.includes(index)) {
+          // 이미 선택된 경우 제거
+          return prevSelected.filter((i) => i !== index);
+        } else {
+          // 선택되지 않은 경우 추가
+          return [...prevSelected, index];
+        }
+      });
+    }
+  };
+
+  // 전체선택
+  const handleSelectAll = () => {
+    if (state) {
+      setSelectedAlarms(alarms.map((_, index) => index));
+    }
+  };
+
+  const handleDelete = async () => {
+    if (state) {
+      const newAlarms = alarms.filter(
+        (_, index) => !selectedAlarms.includes(index)
+      );
+
+      try {
+        await AsyncStorage.setItem("alarm", JSON.stringify(newAlarms));
+        setAlarms(newAlarms);
+        setSelectedAlarms([]); // 선택된 알람 인덱스 배열 초기화
+        setState(false); // 삭제 모드 종료
+      } catch (e) {
+        console.log("삭제 실패:", e);
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* 상단 헤더 */}
@@ -62,7 +102,7 @@ export default function AlarmPage({ navigation }) {
           {!state ? (
             <WithLocalSvg asset={Back} width={27} />
           ) : (
-            <TouchableOpacity activeOpacity={0.5}>
+            <TouchableOpacity activeOpacity={0.5} onPress={handleSelectAll}>
               <Text style={styles.delText}>전체선택</Text>
             </TouchableOpacity>
           )}
@@ -78,7 +118,10 @@ export default function AlarmPage({ navigation }) {
         ) : (
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => setState(!state)}
+            onPress={() => {
+              setState(!state);
+              setSelectedAlarms([]);
+            }}
           >
             <Text style={styles.delText}>{"      "}취소</Text>
           </TouchableOpacity>
@@ -115,12 +158,20 @@ export default function AlarmPage({ navigation }) {
               </View>
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => setSelect(!select)}
+                onPress={() => handlePress(index)}
                 style={{
                   ...styles.circle,
-                  backgroundColor: !state ? "white" : theme.grey150,
+                  backgroundColor: !state
+                    ? "white"
+                    : selectedAlarms.includes(index)
+                    ? theme.red
+                    : theme.grey150,
                 }}
-              ></TouchableOpacity>
+              >
+                {selectedAlarms.includes(index) && (
+                  <WithLocalSvg asset={Check} />
+                )}
+              </TouchableOpacity>
             </View>
           ))}
         </ScrollView>
@@ -142,6 +193,7 @@ export default function AlarmPage({ navigation }) {
         ) : (
           <TouchableOpacity
             activeOpacity={0.5}
+            onPress={handleDelete}
             style={{ ...styles.addButton, backgroundColor: theme.red }}
           >
             <Text style={styles.addButtonText}>삭제하기</Text>
@@ -223,6 +275,8 @@ const styles = StyleSheet.create({
     color: theme.grey800,
   },
   circle: {
+    alignItems: "center",
+    justifyContent: "center",
     width: 25,
     height: 25,
     borderRadius: 20,
