@@ -53,7 +53,7 @@ export default function CalendarScreen({ navigation }) {
         <View style={{ flex: 1 }}>
           <TouchableOpacity activeOpacity={0.5} style={styles.headerTab}>
             <Text style={{ ...styles.subTitle, color: theme.grey300 }}>
-              그래프
+              통계
             </Text>
           </TouchableOpacity>
           <View style={{ height: 4, backgroundColor: theme.grey100 }} />

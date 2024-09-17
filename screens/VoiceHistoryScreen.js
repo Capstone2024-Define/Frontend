@@ -117,7 +117,7 @@ export default function VoiceHistoryScreen({ navigation }) {
             />
           </View>
         </View>
-        <ScrollView style={styles.scroll}>
+        <ScrollView>
           {filteredContents &&
             filteredContents.length > 0 &&
             filteredContents

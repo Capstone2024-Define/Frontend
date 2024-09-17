@@ -147,8 +147,12 @@ export default function StartInfoScreen({ navigation }) {
           {/* page별로 다른 내용 보여줌 */}
           {page == 1 ? (
             <>
-              <View style={{ marginTop: 25, marginBottom: 20 }}>
-                <Text style={styles.hi}>안녕하세요!</Text>
+              <View
+                style={{
+                  marginTop: 24,
+                  marginBottom: 20,
+                }}
+              >
                 <Text style={styles.title}>
                   사용하실 닉네임을{"\n"}입력해주세요!
                 </Text>
@@ -254,7 +258,10 @@ export default function StartInfoScreen({ navigation }) {
                     style={[
                       styles.gender,
                       { marginRight: 6 },
-                      gender === "M" && { backgroundColor: theme.green500 },
+                      gender === "M" && {
+                        backgroundColor: "white",
+                        borderColor: theme.green500,
+                      },
                     ]}
                     onPress={() => {
                       setGender("M");
@@ -264,7 +271,7 @@ export default function StartInfoScreen({ navigation }) {
                       style={[
                         styles.subText,
                         gender === "M"
-                          ? { color: "white" }
+                          ? { color: theme.green500 }
                           : { color: theme.grey600 },
                       ]}
                     >
@@ -275,7 +282,10 @@ export default function StartInfoScreen({ navigation }) {
                     activeOpacity={0.5}
                     style={[
                       styles.gender,
-                      gender === "F" && { backgroundColor: theme.green500 },
+                      gender === "F" && {
+                        backgroundColor: "white",
+                        borderColor: theme.green500,
+                      },
                     ]}
                     onPress={() => {
                       setGender("F");
@@ -285,7 +295,7 @@ export default function StartInfoScreen({ navigation }) {
                       style={[
                         styles.subText,
                         gender === "F"
-                          ? { color: "white" }
+                          ? { color: theme.green500 }
                           : { color: theme.grey600 },
                       ]}
                     >
@@ -321,7 +331,9 @@ export default function StartInfoScreen({ navigation }) {
                         },
                     ]}
                   >
-                    <Text style={[styles.title, { color: "white" }]}>다음</Text>
+                    <Text style={[styles.buttonText, { color: "white" }]}>
+                      다음
+                    </Text>
                   </View>
                 </LinearGradient>
               </TouchableOpacity>
@@ -354,7 +366,7 @@ export default function StartInfoScreen({ navigation }) {
                         gender && { backgroundColor: "transparent" },
                     ]}
                   >
-                    <Text style={[styles.title, { color: "white" }]}>
+                    <Text style={[styles.buttonText, { color: "white" }]}>
                       시작하기
                     </Text>
                   </View>
@@ -389,22 +401,16 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Medium",
     color: "white",
   },
-  hi: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: "Pretendard-Regular",
-    color: theme.grey900,
-  },
   title: {
-    marginVertical: 4,
-    fontSize: 16,
-    lineHeight: 24,
+    marginBottom: 4,
+    fontSize: 20,
+    lineHeight: 30,
     fontFamily: "Pretendard-Bold",
     color: theme.grey900,
   },
   describe: {
-    fontSize: 12,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 24,
     fontFamily: "Pretendard-Regular",
     color: theme.grey600,
   },
@@ -450,6 +456,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: theme.grey250,
   },
+  buttonText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Bold",
+  },
   subText: {
     fontSize: 14,
     lineHeight: 20,
@@ -462,6 +473,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "white",
     backgroundColor: theme.grey150,
   },
 });
