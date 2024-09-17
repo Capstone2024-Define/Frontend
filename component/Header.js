@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "white",
     paddingVertical: 18,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
   },
   space: {
     width: 40,

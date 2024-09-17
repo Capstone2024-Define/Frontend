@@ -29,7 +29,7 @@ export default function CalendarScreen({ navigation }) {
     "금요일",
     "토요일",
   ];
-  const today = new Date().toISOString().split("T")[0]; // 오늘 날짜
+  const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
   const [selectedDate, setSelectedDate] = useState(today); // 달력 시작날짜 -> today
   const [currentMonth, setcurrentMonth] = useState(new Date().getMonth()); // 현재 캘린더 월-1
 

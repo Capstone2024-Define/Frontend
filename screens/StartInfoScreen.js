@@ -166,7 +166,14 @@ export default function StartInfoScreen({ navigation }) {
                   placeholder="닉네임을 입력해주세요 (최대 10자)"
                   style={[
                     styles.input,
-                    nickName.length > 10 && { borderColor: theme.red },
+                    nickName.length > 0 && {
+                      backgroundColor: theme.green50,
+                      borderColor: theme.green500,
+                    },
+                    nickName.length > 10 && {
+                      backgroundColor: theme.grey100,
+                      borderColor: theme.red,
+                    },
                   ]}
                   placeholderTextColor={theme.grey400}
                   onChangeText={setNickName}
@@ -193,7 +200,14 @@ export default function StartInfoScreen({ navigation }) {
                   placeholder="아이의 이름을 입력해주세요 (최대 10자)"
                   style={[
                     styles.input,
-                    name.length > 10 && { borderColor: theme.red },
+                    name.length > 0 && {
+                      backgroundColor: theme.green50,
+                      borderColor: theme.green500,
+                    },
+                    name.length > 10 && {
+                      backgroundColor: theme.grey100,
+                      borderColor: theme.red,
+                    },
                   ]}
                   placeholderTextColor={theme.grey400}
                   value={name}
@@ -212,10 +226,22 @@ export default function StartInfoScreen({ navigation }) {
                   placeholder="2024 / 07 / 27"
                   style={[
                     styles.input,
-                    !valid && birth.length >= 1 && { borderColor: theme.red },
+                    !valid &&
+                      birth.length >= 1 && {
+                        backgroundColor: theme.grey100,
+                        borderColor: theme.red,
+                      },
                     valid &&
                       birth.length >= 1 &&
-                      birth.length < 14 && { borderColor: theme.red },
+                      birth.length < 14 && {
+                        backgroundColor: theme.grey100,
+                        borderColor: theme.red,
+                      },
+                    valid &&
+                      birth.length == 14 && {
+                        backgroundColor: theme.green50,
+                        borderColor: theme.green500,
+                      },
                   ]}
                   placeholderTextColor={theme.grey400}
                   onChangeText={handleBirthChange}
@@ -250,16 +276,15 @@ export default function StartInfoScreen({ navigation }) {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
+                    justifyContent: "space-between",
                   }}
                 >
                   <TouchableOpacity
                     activeOpacity={0.5}
                     style={[
                       styles.gender,
-                      { marginRight: 6 },
                       gender === "M" && {
-                        backgroundColor: "white",
+                        backgroundColor: theme.green50,
                         borderColor: theme.green500,
                       },
                     ]}
@@ -271,19 +296,23 @@ export default function StartInfoScreen({ navigation }) {
                       style={[
                         styles.subText,
                         gender === "M"
-                          ? { color: theme.green500 }
+                          ? {
+                              color: theme.green500,
+                              fontFamily: "Pretendard-Bold",
+                            }
                           : { color: theme.grey600 },
                       ]}
                     >
                       남자아이
                     </Text>
                   </TouchableOpacity>
+                  <View style={{ width: 12 }} />
                   <TouchableOpacity
                     activeOpacity={0.5}
                     style={[
                       styles.gender,
                       gender === "F" && {
-                        backgroundColor: "white",
+                        backgroundColor: theme.green50,
                         borderColor: theme.green500,
                       },
                     ]}
@@ -295,7 +324,10 @@ export default function StartInfoScreen({ navigation }) {
                       style={[
                         styles.subText,
                         gender === "F"
-                          ? { color: theme.green500 }
+                          ? {
+                              color: theme.green500,
+                              fontFamily: "Pretendard-Bold",
+                            }
                           : { color: theme.grey600 },
                       ]}
                     >
@@ -383,8 +415,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     backgroundColor: "white",
-    paddingHorizontal: 24,
-    paddingTop: 32,
+    paddingHorizontal: 16,
+    paddingTop: 20,
     paddingBottom: 16,
   },
   circle: {
@@ -433,7 +465,7 @@ const styles = StyleSheet.create({
     height: 50,
     padding: 10,
     borderRadius: 8,
-    backgroundColor: theme.green50,
+    backgroundColor: theme.grey100,
     fontSize: 14,
     lineHeight: 20,
     fontFamily: "Pretendard-Medium",
@@ -468,7 +500,7 @@ const styles = StyleSheet.create({
     color: theme.grey400,
   },
   gender: {
-    width: 153,
+    flex: 1,
     height: 38,
     alignItems: "center",
     justifyContent: "center",

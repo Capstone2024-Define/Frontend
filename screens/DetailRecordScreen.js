@@ -296,7 +296,21 @@ export default function DetailRecordScreen({ navigation, route }) {
           </View>
           <TextInput
             placeholder="가정에서 있었던 일을 작성해주세요"
-            style={styles.input}
+            style={{
+              ...styles.input,
+              backgroundColor:
+                homeText.length > 800
+                  ? theme.grey100
+                  : homeText.length > 0
+                  ? theme.green50
+                  : theme.grey100,
+              borderColor:
+                homeText.length > 800
+                  ? theme.red
+                  : homeText.length > 0
+                  ? theme.green500
+                  : "white",
+            }}
             placeholderTextColor={theme.grey400}
             multiline
             numberOfLines={2}
@@ -330,7 +344,21 @@ export default function DetailRecordScreen({ navigation, route }) {
           </View>
           <TextInput
             placeholder="학교에서 있었던 일을 작성해주세요"
-            style={styles.input}
+            style={{
+              ...styles.input,
+              backgroundColor:
+                schoolText.length > 600
+                  ? theme.grey100
+                  : schoolText.length > 0
+                  ? theme.green50
+                  : theme.grey100,
+              borderColor:
+                schoolText.length > 600
+                  ? theme.red
+                  : schoolText.length > 0
+                  ? theme.green500
+                  : "white",
+            }}
             multiline
             numberOfLines={2}
             onChangeText={setSchoolText}
@@ -363,7 +391,21 @@ export default function DetailRecordScreen({ navigation, route }) {
           </View>
           <TextInput
             placeholder="병원에서 있었던 일을 작성해주세요"
-            style={styles.input}
+            style={{
+              ...styles.input,
+              backgroundColor:
+                hospitalText.length > 600
+                  ? theme.grey100
+                  : hospitalText.length > 0
+                  ? theme.green50
+                  : theme.grey100,
+              borderColor:
+                hospitalText.length > 600
+                  ? theme.red
+                  : hospitalText.length > 0
+                  ? theme.green500
+                  : "white",
+            }}
             multiline
             numberOfLines={2}
             returnKeyType="done"
@@ -394,16 +436,16 @@ const styles = StyleSheet.create({
   scroll: {},
   subContainer: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
   },
   guideText: {
-    fontSize: 18,
-    //fontWeight: "500",
-    fontFamily: "Pretendard-Medium",
+    fontSize: 20,
+    fontFamily: "Pretendard-Bold",
+    lineHeight: 30,
     marginTop: 28,
     color: theme.grey800,
   },
-  photoScroll: { marginLeft: 24, marginVertical: 20 },
+  photoScroll: { marginLeft: 16, marginVertical: 20 },
   photo: {
     width: 60,
     height: 60,
@@ -443,19 +485,21 @@ const styles = StyleSheet.create({
   },
   inputGuideText: {
     fontSize: 14,
-    //fontWeight: "500",
+    lineHeight: 20,
     fontFamily: "Pretendard-Medium",
     marginLeft: 8,
-    color: theme.grey600,
+    color: theme.grey800,
   },
   input: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: theme.green50,
+    backgroundColor: theme.grey100,
     textAlignVertical: "top",
     fontFamily: "Human-beomseok",
     lineHeight: 19.6,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "white",
   },
   limit: {
     flex: 1,

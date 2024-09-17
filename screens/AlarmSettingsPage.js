@@ -11,7 +11,6 @@ import { Picker } from "@react-native-picker/picker"; // Picker 사용
 import { LinearGradient } from "expo-linear-gradient"; // 그라디언트 라이브러리
 import { WithLocalSvg } from "react-native-svg/css";
 import Back from "../assets/arrow_back_ios.svg";
-import Delete from "../assets/delete.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AlarmSettingsPage({ navigation }) {
@@ -93,11 +92,7 @@ export default function AlarmSettingsPage({ navigation }) {
           <WithLocalSvg asset={Back} width={27} />
         </TouchableOpacity>
         <Text style={styles.title}>알림설정</Text>
-        {/* <Image
-          source={require("../assets/trashIcon.png")}
-          style={styles.icon}
-        /> */}
-        <WithLocalSvg asset={Delete} />
+        <View style={{ width: 25 }} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.alarmTitle}>알림 설정</Text>

@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
   },
   customToastText: {
     fontSize: 14,
+    lineHeight: 20,
     fontFamily: "Pretendard-Regular",
-    color: theme.grey600,
+    color: theme.grey800,
   },
 });
