@@ -40,6 +40,8 @@
     "react-native-shadow-2": "^7.1.0",
     "react-native-svg": "^15.7.1",
     "react-native-toast-message": "^2.2.0",
+    "react-native-wheel-picker-expo": "^0.5.4",
+    "react-native-wheel-scrollview-picker": "^2.0.6",
     "typescript": "~5.3.3"
   },
   "devDependencies": {

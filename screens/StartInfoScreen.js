@@ -339,72 +339,73 @@ export default function StartInfoScreen({ navigation }) {
             </>
           )}
         </View>
-
-        {page == 1
-          ? !isKeyboardVisible && (
-              <TouchableOpacity
-                activeOpacity={0.5}
-                disabled={!(nickName.length >= 1 && nickName.length <= 10)}
-                onPress={() => {
-                  if (page == 1) setPage(2);
-                  else if (page == 2) setPage(1);
-                }}
-              >
-                <LinearGradient
-                  colors={["#79BA7E", "#AFCA85"]}
-                  style={styles.gradientButton}
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          {page == 1
+            ? !isKeyboardVisible && (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  disabled={!(nickName.length >= 1 && nickName.length <= 10)}
+                  onPress={() => {
+                    if (page == 1) setPage(2);
+                    else if (page == 2) setPage(1);
+                  }}
                 >
-                  <View
-                    style={[
-                      styles.button,
-                      nickName.length >= 1 &&
-                        nickName.length <= 10 && {
-                          backgroundColor: "transparent",
-                        },
-                    ]}
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={styles.gradientButton}
                   >
-                    <Text style={[styles.buttonText, { color: "white" }]}>
-                      다음
-                    </Text>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            )
-          : !isKeyboardVisible && (
-              <TouchableOpacity
-                activeOpacity={0.5}
-                disabled={
-                  !(
-                    name.length >= 1 &&
-                    name.length <= 10 &&
-                    birth.length == 14 &&
-                    gender
-                  )
-                }
-                onPress={() => {
-                  console.log("시작하기");
-                }}
-              >
-                <LinearGradient
-                  colors={["#79BA7E", "#AFCA85"]}
-                  style={styles.gradientButton}
-                >
-                  <View
-                    style={[
-                      styles.button,
+                    <View
+                      style={[
+                        styles.button,
+                        nickName.length >= 1 &&
+                          nickName.length <= 10 && {
+                            backgroundColor: "transparent",
+                          },
+                      ]}
+                    >
+                      <Text style={[styles.buttonText, { color: "white" }]}>
+                        다음
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )
+            : !isKeyboardVisible && (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  disabled={
+                    !(
                       name.length >= 1 &&
-                        name.length <= 10 &&
-                        birth.length == 14 &&
-                        gender && { backgroundColor: "transparent" },
-                    ]}
+                      name.length <= 10 &&
+                      birth.length == 14 &&
+                      gender
+                    )
+                  }
+                  onPress={() => {
+                    console.log("시작하기");
+                  }}
+                >
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={styles.gradientButton}
                   >
-                    <Text style={[styles.buttonText, { color: "white" }]}>
-                      시작하기
-                    </Text>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            )}
+                    <View
+                      style={[
+                        styles.button,
+                        name.length >= 1 &&
+                          name.length <= 10 &&
+                          birth.length == 14 &&
+                          gender && { backgroundColor: "transparent" },
+                      ]}
+                    >
+                      <Text style={[styles.buttonText, { color: "white" }]}>
+                        시작하기
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -415,7 +416,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     backgroundColor: "white",
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 16,
   },
