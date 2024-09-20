@@ -23,7 +23,8 @@ import SymptomCheckParent from "./screens/SymptomCheckParent";
 import StartInfoScreen from "./screens/StartInfoScreen";
 import ProfileModifyScreen from "./screens/ProfileModifyScreen";
 import AlarmPage from "./screens/AlarmPage";
-import AlarmSettingsPage from "./screens/AlarmSettingsPage";  // AlarmSettingsPage 추가
+import AlarmSettingsPage from "./screens/AlarmSettingsPage"; // AlarmSettingsPage 추가
+import KakaoLoginScreen from "./screens/KakaoLoginScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -140,6 +141,11 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="KakaoLogin"
+              component={KakaoLoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="StartInfo"
               component={StartInfoScreen}
               options={{ headerShown: false }}
@@ -155,7 +161,7 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="AlarmSettingsPage"  
+              name="AlarmSettingsPage"
               component={AlarmSettingsPage}
               options={{ headerShown: false }}
             />

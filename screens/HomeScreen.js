@@ -97,7 +97,7 @@ export default function HomeScreen({ navigation }) {
 
             //console.log(newRecord);
           } catch (e) {
-            console.log("기록 로드 에러");
+            console.log("기록 로드 에러 혹은 기록 없음");
             // 기록 없는거니까 텍스트랑 이미지 비움
             setTotalText("");
             setImages([]);
@@ -248,7 +248,7 @@ export default function HomeScreen({ navigation }) {
               borderTopRightRadius: 24,
               paddingTop: 16,
               paddingBottom: 14,
-              paddingHorizontal: 24,
+              paddingHorizontal: 20,
               alignItems: "center", // 네모 박스들을 중앙 정렬
             }}
           >
@@ -295,7 +295,7 @@ export default function HomeScreen({ navigation }) {
                   backgroundColor: "#FFFFFF",
                   borderRadius: 8,
                   paddingVertical: 8,
-                  width: 309, // 부모 뷰의 전체 너비를 사용
+                  width: 320, // 부모 뷰의 전체 너비를 사용
                   maxWidth: 350, // 최대 너비 설정
                   paddingHorizontal: 7, // 내부 패딩
                 }}
@@ -439,7 +439,7 @@ export default function HomeScreen({ navigation }) {
                 >
                   <View
                     style={{
-                      width: 312,
+                      width: 320,
                       height: 188,
                       backgroundColor: "white",
                       borderRadius: 8,
@@ -499,6 +499,7 @@ export default function HomeScreen({ navigation }) {
                 alignItems: "center",
                 width: "100%",
                 maxWidth: 350,
+                paddingHorizontal: 4,
               }}
             >
               {images.length > 0 || totalText ? (
@@ -672,7 +673,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   recordContainer: {
-    width: 312,
+    width: 320,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,

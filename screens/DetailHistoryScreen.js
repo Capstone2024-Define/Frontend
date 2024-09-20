@@ -266,7 +266,11 @@ export default function DetailHistoryScreen({ navigation, route }) {
           ))}
         </ScrollView>
         {summaryText ? (
-          <View style={styles.subContainer}>
+          <View
+            style={{
+              ...styles.subContainer,
+            }}
+          >
             <View style={{ marginBottom: 16 }}>
               <View style={{ flexDirection: "row", marginBottom: 12 }}>
                 <WithLocalSvg width={20} height={20} asset={Note} />
@@ -422,19 +426,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingVertical: 28,
+    paddingVertical: 24,
   },
   subContainer: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
 
-  photoScroll: { marginLeft: 24 },
+  photoScroll: { marginLeft: 20 },
   photo: {
     width: 75,
     height: 75,
     borderRadius: 8,
-    backgroundColor: "lightgrey",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
@@ -444,16 +447,16 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     fontFamily: "Pretendard-Medium",
-    color: theme.grey600,
+    color: theme.grey800,
   },
   subText: {
     fontSize: 14,
-    color: theme.grey700,
-    fontFamily: "Human-beomseok",
-    lineHeight: 19.6,
+    color: theme.grey600,
+    fontFamily: "Pretendard-Regular",
+    lineHeight: 20,
   },
   tagContainer: {
-    marginLeft: 24,
+    marginLeft: 20,
     marginBottom: 16,
   },
   line: {
@@ -465,7 +468,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
   subRemind: {
     flexDirection: "row",

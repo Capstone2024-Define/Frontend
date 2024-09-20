@@ -24,12 +24,11 @@ export default function StartInfoScreen({ navigation }) {
   const [gender, setGender] = useState("");
   const [valid, setValid] = useState(true); // 날짜 유효성 검사
 
-  useEffect(() => {
-    console.log("닉네임: ", nickName);
-    console.log("이름: ", name);
-    console.log("생일: ", birth);
-    console.log("성별: ", gender);
-  }, [nickName, name, birth, gender]);
+  // 특정 TextInput에 입력중인지 판단하는 변수
+  const [nameFocus, setNameFocus] = useState(true);
+  const [nameKeyboard, setNameKeyboard] = useState(false);
+  const [birthFocus, setBirthFocus] = useState(false);
+  const [birthKeyboard, setBirthKeyboard] = useState(false);
 
   // 키보드 활성화 시 감지
   useLayoutEffect(() => {
@@ -51,6 +50,29 @@ export default function StartInfoScreen({ navigation }) {
       keyboardDidShowListener.remove();
     };
   }, []);
+
+  // 각 TextInput 키보드 감지
+  useEffect(() => {
+    if (!isKeyboardVisible && nameFocus) {
+      setNameKeyboard(false);
+    } else if (isKeyboardVisible && nameFocus) {
+      setNameKeyboard(true);
+    }
+
+    if (!isKeyboardVisible && birthFocus) {
+      setBirthKeyboard(false);
+    } else if (isKeyboardVisible && birthFocus) {
+      setBirthKeyboard(true);
+    }
+  }, [isKeyboardVisible]);
+
+  // 잘되나 test
+  useEffect(() => {
+    console.log("닉네임: ", nickName);
+    console.log("이름: ", name);
+    console.log("생일: ", birth);
+    console.log("성별: ", gender);
+  }, [nickName, name, birth, gender]);
 
   // 생년월일 입력
   const handleBirthChange = (text) => {
@@ -118,32 +140,36 @@ export default function StartInfoScreen({ navigation }) {
       />
       <View style={styles.container}>
         <View>
-          <View style={{ flexDirection: "row" }}>
-            <View
-              style={[
-                styles.circle,
-                page == 2 && { backgroundColor: theme.grey200 },
-                { marginRight: 16 },
-              ]}
-            >
-              <Text style={styles.number}>
-                {page == 1 ? (
-                  1
-                ) : (
-                  <Feather name="check" size={18} color="white" />
-                )}
-              </Text>
+          {!birthKeyboard ? (
+            <View style={{ flexDirection: "row" }}>
+              <View
+                style={[
+                  styles.circle,
+                  page == 2 && { backgroundColor: theme.grey200 },
+                  { marginRight: 16 },
+                ]}
+              >
+                <Text style={styles.number}>
+                  {page == 1 ? (
+                    1
+                  ) : (
+                    <Feather name="check" size={18} color="white" />
+                  )}
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.circle,
+                  page == 1 && { backgroundColor: theme.grey200 },
+                  { marginRight: 16 },
+                ]}
+              >
+                <Text style={styles.number}>2</Text>
+              </View>
             </View>
-            <View
-              style={[
-                styles.circle,
-                page == 1 && { backgroundColor: theme.grey200 },
-                { marginRight: 16 },
-              ]}
-            >
-              <Text style={styles.number}>2</Text>
-            </View>
-          </View>
+          ) : (
+            <></>
+          )}
           {/* page별로 다른 내용 보여줌 */}
           {page == 1 ? (
             <>
@@ -168,8 +194,12 @@ export default function StartInfoScreen({ navigation }) {
                     styles.input,
                     nickName.length > 0 && {
                       backgroundColor: theme.green50,
-                      borderColor: theme.green500,
                     },
+                    nickName.length > 0 &&
+                      !isKeyboardVisible && {
+                        backgroundColor: theme.green50,
+                        borderColor: theme.green500,
+                      },
                     nickName.length > 10 && {
                       backgroundColor: theme.grey100,
                       borderColor: theme.red,
@@ -189,7 +219,12 @@ export default function StartInfoScreen({ navigation }) {
             </>
           ) : (
             <>
-              <View style={{ marginTop: 25, marginBottom: 17 }}>
+              <View
+                style={{
+                  marginTop: !birthKeyboard ? 24 : 10,
+                  marginBottom: 17,
+                }}
+              >
                 <Text style={styles.title}>
                   디파인님의 아이에 대해서{"\n"}알려주세요!
                 </Text>
@@ -200,10 +235,16 @@ export default function StartInfoScreen({ navigation }) {
                   placeholder="아이의 이름을 입력해주세요 (최대 10자)"
                   style={[
                     styles.input,
-                    name.length > 0 && {
-                      backgroundColor: theme.green50,
-                      borderColor: theme.green500,
-                    },
+                    name.length > 0 &&
+                      nameKeyboard &&
+                      isKeyboardVisible && {
+                        backgroundColor: theme.green50,
+                      },
+                    name.length > 0 &&
+                      !nameKeyboard && {
+                        backgroundColor: theme.green50,
+                        borderColor: theme.green500,
+                      },
                     name.length > 10 && {
                       backgroundColor: theme.grey100,
                       borderColor: theme.red,
@@ -212,6 +253,14 @@ export default function StartInfoScreen({ navigation }) {
                   placeholderTextColor={theme.grey400}
                   value={name}
                   onChangeText={setName}
+                  onFocus={() => {
+                    setNameFocus(true);
+                    setNameKeyboard(true);
+                  }}
+                  onBlur={() => {
+                    setNameFocus(false);
+                    setNameKeyboard(false);
+                  }}
                   returnKeyType="done"
                 />
                 {name.length > 10 && (
@@ -227,37 +276,56 @@ export default function StartInfoScreen({ navigation }) {
                   style={[
                     styles.input,
                     !valid &&
-                      birth.length >= 1 && {
+                      birth.length >= 1 &&
+                      !birthKeyboard && {
                         backgroundColor: theme.grey100,
                         borderColor: theme.red,
                       },
                     valid &&
                       birth.length >= 1 &&
-                      birth.length < 14 && {
+                      birth.length < 14 &&
+                      !birthKeyboard && {
                         backgroundColor: theme.grey100,
                         borderColor: theme.red,
                       },
                     valid &&
-                      birth.length == 14 && {
+                      birth.length == 14 &&
+                      !birthKeyboard && {
                         backgroundColor: theme.green50,
                         borderColor: theme.green500,
+                      },
+                    valid &&
+                      birth.length == 14 &&
+                      birthKeyboard && {
+                        backgroundColor: theme.green50,
                       },
                   ]}
                   placeholderTextColor={theme.grey400}
                   onChangeText={handleBirthChange}
-                  returnKeyType="done"
                   keyboardType="number-pad"
                   value={birth}
                   maxLength={14} // YYYY / MM / DD 의 최대 길이: 14자
+                  onFocus={() => {
+                    setBirthFocus(true);
+                    setBirthKeyboard(true);
+                  }}
+                  onBlur={() => {
+                    setBirthFocus(false);
+                    setBirthKeyboard(false);
+                  }}
+                  returnKeyType="done"
                 />
-                {!valid && birth.length >= 1 && (
+                {!valid && birth.length >= 1 && !birthKeyboard && (
                   <Text style={styles.warn}>유효한 날짜를 입력해주세요!</Text>
                 )}
-                {valid && birth.length >= 1 && birth.length < 14 && (
-                  <Text style={styles.warn}>
-                    날짜를 형식에 맞게 입력해주세요!
-                  </Text>
-                )}
+                {valid &&
+                  birth.length >= 1 &&
+                  birth.length < 14 &&
+                  !birthKeyboard && (
+                    <Text style={styles.warn}>
+                      날짜를 형식에 맞게 입력해주세요!
+                    </Text>
+                  )}
                 {/* <View style={styles.input}>
                   <View
                     style={{
@@ -339,7 +407,13 @@ export default function StartInfoScreen({ navigation }) {
             </>
           )}
         </View>
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
           {page == 1
             ? !isKeyboardVisible && (
                 <TouchableOpacity

@@ -8,13 +8,16 @@ import {
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Notice from "../assets/notice.svg";
-import Docs from "../assets/docs.svg";
+import Docs from "../assets/forward_to_inbox.svg";
 import Bookmark from "../assets/bookmark.svg";
 
 export default function MyPageScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.subContainer}>
+        <Text style={{ ...styles.m_text, color: theme.grey500 }}>
+          안녕하세요!
+        </Text>
         <View
           style={{
             flexDirection: "row",
@@ -23,12 +26,7 @@ export default function MyPageScreen({ navigation }) {
             marginBottom: 33,
           }}
         >
-          <View>
-            <Text style={{ ...styles.m_text, color: theme.grey500 }}>
-              안녕하세요!
-            </Text>
-            <Text style={{ ...styles.L_text, marginTop: 4 }}>디파인님</Text>
-          </View>
+          <Text style={{ ...styles.L_text, marginTop: 4 }}>디파인님</Text>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => navigation.push("ProfileModify")}
@@ -102,13 +100,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   subContainer: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 33,
   },
   L_text: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontFamily: "Pretendard-Medium",
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: "Pretendard-Bold",
     color: theme.grey800,
   },
   m_text: {

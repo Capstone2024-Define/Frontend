@@ -24,13 +24,20 @@ export default function Header({
                 name="chevron-back-outline"
                 size={27}
                 color={theme.grey700}
+                style={{ marginLeft: -6 }}
               />
             ) : (
               <Text style={styles.left}>{left}</Text>
             )}
           </View>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: iconColor ? 10 : 0,
+          }}
+        >
           <Text style={styles.title}>{title}</Text>
           {iconColor ? (
             <FontAwesome
@@ -89,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "white",
     paddingVertical: 18,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   space: {
     width: 40,

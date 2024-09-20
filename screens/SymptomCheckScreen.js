@@ -103,7 +103,7 @@ const SymptomCheckScreen = ({ route, navigation }) => {
           증상을 체크해주세요
         </Text>
         <Text style={styles.subTitle}>
-          증상이 없었을 경우 선택하지 않고 다음을 눌러주세요
+          증상이 없었을 경우 선택하지 않고{"\n"}다음을 눌러주세요
         </Text>
         {Object.entries(symptoms).map(([category, symptoms]) =>
           renderSymptoms(category, symptoms)
@@ -128,36 +128,35 @@ const styles = StyleSheet.create({
     backgroundColor: theme.grey150,
   },
   mainTitle: {
-    marginTop: 28,
+    marginTop: 20,
     color: "#242424",
-    fontSize: 18,
-    marginBottom: 8,
-    marginHorizontal: 25,
-    lineHeight: 24,
-    fontFamily: "Pretendard-Medium",
-    fontWeight: "500",
+    fontSize: 20,
+    lineHeight: 30,
+    marginBottom: 4,
+    marginHorizontal: 20,
+    fontFamily: "Pretendard-Bold",
   },
   subTitle: {
     color: "#A5A5A5",
-    fontSize: 12,
-    marginBottom: 22,
-    marginLeft: 25,
-    fontFamily: "Pretendard-Medium",
-    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 20,
+    marginLeft: 20,
+    fontFamily: "Pretendard-Regular",
   },
   categoryText: {
     color: "#242424",
     fontSize: 16,
     marginBottom: 12,
-    marginLeft: 25,
+    marginLeft: 20,
     lineHeight: 24,
-    fontWeight: "500",
+    fontFamily: "Pretendard-Bold",
   },
   buttonContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginBottom: 6,
-    marginHorizontal: 24,
+    marginHorizontal: 20,
   },
   symptomButton: {
     backgroundColor: "#F6F6F6",
@@ -167,17 +166,23 @@ const styles = StyleSheet.create({
     marginRight: 12,
     marginBottom: 12,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "white",
   },
   symptomButtonSelected: {
-    backgroundColor: "#78BA7D",
+    backgroundColor: theme.green50,
+    borderWidth: 1,
+    borderColor: theme.green500,
   },
   symptomButtonText: {
     color: theme.grey500,
     fontSize: 14,
+    lineHeight: 20,
     fontFamily: "Pretendard-Medium",
   },
   symptomButtonTextSelected: {
-    color: "#FFFFFF",
+    color: theme.green500,
+    fontFamily: "Pretendard-Bold",
   },
 });
 

@@ -421,9 +421,9 @@ const styles = StyleSheet.create({
   scroll: {},
   subContainer: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
-  photoScroll: { marginLeft: 24, marginTop: 28, marginBottom: 8 },
+  photoScroll: { marginLeft: 20, marginTop: 28, marginBottom: 8 },
   photo: {
     width: 60,
     height: 60,

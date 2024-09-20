@@ -31,8 +31,8 @@ export default function CalendarScreen({ navigation }) {
   ];
   const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
   const [selectedDate, setSelectedDate] = useState(today); // 달력 시작날짜 -> today
-  const [currentMonth, setcurrentMonth] = useState(new Date().getMonth()); // 현재 캘린더 월-1
 
+  // 잘되나 확인
   useEffect(() => {
     console.log(selectedDate);
   }, [selectedDate]);
@@ -159,8 +159,8 @@ export default function CalendarScreen({ navigation }) {
                   }}
                   disabled={isFuture}
                   style={[
-                    styles.dayColor,
-                    isSelected && { backgroundColor: theme.green600 },
+                    styles.selectedDay,
+                    isSelected && { backgroundColor: theme.green500 },
                   ]}
                 >
                   <Text
@@ -179,6 +179,12 @@ export default function CalendarScreen({ navigation }) {
                   >
                     {date.day}
                   </Text>
+                  <View
+                    style={[
+                      styles.dayColor,
+                      !isFuture && { backgroundColor: theme.yellow },
+                    ]}
+                  />
                 </TouchableOpacity>
               </View>
             );
@@ -303,13 +309,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  month: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 20,
-    paddingHorizontal: 24,
-  },
   title: {
     fontSize: 16,
     lineHeight: 24,
@@ -328,13 +327,21 @@ const styles = StyleSheet.create({
     height: 45,
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: -6,
+    marginVertical: -5,
   },
-  dayColor: {
-    width: 39,
-    height: 39,
+  selectedDay: {
+    width: 45,
+    height: 45,
     justifyContent: "center",
     alignItems: "center",
+    paddingTop: 7,
+    borderRadius: 8,
+    backgroundColor: "transparent",
+  },
+  dayColor: {
+    width: 7,
+    height: 7,
+    marginTop: 1.6,
     borderRadius: 30,
     backgroundColor: "transparent",
   },

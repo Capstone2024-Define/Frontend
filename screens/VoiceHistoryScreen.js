@@ -167,10 +167,10 @@ const styles = StyleSheet.create({
   },
   subContainer: {
     flex: 1,
-    marginHorizontal: 24,
+    marginHorizontal: 20,
   },
   headerContainer: {
-    paddingTop: 28,
+    paddingTop: 20,
   },
   textInput: {
     flexDirection: "row",

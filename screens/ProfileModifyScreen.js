@@ -15,7 +15,6 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function ProfileModifyScreen({ navigation }) {
-  const [isBirthFocused, setBirthFocused] = useState(false); // 생년월일 입력 감지
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
   const [nickName, setNickName] = useState("");
   const [name, setName] = useState("");
@@ -23,6 +22,15 @@ export default function ProfileModifyScreen({ navigation }) {
   const [gender, setGender] = useState("");
   const [valid, setValid] = useState(true); // 날짜 유효성 검사
 
+  // 특정 TextInput에 입력중인지 판단하는 변수
+  const [nickNameFocus, setNickNameFocus] = useState(false);
+  const [nickNameKeyboard, setNickNameKeyboard] = useState(false);
+  const [nameFocus, setNameFocus] = useState(false);
+  const [nameKeyboard, setNameKeyboard] = useState(false);
+  const [birthFocus, setBirthFocus] = useState(false);
+  const [birthKeyboard, setBirthKeyboard] = useState(false);
+
+  // 잘되나 test, 나중에 DB에 넣을거
   useEffect(() => {
     console.log("닉네임: ", nickName);
     console.log("이름: ", name);
@@ -50,6 +58,27 @@ export default function ProfileModifyScreen({ navigation }) {
       keyboardDidShowListener.remove();
     };
   }, []);
+
+  // 각 TextInput 키보드 감지
+  useEffect(() => {
+    if (!isKeyboardVisible && nickNameFocus) {
+      setNickNameKeyboard(false);
+    } else if (isKeyboardVisible && nickNameFocus) {
+      setNickNameKeyboard(true);
+    }
+
+    if (!isKeyboardVisible && nameFocus) {
+      setNameKeyboard(false);
+    } else if (isKeyboardVisible && nameFocus) {
+      setNameKeyboard(true);
+    }
+
+    if (!isKeyboardVisible && birthFocus) {
+      setBirthKeyboard(false);
+    } else if (isKeyboardVisible && birthFocus) {
+      setBirthKeyboard(true);
+    }
+  }, [isKeyboardVisible]);
 
   // 생년월일 입력
   const handleBirthChange = (text) => {
@@ -116,7 +145,7 @@ export default function ProfileModifyScreen({ navigation }) {
         }}
       />
 
-      {isKeyboardVisible && isBirthFocused ? null : (
+      {isKeyboardVisible && birthFocus ? null : (
         <>
           <View style={{ ...styles.subContainer, paddingTop: 20 }}>
             <Text style={styles.title}>내 정보</Text>
@@ -124,7 +153,21 @@ export default function ProfileModifyScreen({ navigation }) {
             <View
               style={[
                 styles.input,
-                nickName.length > 10 && { borderColor: theme.red },
+                nickName.length > 0 &&
+                  nickNameKeyboard &&
+                  isKeyboardVisible && {
+                    backgroundColor: theme.green50,
+                  },
+                nickName.length > 0 &&
+                  !nickNameKeyboard && {
+                    backgroundColor: theme.green50,
+                    borderColor: theme.green500,
+                  },
+                nickName.length > 10 && {
+                  backgroundColor: theme.grey100,
+                  borderColor: theme.red,
+                },
+                ,
               ]}
             >
               <TextInput
@@ -132,6 +175,14 @@ export default function ProfileModifyScreen({ navigation }) {
                 onChangeText={setNickName}
                 returnKeyType="done"
                 value={nickName}
+                onFocus={() => {
+                  setNickNameFocus(true);
+                  setNickNameKeyboard(true);
+                }}
+                onBlur={() => {
+                  setNickNameFocus(false);
+                  setNickNameKeyboard(false);
+                }}
               />
               <WithLocalSvg asset={Edit} />
             </View>
@@ -156,7 +207,20 @@ export default function ProfileModifyScreen({ navigation }) {
           <View
             style={[
               styles.input,
-              name.length > 10 && { borderColor: theme.red },
+              name.length > 0 &&
+                nameKeyboard &&
+                isKeyboardVisible && {
+                  backgroundColor: theme.green50,
+                },
+              name.length > 0 &&
+                !nameKeyboard && {
+                  backgroundColor: theme.green50,
+                  borderColor: theme.green500,
+                },
+              name.length > 10 && {
+                backgroundColor: theme.grey100,
+                borderColor: theme.red,
+              },
             ]}
           >
             <TextInput
@@ -164,6 +228,14 @@ export default function ProfileModifyScreen({ navigation }) {
               onChangeText={setName}
               returnKeyType="done"
               value={name}
+              onFocus={() => {
+                setNameFocus(true);
+                setNameKeyboard(true);
+              }}
+              onBlur={() => {
+                setNameFocus(false);
+                setNameKeyboard(false);
+              }}
             />
             <WithLocalSvg asset={Edit} />
           </View>
@@ -175,30 +247,59 @@ export default function ProfileModifyScreen({ navigation }) {
           <View
             style={[
               styles.input,
-              !valid && birth.length >= 1 && { borderColor: theme.red },
+              !valid &&
+                birth.length >= 1 &&
+                !birthKeyboard && {
+                  backgroundColor: theme.grey100,
+                  borderColor: theme.red,
+                },
               valid &&
                 birth.length >= 1 &&
-                birth.length < 14 && { borderColor: theme.red },
+                birth.length < 14 &&
+                !birthKeyboard && {
+                  backgroundColor: theme.grey100,
+                  borderColor: theme.red,
+                },
+              valid &&
+                birth.length == 14 &&
+                !birthKeyboard && {
+                  backgroundColor: theme.green50,
+                  borderColor: theme.green500,
+                },
+              valid &&
+                birth.length == 14 &&
+                birthKeyboard && {
+                  backgroundColor: theme.green50,
+                },
             ]}
           >
             <TextInput
               style={styles.inputText}
-              onFocus={() => setBirthFocused(true)} // 생년월일 입력 필드 포커스
-              onBlur={() => setBirthFocused(false)} // 포커스 해제 시
               onChangeText={handleBirthChange}
               returnKeyType="done"
               keyboardType="number-pad"
               value={birth}
               maxLength={14} // YYYY / MM / DD 의 최대 길이
+              onFocus={() => {
+                setBirthFocus(true);
+                setBirthKeyboard(true);
+              }}
+              onBlur={() => {
+                setBirthFocus(false);
+                setBirthKeyboard(false);
+              }}
             />
             <WithLocalSvg asset={Edit} />
           </View>
-          {!valid && birth.length >= 1 && (
+          {!valid && birth.length >= 1 && !birthKeyboard && (
             <Text style={styles.warn}>유효한 날짜를 입력해주세요!</Text>
           )}
-          {valid && birth.length >= 1 && birth.length < 14 && (
-            <Text style={styles.warn}>날짜를 형식에 맞게 입력해주세요!</Text>
-          )}
+          {valid &&
+            birth.length >= 1 &&
+            birth.length < 14 &&
+            !birthKeyboard && (
+              <Text style={styles.warn}>날짜를 형식에 맞게 입력해주세요!</Text>
+            )}
           <View style={{ marginBottom: 12 }} />
           <Text style={styles.subTitle}>성별</Text>
           <View
@@ -213,7 +314,10 @@ export default function ProfileModifyScreen({ navigation }) {
               style={[
                 styles.gender,
                 { marginRight: 6 },
-                gender === "M" && { backgroundColor: theme.green500 },
+                gender === "M" && {
+                  backgroundColor: theme.green50,
+                  borderColor: theme.green500,
+                },
               ]}
               onPress={() => {
                 setGender("M");
@@ -223,7 +327,10 @@ export default function ProfileModifyScreen({ navigation }) {
                 style={[
                   styles.genderText,
                   gender === "M"
-                    ? { color: "white" }
+                    ? {
+                        color: theme.green500,
+                        fontFamily: "Pretendard-Bold",
+                      }
                     : { color: theme.grey600 },
                 ]}
               >
@@ -234,7 +341,10 @@ export default function ProfileModifyScreen({ navigation }) {
               activeOpacity={0.5}
               style={[
                 styles.gender,
-                gender === "F" && { backgroundColor: theme.green500 },
+                gender === "F" && {
+                  backgroundColor: theme.green50,
+                  borderColor: theme.green500,
+                },
               ]}
               onPress={() => {
                 setGender("F");
@@ -244,7 +354,10 @@ export default function ProfileModifyScreen({ navigation }) {
                 style={[
                   styles.genderText,
                   gender === "F"
-                    ? { color: "white" }
+                    ? {
+                        color: theme.green500,
+                        fontFamily: "Pretendard-Bold",
+                      }
                     : { color: theme.grey600 },
                 ]}
               >
@@ -253,47 +366,55 @@ export default function ProfileModifyScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
-        {!isKeyboardVisible && (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            disabled={
-              !(
-                nickName.length >= 1 &&
-                nickName.length <= 10 &&
-                name.length >= 1 &&
-                name.length <= 10 &&
-                birth.length == 14 &&
-                gender
-              )
-            }
-            onPress={() => {
-              console.log("확인");
-            }}
-          >
-            <LinearGradient
-              colors={["#79BA7E", "#AFCA85"]}
-              style={styles.button}
-            >
-              <View
-                style={[
-                  styles.button,
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          {!isKeyboardVisible && (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              disabled={
+                !(
                   nickName.length >= 1 &&
-                    nickName.length <= 10 &&
-                    name.length >= 1 &&
-                    name.length <= 10 &&
-                    birth.length == 14 &&
-                    gender && { backgroundColor: "transparent" },
-                ]}
+                  nickName.length <= 10 &&
+                  name.length >= 1 &&
+                  name.length <= 10 &&
+                  birth.length == 14 &&
+                  gender
+                )
+              }
+              onPress={() => {
+                console.log("확인");
+              }}
+            >
+              <LinearGradient
+                colors={["#79BA7E", "#AFCA85"]}
+                style={styles.button}
               >
-                <Text
-                  style={[styles.title, { marginBottom: 0, color: "white" }]}
+                <View
+                  style={[
+                    styles.button,
+                    nickName.length >= 1 &&
+                      nickName.length <= 10 &&
+                      name.length >= 1 &&
+                      name.length <= 10 &&
+                      birth.length == 14 &&
+                      gender && { backgroundColor: "transparent" },
+                  ]}
                 >
-                  확인
-                </Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+                  <Text
+                    style={[styles.title, { marginBottom: 0, color: "white" }]}
+                  >
+                    확인
+                  </Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -329,7 +450,7 @@ const styles = StyleSheet.create({
     height: 50,
     padding: 10,
     borderRadius: 8,
-    backgroundColor: theme.green50,
+    backgroundColor: theme.grey100,
     borderWidth: 1,
     borderColor: "white",
   },
@@ -348,11 +469,13 @@ const styles = StyleSheet.create({
     borderTopColor: "#ECECEC",
   },
   gender: {
-    width: 153,
+    flex: 1,
     height: 38,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "white",
     backgroundColor: theme.grey150,
   },
   genderText: {

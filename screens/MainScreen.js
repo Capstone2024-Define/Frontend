@@ -69,6 +69,10 @@ function InfoScreen() {
   return (
     <View style={styles.container}>
       <Button title="정보입력" onPress={() => navigation.push("StartInfo")} />
+      <Button
+        title="카카오로그인"
+        onPress={() => navigation.push("KakaoLogin")}
+      />
       <Button title="Send POST request" onPress={handlePost} />
       {error && <Text>Error: {error.message}</Text>}
       {data && <Text>Data: {JSON.stringify(data)}</Text>}
@@ -177,7 +181,7 @@ export default function MainScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 30,
+    paddingVertical: 80,
     justifyContent: "space-between",
   },
   tabBarText: {

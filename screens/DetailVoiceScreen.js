@@ -350,7 +350,12 @@ export default function DetailVoiceScreen({ navigation, route }) {
         <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.pop()}>
           <Ionicons name="close" size={24} color={theme.grey800} />
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
           {/* <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => setVisible1(true)}
@@ -426,14 +431,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 17,
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     backgroundColor: "white",
+    alignItems: "center",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    width: "100%",
     marginBottom: 28,
+    paddingHorizontal: 4,
   },
   headerText: {
     fontSize: 16,
@@ -448,9 +456,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   infoHeader: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
+    marginHorizontal: 20,
   },
   date: {
     fontSize: 16,
@@ -464,7 +474,7 @@ const styles = StyleSheet.create({
     color: theme.grey500,
   },
   summaryBox: {
-    width: 312,
+    width: "100%",
     padding: 12,
     borderRadius: 8,
     backgroundColor: theme.grey50,
@@ -474,10 +484,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     fontFamily: "Pretendard-Medium",
-    color: theme.grey600,
+    color: theme.grey800,
   },
   summaryText: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Pretendard-Regular",
     lineHeight: 20,
     color: theme.grey500,
