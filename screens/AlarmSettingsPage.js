@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { WithLocalSvg } from "react-native-svg/css";
@@ -13,13 +14,13 @@ import Back from "../assets/arrow_back_ios.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import { theme } from "../colors/color";
+import * as Notifications from "expo-notifications";
 
 export default function AlarmSettingsPage({ navigation }) {
   const hours = Array.from({ length: 12 }, (_, i) => `${i + 1}`);
   const minutes = Array.from({ length: 60 }, (_, i) => `${i}`.padStart(2, "0"));
   const ampm = ["am", "pm"];
 
-  // 현재 시간을 계산하여 초기 상태로 설정
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -36,6 +37,30 @@ export default function AlarmSettingsPage({ navigation }) {
   const [selectedAmPm, setSelectedAmPm] = useState(ampmValue);
   const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]);
   const [isEverydayChecked, setIsEverydayChecked] = useState(false);
+
+  useEffect(() => {
+    const getPermissions = async () => {
+      const settings = await Notifications.getPermissionsAsync();
+      if (!settings.granted && !settings.canAskAgain) {
+        alert("알림 권한이 필요합니다.");
+      } else if (!settings.granted) {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== "granted") {
+          alert("알림 권한을 부여해주세요.");
+        }
+      }
+    };
+    getPermissions();
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  }, []);
 
   const toggleDaySelection = (index) => {
     const updatedDays = [...selectedDays];
@@ -71,6 +96,34 @@ export default function AlarmSettingsPage({ navigation }) {
     }
   };
 
+  const scheduleAlarm = async (hour, minute, ampm, selectedDays) => {
+    const now = new Date();
+    const currentDay = now.getDay();
+  
+    selectedDays.forEach((isSelected, index) => {
+      if (isSelected) {
+        const alarmDay = (index + 7 - currentDay) % 7;
+        const triggerTime = new Date(now);
+        
+        triggerTime.setDate(now.getDate() + alarmDay);
+        triggerTime.setHours(ampm === "pm" ? parseInt(hour) + 12 : parseInt(hour));
+        triggerTime.setMinutes(parseInt(minute));
+        triggerTime.setSeconds(0);
+        
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: "알림",
+            body: "설정된 시간입니다!",
+          },
+          trigger: {
+            date: triggerTime,
+            repeats: false,
+          },
+        });
+      }
+    });
+  };
+
   const handleComplete = async () => {
     if (selectedDays.every((day) => !day)) {
       return; // 요일이 하나도 선택되지 않은 경우, 확인 버튼 클릭을 방지
@@ -82,6 +135,10 @@ export default function AlarmSettingsPage({ navigation }) {
       days: selectedDays,
     };
     console.log("새로운 알람", newAlarm);
+    
+    // 알림 스케줄링
+    await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm, selectedDays);
+
     await save(newAlarm);
     navigation.pop();
   };
