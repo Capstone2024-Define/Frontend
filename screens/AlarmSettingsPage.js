@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient"; // 그라디언트 라이브러리
+import { LinearGradient } from "expo-linear-gradient";
 import { WithLocalSvg } from "react-native-svg/css";
 import Back from "../assets/arrow_back_ios.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,25 +19,23 @@ export default function AlarmSettingsPage({ navigation }) {
   const minutes = Array.from({ length: 60 }, (_, i) => `${i}`.padStart(2, "0"));
   const ampm = ["am", "pm"];
 
-  const [selectedHour, setSelectedHour] = useState("12");
-  const [selectedMinute, setSelectedMinute] = useState("30");
-  const [selectedAmPm, setSelectedAmPm] = useState("am");
+  // 현재 시간을 계산하여 초기 상태로 설정
+  const now = new Date();
+  let currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const ampmValue = currentHour >= 12 ? "pm" : "am";
 
-  const [selectedDays, setSelectedDays] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]); // 요일 상태
-  const [isEverydayChecked, setIsEverydayChecked] = useState(false); // 매일 체크박스 상태
+  if (currentHour > 12) {
+    currentHour = currentHour - 12;
+  } else if (currentHour === 0) {
+    currentHour = 12;
+  }
 
-  // 잘되나 확인
-  // useEffect(() => {
-  //   console.log(`${selectedHour}:${selectedMinute} ${selectedAmPm}`);
-  // }, [selectedHour, selectedMinute, selectedAmPm]);
+  const [selectedHour, setSelectedHour] = useState(currentHour.toString());
+  const [selectedMinute, setSelectedMinute] = useState(currentMinute.toString().padStart(2, "0"));
+  const [selectedAmPm, setSelectedAmPm] = useState(ampmValue);
+  const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]);
+  const [isEverydayChecked, setIsEverydayChecked] = useState(false);
 
   const toggleDaySelection = (index) => {
     const updatedDays = [...selectedDays];
@@ -55,10 +53,8 @@ export default function AlarmSettingsPage({ navigation }) {
     );
   };
 
-  // 저장
   const save = async (toSave) => {
     try {
-      // 기존 저장된 기록 불러오기
       const rawAlarmList = await AsyncStorage.getItem("alarm");
       let alarmList = [];
       if (rawAlarmList) {
@@ -68,17 +64,17 @@ export default function AlarmSettingsPage({ navigation }) {
           console.error("JSON 파싱 에러:", parseError);
         }
       }
-      // 새로운 기록 추가
       alarmList.push(toSave);
-      // 기록 저장
       await AsyncStorage.setItem("alarm", JSON.stringify(alarmList));
     } catch (error) {
       console.error("기록 저장 에러:", error);
     }
   };
 
-  // 완료
   const handleComplete = async () => {
+    if (selectedDays.every((day) => !day)) {
+      return; // 요일이 하나도 선택되지 않은 경우, 확인 버튼 클릭을 방지
+    }
     const newAlarm = {
       hour: selectedHour,
       minute: selectedMinute,
@@ -86,8 +82,6 @@ export default function AlarmSettingsPage({ navigation }) {
       days: selectedDays,
     };
     console.log("새로운 알람", newAlarm);
-
-    // 스토리지 저장
     await save(newAlarm);
     navigation.pop();
   };
@@ -96,10 +90,6 @@ export default function AlarmSettingsPage({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          {/* <Image
-            source={require("../assets/backIcon.png")}
-            style={styles.icon}
-          /> */}
           <WithLocalSvg asset={Back} width={27} />
         </TouchableOpacity>
         <Text style={styles.title}>알림설정</Text>
@@ -117,9 +107,9 @@ export default function AlarmSettingsPage({ navigation }) {
           <View style={styles.timePickerMainRow}>
             <ScrollPicker
               dataSource={hours}
-              selectedIndex={11}
+              selectedIndex={hours.indexOf(selectedHour)}
               wrapperHeight={144}
-              wrapperBackground={"transperant"}
+              wrapperBackground={"transparent"}
               itemHeight={33}
               highlightBorderWidth={0}
               activeItemTextStyle={styles.pickerActiveText}
@@ -138,9 +128,9 @@ export default function AlarmSettingsPage({ navigation }) {
             </Text>
             <ScrollPicker
               dataSource={minutes}
-              selectedIndex={30}
+              selectedIndex={minutes.indexOf(selectedMinute)}
               wrapperHeight={144}
-              wrapperBackground={"transperant"}
+              wrapperBackground={"transparent"}
               itemHeight={33}
               highlightBorderWidth={0}
               activeItemTextStyle={styles.pickerActiveText}
@@ -151,9 +141,9 @@ export default function AlarmSettingsPage({ navigation }) {
             />
             <ScrollPicker
               dataSource={ampm}
-              selectedIndex={0}
+              selectedIndex={ampm.indexOf(selectedAmPm)}
               wrapperHeight={144}
-              wrapperBackground={"transperant"}
+              wrapperBackground={"transparent"}
               itemHeight={33}
               highlightBorderWidth={0}
               activeItemTextStyle={{
@@ -180,7 +170,6 @@ export default function AlarmSettingsPage({ navigation }) {
             ]}
             onPress={toggleEverydayCheckbox}
           >
-            {/* 이미지로 체크박스 커스텀 */}
             {isEverydayChecked && (
               <Image
                 source={require("../assets/checkBox.png")}
@@ -217,12 +206,19 @@ export default function AlarmSettingsPage({ navigation }) {
         </View>
       </View>
       {/* 확인 버튼 */}
-      <TouchableOpacity activeOpacity={0.5} onPress={handleComplete}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={handleComplete}
+        disabled={selectedDays.every((day) => !day)} // 요일이 선택되지 않으면 버튼 비활성화
+      >
         <LinearGradient
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           colors={["#79BA7E", "#AFCA85"]}
-          style={styles.confirmButton}
+          style={[
+            styles.confirmButton,
+            selectedDays.every((day) => !day) && { opacity: 0.5 },
+          ]}
         >
           <Text style={styles.confirmButtonText}>확인</Text>
         </LinearGradient>
@@ -357,7 +353,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   disabledText: {
-    // color: "#8B8B8B",
     color: "white",
   },
   confirmButton: {
