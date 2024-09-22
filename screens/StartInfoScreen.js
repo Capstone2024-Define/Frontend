@@ -11,8 +11,6 @@ import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { useEffect, useLayoutEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
-import { WithLocalSvg } from "react-native-svg/css";
-import Calendar from "../assets/calender.svg";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function StartInfoScreen({ navigation, route }) {
@@ -327,19 +325,6 @@ export default function StartInfoScreen({ navigation, route }) {
                       날짜를 형식에 맞게 입력해주세요!
                     </Text>
                   )}
-                {/* <View style={styles.input}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text style={styles.subText}>2024 / 07 / 27</Text>
-                    <TouchableOpacity activeOpacity={0.5}>
-                      <WithLocalSvg width={24} height={24} asset={Calendar} />
-                    </TouchableOpacity>
-                  </View>
-                </View> */}
                 <Text style={[styles.subTitle, { marginTop: 24 }]}>성별</Text>
                 <View
                   style={{
@@ -427,11 +412,12 @@ export default function StartInfoScreen({ navigation, route }) {
                 >
                   <LinearGradient
                     colors={["#79BA7E", "#AFCA85"]}
-                    style={styles.gradientButton}
+                    style={styles.button}
                   >
                     <View
                       style={[
                         styles.button,
+                        { backgroundColor: theme.grey250 },
                         nickName.length >= 1 &&
                           nickName.length <= 10 && {
                             backgroundColor: "transparent",
@@ -462,15 +448,17 @@ export default function StartInfoScreen({ navigation, route }) {
                 >
                   <LinearGradient
                     colors={["#79BA7E", "#AFCA85"]}
-                    style={styles.gradientButton}
+                    style={styles.button}
                   >
                     <View
                       style={[
                         styles.button,
+                        { backgroundColor: theme.grey250 },
                         name.length >= 1 &&
                           name.length <= 10 &&
                           birth.length == 14 &&
-                          gender && { backgroundColor: "transparent" },
+                          gender &&
+                          valid && { backgroundColor: "transparent" },
                       ]}
                     >
                       <Text style={[styles.buttonText, { color: "white" }]}>
@@ -549,20 +537,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "white",
   },
-  gradientButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 312,
-    height: 56,
-    borderRadius: 16,
-  },
   button: {
     alignItems: "center",
     justifyContent: "center",
-    width: 312,
+    width: 320,
     height: 56,
     borderRadius: 16,
-    backgroundColor: theme.grey250,
   },
   buttonText: {
     fontSize: 16,

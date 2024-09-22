@@ -108,19 +108,19 @@ const styles = StyleSheet.create({
   },
   left: {
     fontSize: 16,
-    // fontWeight: "500",
+    lineHeight: 24,
     fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },
   title: {
     fontSize: 16,
-    // fontWeight: "500",
+    lineHeight: 24,
     fontFamily: "Pretendard-Medium",
     color: theme.grey800,
   },
   right: {
     fontSize: 16,
-    // fontWeight: "500",
+    lineHeight: 24,
     fontFamily: "Pretendard-Medium",
     color: theme.green500,
   },

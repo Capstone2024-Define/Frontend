@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    width: 312,
+    width: 320,
     height: 56,
     borderRadius: 16,
     backgroundColor: theme.grey250,

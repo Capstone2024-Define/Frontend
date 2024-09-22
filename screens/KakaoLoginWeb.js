@@ -58,6 +58,7 @@ export default function KakaoLoginWeb({ navigation }) {
       },
     })
       .then((response) => {
+        // response.date ex. {"connected_at": "2024-09-22T10:07:10Z", "id": 3715761500}
         console.log("유저 고유 ID: ", response.data.id);
         navigation.replace("StartInfo", { user_id: response.data.id }); // 다음페이지로 id 전달
       })

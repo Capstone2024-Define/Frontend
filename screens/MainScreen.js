@@ -72,6 +72,10 @@ function InfoScreen() {
         title="카카오로그인"
         onPress={() => navigation.push("KakaoLogin")}
       />
+      <Button
+        title="정보입력"
+        onPress={() => navigation.push("StartInfo", { user_id: 1 })}
+      />
       {/* <Button title="Send POST request" onPress={handlePost} />
       {error && <Text>Error: {error.message}</Text>}
       {data && <Text>Data: {JSON.stringify(data)}</Text>} */}
