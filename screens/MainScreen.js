@@ -27,55 +27,54 @@ const SvgIcon = ({ asset }) => (
 
 function InfoScreen() {
   // GET
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [data, setData] = useState(null);
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(true);
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    // GET 요청
-    axios
-      .get("http://192.168.64.1:8080/api/detail/alldetail")
-      .then((response) => {
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log("Get 에러: ", error);
-        setError(error);
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   // GET 요청
+  //   axios
+  //     .get("http://192.168.64.1:8080/api/detail/alldetail")
+  //     .then((response) => {
+  //       setData(response.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.log("Get 에러: ", error);
+  //       setError(error);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
-  // POST 요청 핸들러
-  const handlePost = () => {
-    axios
-      .post("http://192.168.64.1:8080/api/detail", {
-        date: "2024-07-22",
-        userCode: 1001,
-        detail_home: "home test",
-        detail_school: "school test",
-        detail_hospital: "hospital test",
-      })
-      .then((response) => {
-        console.log("Post 응답:", response.data);
-      })
-      .catch((error) => {
-        console.error("Post 에러:", error);
-      });
-  };
+  // // POST 요청 핸들러
+  // const handlePost = () => {
+  //   axios
+  //     .post("http://192.168.64.1:8080/api/detail", {
+  //       date: "2024-07-22",
+  //       userCode: 1001,
+  //       detail_home: "home test",
+  //       detail_school: "school test",
+  //       detail_hospital: "hospital test",
+  //     })
+  //     .then((response) => {
+  //       console.log("Post 응답:", response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Post 에러:", error);
+  //     });
+  // };
 
   return (
     <View style={styles.container}>
-      <Button title="정보입력" onPress={() => navigation.push("StartInfo")} />
       <Button
         title="카카오로그인"
         onPress={() => navigation.push("KakaoLogin")}
       />
-      <Button title="Send POST request" onPress={handlePost} />
+      {/* <Button title="Send POST request" onPress={handlePost} />
       {error && <Text>Error: {error.message}</Text>}
-      {data && <Text>Data: {JSON.stringify(data)}</Text>}
+      {data && <Text>Data: {JSON.stringify(data)}</Text>} */}
     </View>
   );
 }

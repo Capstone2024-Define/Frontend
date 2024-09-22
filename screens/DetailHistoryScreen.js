@@ -269,14 +269,19 @@ export default function DetailHistoryScreen({ navigation, route }) {
           <View
             style={{
               ...styles.subContainer,
+              backgroundColor: theme.grey50,
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+              marginHorizontal: 20,
             }}
           >
-            <View style={{ marginBottom: 16 }}>
-              <View style={{ flexDirection: "row", marginBottom: 12 }}>
+            <View style={{ marginBottom: 0 }}>
+              <View style={{ flexDirection: "row", marginBottom: 4 }}>
                 <WithLocalSvg width={20} height={20} asset={Note} />
                 <Text style={styles.title}>기록을 요약했어요</Text>
               </View>
-              <Text style={{ ...styles.subText }}>{summaryText}</Text>
+              <Text style={styles.subText}>{summaryText}</Text>
             </View>
           </View>
         ) : null}
@@ -457,7 +462,7 @@ const styles = StyleSheet.create({
   },
   tagContainer: {
     marginLeft: 20,
-    marginBottom: 16,
+    marginVertical: 16,
   },
   line: {
     width: "100%",

@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { theme } from "../colors/color";
 import { FontAwesome } from "@expo/vector-icons";
 import { WithLocalSvg } from "react-native-svg/css";
 import Kakao from "../assets/kakao.svg";
 import { LinearGradient } from "expo-linear-gradient";
+// import * as Linking from "expo-linking";
+// import * as AuthSession from "expo-auth-session";
 
 const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 
@@ -113,6 +115,7 @@ export default function KakaoLoginScreen({ navigation }) {
       </View>
       <TouchableOpacity
         activeOpacity={0.5}
+        onPress={() => navigation.navigate("KakaoLoginWeb")}
         style={{ ...styles.button, marginBottom: 20 }}
       >
         <WithLocalSvg asset={Kakao} />

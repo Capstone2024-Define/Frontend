@@ -24,16 +24,13 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "RECORD_AUDIO"
-      ]
+      "permissions": ["RECORD_AUDIO"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font"
-    ],
+    "platforms": ["ios", "android", "web"],
+    "plugins": ["expo-font"],
     "extra": {
       "eas": {
         "projectId": "fd9d78f2-cf86-4238-87f8-fbcba18bbadb"

@@ -286,7 +286,7 @@ export default function HomeScreen({ navigation }) {
                 <WithLocalSvg asset={Right} />
               </TouchableOpacity>
             </View>
-            <Shadow distance={6} startColor="#EFEFEFE6" endColor="#EFEFEF00">
+            <Shadow distance={5} startColor="#00000009" endColor="#00000000">
               <View
                 style={{
                   flexDirection: "row",
@@ -385,9 +385,9 @@ export default function HomeScreen({ navigation }) {
             {images.length > 0 || totalText ? (
               <View style={{ flex: 1 }}>
                 <Shadow
-                  distance={6}
-                  startColor="#EFEFEFE6"
-                  endColor="#EFEFEF00"
+                  distance={5}
+                  startColor="#00000009"
+                  endColor="#00000000"
                 >
                   <TouchableOpacity
                     style={styles.recordContainer}
@@ -433,9 +433,9 @@ export default function HomeScreen({ navigation }) {
             ) : (
               <View style={{ flex: 1 }}>
                 <Shadow
-                  distance={6}
-                  startColor="#EFEFEFE6"
-                  endColor="#EFEFEF00"
+                  distance={5}
+                  startColor="#00000009"
+                  endColor="#00000000"
                 >
                   <View
                     style={{

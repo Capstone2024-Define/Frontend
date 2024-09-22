@@ -15,7 +15,7 @@ import { WithLocalSvg } from "react-native-svg/css";
 import Calendar from "../assets/calender.svg";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function StartInfoScreen({ navigation }) {
+export default function StartInfoScreen({ navigation, route }) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
   const [page, setPage] = useState(1);
   const [nickName, setNickName] = useState("");
@@ -68,6 +68,7 @@ export default function StartInfoScreen({ navigation }) {
 
   // 잘되나 test
   useEffect(() => {
+    console.log("유저 id: ", route.params.user_id);
     console.log("닉네임: ", nickName);
     console.log("이름: ", name);
     console.log("생일: ", birth);
@@ -456,7 +457,7 @@ export default function StartInfoScreen({ navigation }) {
                     )
                   }
                   onPress={() => {
-                    console.log("시작하기");
+                    navigation.navigate("Main");
                   }}
                 >
                   <LinearGradient
