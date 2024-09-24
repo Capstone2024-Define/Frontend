@@ -69,7 +69,7 @@ const CalendarModal = ({
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalBackground}>
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => {}}>
             <Animated.View
               style={[styles.modal, { transform: [{ translateY: slideAnim }] }]}
             >
@@ -540,11 +540,8 @@ export default function ExportRecordScreen({ navigation }) {
                 : navigation.pop();
             }}
             disabled={
-              page == 1 && (!startDate || !endDate)
-                ? true
-                : page == 2 && !isValidEmail
-                ? true
-                : false
+              (page == 1 && !(startDate && endDate)) ||
+              (page == 2 && !isValidEmail)
             }
             style={{ marginBottom: 20 }}
           >
