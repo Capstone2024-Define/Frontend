@@ -2,9 +2,14 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
+import * as AuthSession from "expo-auth-session";
 
 const REST_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
 const REDIRECT_URI = "http://192.168.123.130:8081/Login";
+// const REDIRECT_URI = AuthSession.makeRedirectUri({
+//   useProxy: true, // Expo Proxy 사용
+//   scheme: "clobit",
+// });
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
 export default function KakaoLoginWeb({ navigation }) {

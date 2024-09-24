@@ -3,6 +3,7 @@
     "name": "Capstone2024",
     "slug": "Capstone2024",
     "version": "1.0.0",
+    "scheme": "clobit",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -29,12 +30,16 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
     "platforms": ["ios", "android", "web"],
     "plugins": ["expo-font"],
     "extra": {
       "eas": {
         "projectId": "fd9d78f2-cf86-4238-87f8-fbcba18bbadb"
       }
+    },
+    "linking": {
+      "prefixes": ["clobit://"]
     }
   }
 }
