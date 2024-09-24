@@ -271,7 +271,7 @@ export default function StartInfoScreen({ navigation, route }) {
                   생년월일
                 </Text>
                 <TextInput
-                  placeholder="2024 / 07 / 27"
+                  placeholder="YYYY / MM / DD"
                   style={[
                     styles.input,
                     !valid &&

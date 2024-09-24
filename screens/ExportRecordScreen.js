@@ -68,7 +68,7 @@ const CalendarModal = ({
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalBackground}>
+        <View style={theme.modalBackground}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <Animated.View
               style={[styles.modal, { transform: [{ translateY: slideAnim }] }]}
@@ -422,7 +422,7 @@ export default function ExportRecordScreen({ navigation }) {
                     ? `${new Date(startDate).getFullYear()} / ${
                         new Date(startDate).getMonth() + 1
                       } / ${new Date(startDate).getDate()}`
-                    : "2024 / 07 / 27"}
+                    : "YYYY / MM / DD"}
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.5}
@@ -463,7 +463,7 @@ export default function ExportRecordScreen({ navigation }) {
                     ? `${new Date(endDate).getFullYear()} / ${
                         new Date(endDate).getMonth() + 1
                       } / ${new Date(endDate).getDate()}`
-                    : "2024 / 07 / 27"}
+                    : "YYYY / MM / DD"}
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.5}
@@ -691,11 +691,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     backgroundColor: "white",
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "#1212125C",
   },
   calendarContainer: {
     flex: 1,
