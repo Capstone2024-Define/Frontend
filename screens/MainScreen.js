@@ -17,6 +17,7 @@ import CalendarGreen from "../assets/calendar_gradient.svg";
 import MyGreen from "../assets/my_gradient.svg";
 import ChatGray from "../assets/chat_gray.svg";
 import ChatGreen from "../assets/chat_gradient.svg";
+import ChatbotScreen from "./ChatBotScreen"
 import axios from "axios";
 
 const Tab = createBottomTabNavigator();
@@ -83,15 +84,7 @@ function InfoScreen() {
   );
 }
 
-function ChatScreen() {
-  const navigation = useNavigation();
 
-  return (
-    <View style={styles.defaultScreen}>
-      <Text>챗봇페이지</Text>
-    </View>
-  );
-}
 
 export default function MainScreen() {
   return (
@@ -140,7 +133,7 @@ export default function MainScreen() {
       />
       <Tab.Screen
         name="Chat"
-        component={ChatScreen}
+        component={ChatbotScreen}
         options={{
           title: "챗봇",
           tabBarIcon: ({ color }) =>

@@ -4,7 +4,7 @@ import { WebView } from "react-native-webview";
 import axios from "axios";
 
 const REST_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
-const REDIRECT_URI = "http://192.168.123.130:8081/Login";
+const REDIRECT_URI = "http://172.30.1.39:8081/Login";
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
 export default function KakaoLoginWeb({ navigation }) {
