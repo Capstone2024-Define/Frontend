@@ -33,9 +33,19 @@ export default function AlarmSettingsPage({ navigation }) {
   }
 
   const [selectedHour, setSelectedHour] = useState(currentHour.toString());
-  const [selectedMinute, setSelectedMinute] = useState(currentMinute.toString().padStart(2, "0"));
+  const [selectedMinute, setSelectedMinute] = useState(
+    currentMinute.toString().padStart(2, "0")
+  );
   const [selectedAmPm, setSelectedAmPm] = useState(ampmValue);
-  const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]);
+  const [selectedDays, setSelectedDays] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
   const [isEverydayChecked, setIsEverydayChecked] = useState(false);
 
   useEffect(() => {
@@ -52,12 +62,12 @@ export default function AlarmSettingsPage({ navigation }) {
     };
     getPermissions();
 
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: "#FF231F7C",
       });
     }
   }, []);
@@ -99,17 +109,19 @@ export default function AlarmSettingsPage({ navigation }) {
   const scheduleAlarm = async (hour, minute, ampm, selectedDays) => {
     const now = new Date();
     const currentDay = now.getDay();
-  
+
     selectedDays.forEach((isSelected, index) => {
       if (isSelected) {
         const alarmDay = (index + 7 - currentDay) % 7;
         const triggerTime = new Date(now);
-        
+
         triggerTime.setDate(now.getDate() + alarmDay);
-        triggerTime.setHours(ampm === "pm" ? parseInt(hour) + 12 : parseInt(hour));
+        triggerTime.setHours(
+          ampm === "pm" ? parseInt(hour) + 12 : parseInt(hour)
+        );
         triggerTime.setMinutes(parseInt(minute));
         triggerTime.setSeconds(0);
-        
+
         Notifications.scheduleNotificationAsync({
           content: {
             title: "알림",
@@ -118,6 +130,8 @@ export default function AlarmSettingsPage({ navigation }) {
           trigger: {
             date: triggerTime,
             repeats: false,
+            repeats: true, // 반복 설정
+            weekday: (index + 1) % 7,
           },
         });
       }
@@ -135,9 +149,14 @@ export default function AlarmSettingsPage({ navigation }) {
       days: selectedDays,
     };
     console.log("새로운 알람", newAlarm);
-    
+
     // 알림 스케줄링
-    await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm, selectedDays);
+    await scheduleAlarm(
+      selectedHour,
+      selectedMinute,
+      selectedAmPm,
+      selectedDays
+    );
 
     await save(newAlarm);
     navigation.pop();

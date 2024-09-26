@@ -9,18 +9,261 @@ import {
   Keyboard,
   Image,
   BackHandler,
+  Modal,
+  Animated,
+  TouchableWithoutFeedback,
+  StatusBar,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Header from "../component/Header";
 import { LinearGradient } from "expo-linear-gradient";
 import { theme } from "../colors/color";
 import Feather from "@expo/vector-icons/Feather";
 import { WithLocalSvg } from "react-native-svg/css";
-import Calendar from "../assets/calender.svg";
+import CalendarImg from "../assets/calender.svg";
 import { useLayoutEffect } from "react";
+import { Calendar } from "react-native-calendars";
+import Left from "../assets/chevron_left.svg";
+import Right from "../assets/chevron_right.svg";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
+// 캘린더 모달
+const CalendarModal = ({
+  visible,
+  onClose,
+  currentDate,
+  calendarNum,
+  startDate,
+  setStartDate,
+  setEndDate,
+}) => {
+  const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
+  const [selectedDate, setSelectedDate] = useState(currentDate);
+  const slideAnim = useRef(new Animated.Value(300)).current; // 애니메이션
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 300,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
+  // 모달이 열릴 때마다 selectedDate를 current로 초기화
+  useEffect(() => {
+    if (visible) {
+      setSelectedDate(currentDate);
+    }
+  }, [visible]);
+
+  return (
+    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={theme.modalBackground}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <Animated.View
+              style={[styles.modal, { transform: [{ translateY: slideAnim }] }]}
+            >
+              <View style={styles.calendarContainer}>
+                <Calendar
+                  current={selectedDate ? selectedDate : today}
+                  // 헤더 커스터마이징
+                  customHeader={(props) => {
+                    // props 제공 -> month(Date 객체), addMonth(달 이동)
+                    const month = props.month;
+                    const year = month.getFullYear(); // 연도
+                    const monthNumber = month.getMonth() + 1;
+                    const header = `${year}년 ${monthNumber}월`;
+
+                    return (
+                      <View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: 8,
+                            marginHorizontal: 11,
+                          }}
+                        >
+                          <TouchableOpacity
+                            activeOpacity={0.5}
+                            onPress={() => {
+                              props.addMonth(-1);
+                            }}
+                          >
+                            <WithLocalSvg asset={Left} />
+                          </TouchableOpacity>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              lineHeight: 24,
+                              fontFamily: "Pretendard-Bold",
+                              color: theme.grey700,
+                            }}
+                          >
+                            {header}
+                          </Text>
+                          <TouchableOpacity
+                            activeOpacity={0.5}
+                            onPress={() => props.addMonth(1)}
+                          >
+                            <WithLocalSvg asset={Right} />
+                          </TouchableOpacity>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginBottom: 4,
+                          }}
+                        >
+                          {["일", "월", "화", "수", "목", "금", "토"].map(
+                            (day, index) => (
+                              <View
+                                key={index}
+                                style={{
+                                  width: 45,
+                                  height: 45,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  marginHorizontal: 1,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    lineHeight: 24,
+                                    fontFamily: "Pretendard-Bold",
+                                    color: theme.grey800,
+                                  }}
+                                >
+                                  {day}
+                                </Text>
+                              </View>
+                            )
+                          )}
+                        </View>
+                      </View>
+                    );
+                  }}
+                  // 날짜 커스터마이징
+                  dayComponent={({ date, state }) => {
+                    // const isToday = date.dateString === today;
+                    // const isDisabled = state === "disabled";
+                    const isSelected = date.dateString === selectedDate;
+                    const isFuture =
+                      new Date(date.dateString) > new Date(today); // 미래인지 확인
+                    const isBeforeStart =
+                      new Date(date.dateString) < new Date(startDate); // 시작일자 이후인지 확인
+
+                    return (
+                      <View style={styles.dayContainer}>
+                        <TouchableOpacity
+                          activeOpacity={0.5}
+                          onPress={() => {
+                            setSelectedDate(date.dateString);
+                          }}
+                          disabled={
+                            isFuture || (calendarNum == 2 && isBeforeStart)
+                          }
+                          style={[
+                            styles.selectedDay,
+                            isSelected && { backgroundColor: theme.green500 },
+                          ]}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              lineHeight: 20,
+                              fontFamily: isSelected
+                                ? "Pretendard-Bold"
+                                : "Pretendard-Regular",
+                              color: isSelected
+                                ? "white"
+                                : isFuture ||
+                                  (calendarNum == 2 && isBeforeStart)
+                                ? theme.grey300
+                                : theme.grey700,
+                            }}
+                          >
+                            {date.day}
+                          </Text>
+                          <View
+                            style={[
+                              styles.dayColor,
+                              !isFuture && { backgroundColor: theme.yellow },
+                            ]}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }}
+                  style={styles.calendar}
+                />
+              </View>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => {
+                    !selectedDate
+                      ? onClose()
+                      : calendarNum == 1
+                      ? setStartDate(selectedDate)
+                      : setEndDate(selectedDate);
+                    onClose();
+                  }}
+                >
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={styles.button}
+                  >
+                    <View
+                      style={[
+                        styles.button,
+                        { backgroundColor: theme.grey250 },
+                        selectedDate && { backgroundColor: "transparent" },
+                      ]}
+                    >
+                      <Text style={styles.buttonText}>
+                        {selectedDate
+                          ? `${
+                              new Date(selectedDate).getMonth() + 1
+                            }월 ${new Date(selectedDate).getDate()}일 (${
+                              ["일", "월", "화", "수", "목", "금", "토"][
+                                new Date(selectedDate).getDay()
+                              ]
+                            }) 선택`
+                          : "닫기"}
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
+};
+
+// 스크린 화면
 export default function ExportRecordScreen({ navigation }) {
   const [page, setPage] = useState(0);
   const [startDate, setStartDate] = useState(null);
@@ -28,6 +271,8 @@ export default function ExportRecordScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [visible, setVisible] = useState(false); // 모달 상태
+  const [calendarNum, setCalendarNum] = useState(null);
 
   // 키보드 활성화 시 감지
   useLayoutEffect(() => {
@@ -67,8 +312,6 @@ export default function ExportRecordScreen({ navigation }) {
       "hardwareBackPress",
       backAction
     );
-
-    console.log("Page: ", page);
 
     return () => backHandler.remove(); // 컴포넌트 언마운트 시 이벤트 제거
   }, [page]);
@@ -175,10 +418,20 @@ export default function ExportRecordScreen({ navigation }) {
                       : { color: theme.grey400 },
                   ]}
                 >
-                  {startDate ? startDate : "2024 / 07 / 27"}
+                  {startDate
+                    ? `${new Date(startDate).getFullYear()} / ${
+                        new Date(startDate).getMonth() + 1
+                      } / ${new Date(startDate).getDate()}`
+                    : "YYYY / MM / DD"}
                 </Text>
-                <TouchableOpacity activeOpacity={0.5}>
-                  <WithLocalSvg asset={Calendar} />
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => {
+                    setCalendarNum(1);
+                    setVisible(true);
+                  }}
+                >
+                  <WithLocalSvg asset={CalendarImg} />
                 </TouchableOpacity>
               </View>
               <Text style={{ ...styles.subTitle, marginTop: 12 }}>
@@ -206,10 +459,20 @@ export default function ExportRecordScreen({ navigation }) {
                       : { color: theme.grey400 },
                   ]}
                 >
-                  {endDate ? endDate : "2024 / 07 / 27"}
+                  {endDate
+                    ? `${new Date(endDate).getFullYear()} / ${
+                        new Date(endDate).getMonth() + 1
+                      } / ${new Date(endDate).getDate()}`
+                    : "YYYY / MM / DD"}
                 </Text>
-                <TouchableOpacity activeOpacity={0.5}>
-                  <WithLocalSvg asset={Calendar} />
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => {
+                    setCalendarNum(2);
+                    setVisible(true);
+                  }}
+                >
+                  <WithLocalSvg asset={CalendarImg} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -276,7 +539,10 @@ export default function ExportRecordScreen({ navigation }) {
                 ? setPage(3)
                 : navigation.pop();
             }}
-            disabled={page == 2 && !isValidEmail ? true : false}
+            disabled={
+              (page == 1 && !(startDate && endDate)) ||
+              (page == 2 && !isValidEmail)
+            }
             style={{ marginBottom: 20 }}
           >
             <LinearGradient
@@ -290,6 +556,9 @@ export default function ExportRecordScreen({ navigation }) {
                   (page == 0 || page == 3) && {
                     backgroundColor: "transparent",
                   },
+                  page == 1 &&
+                    startDate &&
+                    endDate && { backgroundColor: "transparent" },
                   page == 2 &&
                     isValidEmail && { backgroundColor: "transparent" },
                 ]}
@@ -308,6 +577,15 @@ export default function ExportRecordScreen({ navigation }) {
           </TouchableOpacity>
         )}
       </View>
+      <CalendarModal
+        visible={visible}
+        onClose={() => setVisible(false)}
+        currentDate={calendarNum == 1 ? startDate : endDate}
+        calendarNum={calendarNum}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+      />
     </SafeAreaView>
   );
 }
@@ -404,5 +682,45 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: "Pretendard-Bold",
     color: "white",
+  },
+  modal: {
+    width: "100%",
+    height: 442,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    backgroundColor: "white",
+  },
+  calendarContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  calendar: {
+    flex: 1,
+    marginBottom: 4,
+  },
+  dayContainer: {
+    width: 45,
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: -5,
+  },
+  selectedDay: {
+    width: 45,
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 7,
+    borderRadius: 8,
+    backgroundColor: "transparent",
+  },
+  dayColor: {
+    width: 7,
+    height: 7,
+    marginTop: 1.6,
+    borderRadius: 30,
+    backgroundColor: "transparent",
   },
 });

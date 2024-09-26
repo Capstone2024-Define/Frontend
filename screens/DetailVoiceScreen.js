@@ -5,11 +5,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  Pressable,
   Animated,
   TouchableWithoutFeedback,
   SafeAreaView,
-  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect, useCallback } from "react";
@@ -26,6 +24,7 @@ import TodayRecord from "../assets/modal_blackNotes.svg";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summary from "./SummaryAPI";
+import RemoveAlert from "../component/RemoveAlert";
 
 // 음성녹음 창에서 올때는 이 날 기록보기, 삭제하기를 띄움
 // 기록 창에서 올때는 삭제하기만 띄움
@@ -33,9 +32,9 @@ const Modal2 = ({
   visible,
   detail,
   onClose,
-  onRemove,
   onShowRecord,
   setVisible1,
+  setRemoveModalVisible,
 }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
@@ -62,7 +61,7 @@ const Modal2 = ({
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalBackground}>
+        <View style={theme.modalBackground}>
           {!detail ? (
             <Animated.View
               style={[
@@ -90,28 +89,8 @@ const Modal2 = ({
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {
-                  Alert.alert(
-                    "삭제",
-                    "정말로 삭제하시겠어요?",
-                    [
-                      { text: "취소", style: "cancel" },
-                      {
-                        text: "삭제",
-                        onPress: () => {
-                          onRemove();
-                          navigation.pop();
-                        },
-                        style: "destructive",
-                      },
-                    ],
-                    {
-                      // 안드로이드에서 Alert 박스 바깥 영역을 터치하거나
-                      // Back버튼 눌렀을 때 Alert가 닫히도록 설정(cancelable)
-                      // onDismiss는 Alert가 닫힐 때 호출되는 함수
-                      cancelable: true,
-                      onDismiss: () => {},
-                    }
-                  );
+                  setRemoveModalVisible(true);
+                  onClose();
                 }}
                 style={{
                   flexDirection: "row",
@@ -184,28 +163,8 @@ const Modal2 = ({
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {
-                  Alert.alert(
-                    "삭제",
-                    "정말로 삭제하시겠어요?",
-                    [
-                      { text: "취소", style: "cancel" },
-                      {
-                        text: "삭제",
-                        onPress: () => {
-                          onRemove();
-                          navigation.pop();
-                        },
-                        style: "destructive",
-                      },
-                    ],
-                    {
-                      // 안드로이드에서 Alert 박스 바깥 영역을 터치하거나
-                      // Back버튼 눌렀을 때 Alert가 닫히도록 설정(cancelable)
-                      // onDismiss는 Alert가 닫힐 때 호출되는 함수
-                      cancelable: true,
-                      onDismiss: () => {},
-                    }
-                  );
+                  setRemoveModalVisible(true);
+                  onClose();
                 }}
                 style={{
                   flexDirection: "row",
@@ -249,6 +208,7 @@ export default function DetailVoiceScreen({ navigation, route }) {
   const [summaryText, setSummaryText] = useState("");
   const [voiceList, setVoiceList] = useState([]); // 스토리지 내용
   const [realDate, setRealDate] = useState("");
+  const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
   const { place, date, time } = route.params;
 
@@ -419,9 +379,14 @@ export default function DetailVoiceScreen({ navigation, route }) {
         visible={visible2}
         detail={route.params.detail}
         onClose={() => setVisible2(false)}
-        onRemove={remove}
         onShowRecord={showRecord}
         setVisible1={setVisible1}
+        setRemoveModalVisible={setRemoveModalVisible}
+      />
+      <RemoveAlert
+        visible={removeModalVisible}
+        onClose={() => setRemoveModalVisible(false)}
+        onRemove={remove}
       />
     </SafeAreaView>
   );
@@ -497,11 +462,6 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Regular",
     lineHeight: 20,
     color: theme.grey700,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "#1212125C",
   },
   modalText: {
     fontSize: 16,

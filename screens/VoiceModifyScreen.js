@@ -103,7 +103,7 @@ export default function VoiceModifyScreen({
 
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
-      <View style={styles.modalBackground}>
+      <View style={theme.modalBackground}>
         <View style={styles.overlay} onPress={onClose} />
         <Animated.View
           style={[styles.container, { transform: [{ translateY: slideAnim }] }]}
@@ -167,11 +167,6 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Regular",
     lineHeight: 20,
     color: theme.grey700,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "#1212125C",
   },
   overlay: {
     position: "absolute",

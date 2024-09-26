@@ -28,8 +28,16 @@ import SmallTag from "../component/SmallTag";
 import { Entypo } from "@expo/vector-icons";
 import Edit from "../assets/modal_blackEdit.svg";
 import Delete from "../assets/modal_redDelete.svg";
+import RemoveAlert from "../component/RemoveAlert";
 
-const PopUp = ({ visible, onClose, date, checkList, setVisible }) => {
+const Modal2 = ({
+  visible,
+  onClose,
+  date,
+  checkList,
+  setVisible,
+  setRemoveModalVisible,
+}) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
 
@@ -55,7 +63,7 @@ const PopUp = ({ visible, onClose, date, checkList, setVisible }) => {
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalBackground}>
+        <View style={theme.modalBackground}>
           <Animated.View
             style={[styles.modal, { transform: [{ translateY: slideAnim }] }]}
           >
@@ -82,28 +90,8 @@ const PopUp = ({ visible, onClose, date, checkList, setVisible }) => {
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => {
-                Alert.alert(
-                  "삭제",
-                  "정말로 삭제하시겠어요?",
-                  [
-                    { text: "취소", style: "cancel" },
-                    {
-                      text: "삭제",
-                      onPress: () => {
-                        navigation.pop();
-                        // 서버연결되면 삭제 내용 구현
-                      },
-                      style: "destructive",
-                    },
-                  ],
-                  {
-                    // 안드로이드에서 Alert 박스 바깥 영역을 터치하거나
-                    // Back버튼 눌렀을 때 Alert가 닫히도록 설정(cancelable)
-                    // onDismiss는 Alert가 닫힐 때 호출되는 함수
-                    cancelable: true,
-                    onDismiss: () => {},
-                  }
-                );
+                setRemoveModalVisible(true);
+                onClose();
               }}
               style={{
                 flexDirection: "row",
@@ -156,6 +144,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
 
   const [visible, setVisible] = useState(false); // 모달 상태
+  const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
   // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
   useFocusEffect(
@@ -416,12 +405,20 @@ export default function DetailHistoryScreen({ navigation, route }) {
           <View style={{ marginBottom: 70 }} />
         </View>
       </ScrollView>
-      <PopUp
+      <Modal2
         visible={visible}
         onClose={() => setVisible(false)}
         date={date}
         checkList={checkList}
         setVisible={setVisible}
+        setRemoveModalVisible={setRemoveModalVisible}
+      />
+      <RemoveAlert
+        visible={removeModalVisible}
+        onClose={() => setRemoveModalVisible(false)}
+        onRemove={() => {
+          console.log("상세기록 삭제 기능");
+        }}
       />
     </SafeAreaView>
   );
@@ -522,11 +519,6 @@ const styles = StyleSheet.create({
     color: theme.grey800,
     fontFamily: "Human-beomseok",
     lineHeight: 19.6,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "#1212125C",
   },
   modal: {
     width: "100%",

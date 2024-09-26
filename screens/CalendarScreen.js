@@ -111,7 +111,6 @@ export default function CalendarScreen({ navigation }) {
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    marginBottom: 4,
                   }}
                 >
                   {["일", "월", "화", "수", "목", "금", "토"].map(
@@ -146,7 +145,7 @@ export default function CalendarScreen({ navigation }) {
           // 날짜 커스터마이징
           dayComponent={({ date, state }) => {
             // const isToday = date.dateString === today;
-            // const isDisabled = state === "disabled";
+            const isDisabled = state === "disabled"; // 이전/다음 달 날짜
             const isSelected = date.dateString === selectedDate;
             const isFuture = new Date(date.dateString) > new Date(today); // 미래인지 확인
 
@@ -157,7 +156,7 @@ export default function CalendarScreen({ navigation }) {
                   onPress={() => {
                     setSelectedDate(date.dateString);
                   }}
-                  disabled={isFuture}
+                  disabled={isDisabled || isFuture}
                   style={[
                     styles.selectedDay,
                     isSelected && { backgroundColor: theme.green500 },
@@ -172,7 +171,7 @@ export default function CalendarScreen({ navigation }) {
                         : "Pretendard-Regular",
                       color: isSelected
                         ? "white"
-                        : isFuture
+                        : isFuture || isDisabled
                         ? theme.grey300
                         : theme.grey700,
                     }}

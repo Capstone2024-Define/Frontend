@@ -32,4 +32,10 @@ export const theme = {
   pink: "#EF9DA2",
 
   red: "#F05757",
+
+  modalBackground: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "#1212125C",
+  },
 };
