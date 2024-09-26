@@ -49,6 +49,9 @@ export default function DetailRecordScreen({ navigation, route }) {
   const [id, setId] = useState(0);
   let k = 0;
 
+  console.log(route.params.checkList);
+  console.log(route.params.symptomList);
+
   // 네이버 summary api
   // useEffect(() => {
 

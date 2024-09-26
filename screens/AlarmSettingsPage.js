@@ -124,7 +124,7 @@ export default function AlarmSettingsPage({ navigation }) {
 
         Notifications.scheduleNotificationAsync({
           content: {
-            title: "알림",
+            title: "Clobit",
             body: "설정된 시간입니다!",
           },
           trigger: {
