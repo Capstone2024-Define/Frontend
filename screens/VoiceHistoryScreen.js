@@ -76,8 +76,9 @@ export default function VoiceHistoryScreen({ navigation }) {
         left="leftArrow"
         title="음성기록"
         onLeftPress={() => navigation.pop()}
-        line={true}
       />
+      {/* 이상하게 이 화면만 Header 라인이 적용이 안돼서 추가 */}
+      <View style={{ width: "100%", height: 1, backgroundColor: "#EBEBEB" }} />
       <View style={styles.subContainer}>
         <View style={styles.headerContainer}>
           <View style={styles.textInput}>

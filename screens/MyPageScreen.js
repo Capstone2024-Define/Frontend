@@ -90,6 +90,19 @@ export default function MyPageScreen({ navigation }) {
             앱 정보
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            console.log("test");
+            navigation.push("Test");
+          }}
+        >
+          <Text
+            style={{ ...styles.m_text, color: theme.grey250, marginBottom: 11 }}
+          >
+            TEST 페이지
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

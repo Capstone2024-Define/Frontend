@@ -27,6 +27,9 @@ import AlarmSettingsPage from "./screens/AlarmSettingsPage"; // AlarmSettingsPag
 import KakaoLoginScreen from "./screens/KakaoLoginScreen";
 import KakaoLoginWeb from "./screens/KakaoLoginWeb";
 import ExportRecordScreen from "./screens/ExportRecordScreen";
+import CalendarScreen from "./screens/CalendarScreen";
+import StatisticsScreen from "./screens/StatisticsScreen";
+import TestPage from "./screens/TestPage";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -175,6 +178,21 @@ export default function App() {
             <Stack.Screen
               name="ExportRecord"
               component={ExportRecordScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Calendar"
+              component={CalendarScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Statistics"
+              component={StatisticsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Test"
+              component={TestPage}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

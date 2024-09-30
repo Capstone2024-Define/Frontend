@@ -12,7 +12,6 @@ import {
   Modal,
   Animated,
   TouchableWithoutFeedback,
-  StatusBar,
 } from "react-native";
 import { useEffect, useState, useRef } from "react";
 import Header from "../component/Header";
@@ -236,11 +235,17 @@ const CalendarModal = ({
                     <View
                       style={[
                         styles.button,
-                        { backgroundColor: theme.grey250 },
+                        { backgroundColor: theme.grey200 },
                         selectedDate && { backgroundColor: "transparent" },
                       ]}
                     >
-                      <Text style={styles.buttonText}>
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          { color: theme.grey400 },
+                          selectedDate && { color: "white" },
+                        ]}
+                      >
                         {selectedDate
                           ? `${
                               new Date(selectedDate).getMonth() + 1

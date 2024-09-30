@@ -10,7 +10,6 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Modal,
-  Alert,
 } from "react-native";
 import VoiceButton from "../component/VoiceButton";
 import Header from "../component/Header";
@@ -29,6 +28,7 @@ import { Entypo } from "@expo/vector-icons";
 import Edit from "../assets/modal_blackEdit.svg";
 import Delete from "../assets/modal_redDelete.svg";
 import RemoveAlert from "../component/RemoveAlert";
+import ModalCloseButton from "../component/ModalCloseButton";
 
 const Modal2 = ({
   visible,
@@ -104,22 +104,7 @@ const Modal2 = ({
                 삭제하기
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={onClose}
-              style={styles.button}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                  lineHeight: 20,
-                  fontFamily: "Pretendard-Medium",
-                  color: "white",
-                }}
-              >
-                닫기
-              </Text>
-            </TouchableOpacity>
+            <ModalCloseButton onClose={onClose} />
           </Animated.View>
         </View>
       </TouchableWithoutFeedback>
@@ -258,7 +243,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           <View
             style={{
               ...styles.subContainer,
-              backgroundColor: theme.grey50,
+              backgroundColor: theme.grey100,
               borderRadius: 8,
               paddingHorizontal: 12,
               paddingVertical: 12,
@@ -270,7 +255,9 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 <WithLocalSvg width={20} height={20} asset={Note} />
                 <Text style={styles.title}>기록을 요약했어요</Text>
               </View>
-              <Text style={styles.subText}>{summaryText}</Text>
+              <Text style={{ ...styles.subText, color: theme.grey700 }}>
+                {summaryText}
+              </Text>
             </View>
           </View>
         ) : null}
@@ -522,7 +509,7 @@ const styles = StyleSheet.create({
   },
   modal: {
     width: "100%",
-    height: 184,
+    height: 194,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     paddingTop: 22,
@@ -534,15 +521,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: "Pretendard-Medium",
-  },
-  button: {
-    width: "100%",
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 24,
-    paddingHorizontal: 36,
-    paddingVertical: 12,
-    backgroundColor: theme.grey200,
   },
 });

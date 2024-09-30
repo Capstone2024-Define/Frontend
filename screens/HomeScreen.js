@@ -8,20 +8,19 @@ import {
   Image,
   Pressable,
   Modal,
-  Dimensions,
   ImageBackground,
   StatusBar,
 } from "react-native";
-import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import { theme } from "../colors/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { WithLocalSvg } from "react-native-svg/css";
 import Rabbit from "../assets/homeRabbit.svg";
-import Edit_white from "../assets/notes_white.svg";
-import Edit_green from "../assets/edit_green.svg";
-import Mic from "../assets/mic.svg";
+import Edit_white from "../assets/edit_white.svg";
+import Note_white from "../assets/notes_white.svg";
+import Mic from "../assets/mic_green.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Calender from "../assets/calendarNew.svg";
@@ -65,11 +64,27 @@ export default function HomeScreen({ navigation }) {
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
 
+  // 홈 화면만 상태바 색 변경
+  useFocusEffect(
+    React.useCallback(() => {
+      StatusBar.setBarStyle("light-content");
+      StatusBar.setBackgroundColor(theme.green500);
+
+      return () => {
+        // 홈 화면을 벗어날 때 StatusBar 초기화
+        StatusBar.setBarStyle("dark-content");
+        StatusBar.setBackgroundColor("#fff");
+      };
+    }, [])
+  );
+
+  // 시작 시 오늘 날짜를 선택날짜로 함
   useEffect(() => {
     const date = cvtDateString(new Date());
     setSelectedDate(date);
   }, []);
 
+  // 선택날짜 기록 로드(DB)
   useFocusEffect(
     useCallback(() => {
       if (selectedDate) {
@@ -108,6 +123,7 @@ export default function HomeScreen({ navigation }) {
     }, [selectedDate])
   );
 
+  // 주(weeks)가 바뀌면 이모지 색 변경
   useFocusEffect(
     useCallback(() => {
       const fetchEmojiColors = async () => {
@@ -128,6 +144,7 @@ export default function HomeScreen({ navigation }) {
     }, [weeks])
   );
 
+  // Date형 -> "YYYY-MM-DD" 문자형
   const cvtDateString = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -135,6 +152,7 @@ export default function HomeScreen({ navigation }) {
     return `${year}-${month}-${day}`;
   };
 
+  // 선택된 날짜 주(weeks) 얻기
   const getWeeks = (date) => {
     const startDate = new Date(date);
     const dayOfWeek = startDate.getDay();
@@ -149,6 +167,7 @@ export default function HomeScreen({ navigation }) {
     setWeeks(newWeeks);
   };
 
+  // 몇주차인지 얻기
   const getWeekNumber = (date) => {
     const dateFrom = new Date(date);
     const currentDate = dateFrom.getDate();
@@ -158,6 +177,7 @@ export default function HomeScreen({ navigation }) {
     return parseInt((weekDay - 1 + currentDate) / 7) + 1;
   };
 
+  // 주 변경 화살표 함수
   const handleWeekChange = (direction) => {
     const current = new Date(selectedDate);
     const newDate = new Date(
@@ -211,8 +231,13 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground
+      <StatusBar backgroundColor={theme.green500} />
+      {/* <ImageBackground
         source={require("../assets/background.png")}
+        style={styles.backgroundImage}
+      > */}
+      <ImageBackground
+        source={require("../assets/home_background.png")}
         style={styles.backgroundImage}
       >
         <View style={{ flex: 1 }}>
@@ -220,7 +245,7 @@ export default function HomeScreen({ navigation }) {
             style={{
               flexDirection: "row",
               marginTop: 17,
-              marginLeft: 29,
+              marginLeft: 20,
               marginRight: 6,
               justifyContent: "space-between",
             }}
@@ -286,7 +311,7 @@ export default function HomeScreen({ navigation }) {
                 <WithLocalSvg asset={Right} />
               </TouchableOpacity>
             </View>
-            <Shadow distance={5} startColor="#00000009" endColor="#00000000">
+            <Shadow distance={5} startColor="#00000010" endColor="#00000000">
               <View
                 style={{
                   flexDirection: "row",
@@ -386,7 +411,7 @@ export default function HomeScreen({ navigation }) {
               <View style={{ flex: 1 }}>
                 <Shadow
                   distance={5}
-                  startColor="#00000009"
+                  startColor="#00000010"
                   endColor="#00000000"
                 >
                   <TouchableOpacity
@@ -434,7 +459,7 @@ export default function HomeScreen({ navigation }) {
               <View style={{ flex: 1 }}>
                 <Shadow
                   distance={5}
-                  startColor="#00000009"
+                  startColor="#00000010"
                   endColor="#00000000"
                 >
                   <View
@@ -499,10 +524,9 @@ export default function HomeScreen({ navigation }) {
                 alignItems: "center",
                 width: "100%",
                 maxWidth: 350,
-                paddingHorizontal: 4,
               }}
             >
-              {images.length > 0 || totalText ? (
+              {/* {images.length > 0 || totalText ? (
                 <TouchableOpacity
                   style={{ borderRadius: 24 }}
                   onPress={() =>
@@ -528,7 +552,8 @@ export default function HomeScreen({ navigation }) {
                     </View>
                   </LinearGradient>
                 </TouchableOpacity>
-              ) : (
+              ) : ( */}
+              <Shadow distance={5} startColor="#00000009" endColor="#00000000">
                 <LinearGradient
                   colors={["#79BA7E", "#AFCA85"]}
                   style={styles.gradientGButton}
@@ -536,46 +561,68 @@ export default function HomeScreen({ navigation }) {
                   <TouchableOpacity
                     style={styles.greenButton}
                     onPress={() =>
-                      navigation.push("SymptomCheck", { date: selectedDate })
+                      images.length > 0 || totalText
+                        ? navigation.push("DetailModify", {
+                            date: selectedDate,
+                          })
+                        : navigation.push("SymptomCheck", {
+                            date: selectedDate,
+                          })
                     }
                   >
-                    <WithLocalSvg asset={Edit_white} />
+                    {images.length > 0 || totalText ? (
+                      <WithLocalSvg asset={Edit_white} />
+                    ) : (
+                      <WithLocalSvg asset={Note_white} />
+                    )}
                     <Text
                       style={{
                         color: "#FFFFFF",
-                        fontSize: 14,
+                        fontSize: 16,
+                        lineHeight: 24,
                         marginLeft: 8,
-                        fontFamily: "Pretendard-Medium",
+                        fontFamily: "Pretendard-Bold",
                       }}
                     >
-                      {"하루기록"}
+                      {images.length > 0 || totalText ? "수정하기" : "하루기록"}
                     </Text>
                   </TouchableOpacity>
                 </LinearGradient>
-              )}
-              <LinearGradient
-                colors={["#FCD754", "#FCE28E"]}
-                style={styles.gradientYButton}
+              </Shadow>
+              {/* )} */}
+
+              <TouchableOpacity
+                style={styles.whiteButton}
+                onPress={() =>
+                  navigation.push("MainVoice", { date: selectedDate })
+                }
               >
-                <TouchableOpacity
-                  style={styles.yellowButton}
-                  onPress={() =>
-                    navigation.push("MainVoice", { date: selectedDate })
-                  }
+                <Shadow
+                  distance={5}
+                  startColor="#00000009"
+                  endColor="#00000000"
                 >
-                  <WithLocalSvg asset={Mic} />
-                  <Text
-                    style={{
-                      color: "#FFFFFF",
-                      fontSize: 14,
-                      marginLeft: 8,
-                      fontFamily: "Pretendard-Medium",
-                    }}
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={{ padding: 1.4, borderRadius: 24 }}
                   >
-                    {"음성기록"}
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
+                    <View style={styles.whiteButton}>
+                      <WithLocalSvg asset={Mic} />
+                      <Text
+                        style={{
+                          color: theme.green500,
+                          fontSize: 16,
+                          lineHeight: 24,
+                          marginLeft: 8,
+                          fontFamily: "Pretendard-Bold",
+                        }}
+                      >
+                        {"음성기록"}
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </Shadow>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -732,15 +779,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 24,
-    width: 177,
-    height: 44,
-    marginRight: 16,
-    padding: 1,
   },
   greenButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    width: 184,
+    paddingVertical: 12,
     backgroundColor: "transparent",
   },
   whiteButton: {
@@ -748,23 +793,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     borderRadius: 24,
-    width: 177,
-    height: 44,
+    width: 124,
     justifyContent: "center",
+    paddingVertical: 10,
   },
-  gradientYButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 24,
-    width: 119,
-    height: 44,
-  },
-  yellowButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-  },
+  // gradientYButton: {
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   borderRadius: 24,
+  //   width: 119,
+  //   height: 44,
+  // },
+  // yellowButton: {
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   backgroundColor: "transparent",
+  // },
   buttonText: {
     color: "white",
     marginLeft: 5,

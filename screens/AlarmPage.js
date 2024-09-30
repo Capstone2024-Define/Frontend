@@ -47,39 +47,39 @@ export default function AlarmPage({ navigation }) {
   }, []);
 
   // 알람 기록 로드
-  useEffect(() => {
-    async function load() {
-      try {
-        const rawAlarm = await AsyncStorage.getItem("alarm");
-        if (rawAlarm) {
-          const alarm = JSON.parse(rawAlarm);
-          setAlarms(alarm);
-        }
-      } catch (e) {
-        console.log("기록 없음 혹은 로드 에러");
-      }
-    }
-    load();
-  }, []);
-
-  // 삭제모드 시 뒤로가기 커스텀
   useFocusEffect(
     useCallback(() => {
-      const onBackPress = () => {
-        if (state) {
-          setState(false);
-          setSelectedAlarms([]);
-          return true; // 뒤로가기 버튼 기본 동작 막기
+      async function load() {
+        try {
+          const rawAlarm = await AsyncStorage.getItem("alarm");
+          if (rawAlarm) {
+            const alarm = JSON.parse(rawAlarm);
+            setAlarms(alarm);
+          }
+        } catch (e) {
+          console.log("기록 없음 혹은 로드 에러");
         }
-        return false; // 뒤로가기 버튼 기본 동작 허용
-      };
-
-      BackHandler.addEventListener("hardwareBackPress", onBackPress);
-
-      return () =>
-        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-    }, [state])
+      }
+      load();
+    }, [])
   );
+
+  // 삭제모드 시 뒤로가기 커스텀(기본 모드로 변경되게)
+  useEffect(() => {
+    const onBackPress = () => {
+      if (state) {
+        setState(false);
+        setSelectedAlarms([]);
+        return true; // 뒤로가기 버튼 기본 동작 막기
+      }
+      return false; // 뒤로가기 버튼 기본 동작 허용
+    };
+
+    BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+  }, [state]);
 
   // alarms 상태가 변경될 때마다 콘솔에 출력
   useEffect(() => {
@@ -163,7 +163,14 @@ export default function AlarmPage({ navigation }) {
           </TouchableOpacity>
         )}
       </View>
-
+      <View
+        style={{
+          width: "100%",
+          height: 1,
+          backgroundColor: "#EBEBEB",
+          marginBottom: 23,
+        }}
+      />
       {/* 설명 텍스트 부분 */}
       <View style={styles.body}>
         <Text style={styles.infoText}>
@@ -253,7 +260,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     backgroundColor: "#FFFFFF",
     justifyContent: "space-between",
-    marginBottom: 23,
+    //marginBottom: 23,
   },
   title: {
     color: "#242424",

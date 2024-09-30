@@ -25,6 +25,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summary from "./SummaryAPI";
 import RemoveAlert from "../component/RemoveAlert";
+import ModalCloseButton from "../component/ModalCloseButton";
 
 // 음성녹음 창에서 올때는 이 날 기록보기, 삭제하기를 띄움
 // 기록 창에서 올때는 삭제하기만 띄움
@@ -103,22 +104,7 @@ const Modal2 = ({
                   삭제하기
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={onClose}
-                style={styles.button}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    lineHeight: 20,
-                    fontFamily: "Pretendard-Medium",
-                    color: "white",
-                  }}
-                >
-                  닫기
-                </Text>
-              </TouchableOpacity>
+              <ModalCloseButton onClose={onClose} />
             </Animated.View>
           ) : (
             <Animated.View
@@ -177,22 +163,7 @@ const Modal2 = ({
                   삭제하기
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={onClose}
-                style={styles.button}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    lineHeight: 20,
-                    fontFamily: "Pretendard-Medium",
-                    color: "white",
-                  }}
-                >
-                  닫기
-                </Text>
-              </TouchableOpacity>
+              <ModalCloseButton onClose={onClose} />
             </Animated.View>
           )}
         </View>
@@ -442,7 +413,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 12,
     borderRadius: 8,
-    backgroundColor: theme.grey50,
+    backgroundColor: theme.grey100,
     marginBottom: 26,
   },
   summaryTitle: {
@@ -471,33 +442,31 @@ const styles = StyleSheet.create({
   // 음성기록에서 뜨는 모달
   modal2: {
     width: "100%",
-    height: 236,
+    height: 246,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingTop: 22,
-    paddingBottom: 17,
+    paddingTop: 20,
     paddingHorizontal: 24,
     backgroundColor: "white",
   },
   // 하루기록 -> 음성기록(이날 기록보기가 안뜸)
   modal3: {
     width: "100%",
-    height: 184,
+    height: 194,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingTop: 22,
+    paddingTop: 20,
     paddingBottom: 15,
     paddingHorizontal: 24,
     backgroundColor: "white",
   },
   button: {
     width: "100%",
-    height: 44,
+    height: 56,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 24,
-    paddingHorizontal: 36,
-    paddingVertical: 12,
+    borderRadius: 16,
+    paddingHorizontal: 10,
     backgroundColor: theme.grey200,
   },
 });

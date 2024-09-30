@@ -1,0 +1,139 @@
+import { useState, useEffect } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+} from "react-native";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import Header from "../component/Header";
+import { theme } from "../colors/color";
+
+export default function TestPage() {
+  // GET
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    // GET 요청
+    console.log("GET 요청 시작");
+    axios
+      .get("http://192.168.123.159:8080/daily/records/1000/2024-09-23")
+      .then((response) => {
+        console.log("response: ", response);
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.log("Get 에러: ", error);
+        setError(error);
+      });
+  }, []);
+
+  // POST 요청 핸들러
+  const handlePost = () => {
+    axios
+      .post("http://192.168.123.159:8080/daily/post", {
+        user_code: 1000,
+        date: "2024-09-26",
+        home: "9월 24일 home 테스트",
+        school: "9월 24일 school 테스트",
+        hospital: "9월 24일 hospital 테스트",
+        summary: "프론트 테스트중",
+        state: 2,
+      })
+      .then((response) => {
+        console.log("Post 응답:", response.data);
+      })
+      .catch((error) => {
+        console.error("Post error:", error);
+      });
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Header
+        left={"leftArrow"}
+        title={"테스트 페이지"}
+        onLeftPress={() => navigation.pop()}
+      />
+      <View style={{ flex: 1, paddingHorizontal: 20 }}>
+        <View
+          style={{
+            flex: 2,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingVertical: 20,
+          }}
+        >
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => navigation.push("KakaoLogin")}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>카카오 로그인</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => navigation.push("StartInfo", { user_id: 1 })}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>시작 정보 입력</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={handlePost}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>POST 요청 테스트</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 1.5, paddingVertical: 20 }}>
+          {error && (
+            <Text style={{ ...styles.s_text, marginBottom: 4 }}>
+              Error: {error.message}
+            </Text>
+          )}
+          {data && (
+            <Text style={styles.s_text}>
+              GET{"\n"}
+              {JSON.stringify(data)}
+            </Text>
+          )}
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    backgroundColor: "white",
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 320,
+    height: 56,
+    marginVertical: 2,
+    backgroundColor: theme.grey150,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.grey300,
+  },
+  buttonText: {
+    fontSize: 15,
+    fontFamily: "Pretendard-Meidum",
+  },
+  s_text: {
+    fontSize: 12,
+    lineHeight: 20,
+    color: theme.grey600,
+  },
+});

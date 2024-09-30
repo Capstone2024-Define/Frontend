@@ -4,7 +4,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
 // 왼쪽 헤더가 화살표 아이콘일때는 left = "leftArrow" 라고 props 보내기
-// line은 헤더 아래 선을 그을지 말지 boolean값
+// **VoiceHistory, 알림 화면은 직접가서 수정할것
 export default function Header({
   left,
   title,
@@ -82,7 +82,7 @@ export default function Header({
           </View>
         </TouchableOpacity>
       </View>
-      {/* <View style={line && styles.line} /> */}
+      <View style={styles.line} />
     </View>
   );
 }
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   line: {
     width: "100%",
     height: 1,
-    backgroundColor: theme.yellow100,
+    backgroundColor: "#EBEBEB",
   },
   image: {
     width: 24,

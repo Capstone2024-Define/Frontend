@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, SafeAreaView } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import HomeScreen from "./HomeScreen";
@@ -17,7 +17,7 @@ import CalendarGreen from "../assets/calendar_gradient.svg";
 import MyGreen from "../assets/my_gradient.svg";
 import ChatGray from "../assets/chat_gray.svg";
 import ChatGreen from "../assets/chat_gradient.svg";
-import axios from "axios";
+import ChatbotScreen from "./ChatBotScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,71 +26,10 @@ const SvgIcon = ({ asset }) => (
 );
 
 function InfoScreen() {
-  // GET
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    // GET 요청
-    console.log("GET 요청 시작");
-    axios
-      .get("http://192.168.123.159:8080/daily/records/1000/2024-09-23")
-      .then((response) => {
-        console.log("response: ", response);
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.log("Get 에러: ", error);
-        setError(error);
-      });
-  }, []);
-
-  // POST 요청 핸들러
-  const handlePost = () => {
-    axios
-      .post("http://192.168.123.159:8080/daily/post", {
-        user_code: 1000,
-        date: "2024-09-26",
-        home: "9월 24일 home 테스트",
-        school: "9월 24일 school 테스트",
-        hospital: "9월 24일 hospital 테스트",
-        summary: "프론트 테스트중",
-        state: 2,
-      })
-      .then((response) => {
-        console.log("Post 응답:", response.data);
-      })
-      .catch((error) => {
-        console.error("Post error:", error);
-      });
-  };
-
   return (
-    <View style={styles.container}>
-      <Button
-        title="카카오로그인"
-        onPress={() => navigation.push("KakaoLogin")}
-      />
-      <Button
-        title="정보입력"
-        onPress={() => navigation.push("StartInfo", { user_id: 1 })}
-      />
-      <Button title="Send POST request" onPress={handlePost} />
-      {error && <Text>Error: {error.message}</Text>}
-      {data && <Text>Data: {JSON.stringify(data)}</Text>}
-    </View>
-  );
-}
-
-function ChatScreen() {
-  const navigation = useNavigation();
-
-  return (
-    <View style={styles.defaultScreen}>
-      <Text>챗봇페이지</Text>
-    </View>
+    <SafeAreaView style={{ padding: 50 }}>
+      <Text>정보 페이지</Text>
+    </SafeAreaView>
   );
 }
 
@@ -141,7 +80,7 @@ export default function MainScreen() {
       />
       <Tab.Screen
         name="Chat"
-        component={ChatScreen}
+        component={ChatbotScreen}
         options={{
           title: "챗봇",
           tabBarIcon: ({ color }) =>

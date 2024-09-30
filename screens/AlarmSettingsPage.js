@@ -171,6 +171,14 @@ export default function AlarmSettingsPage({ navigation }) {
         <Text style={styles.title}>알림설정</Text>
         <View style={{ width: 25 }} />
       </View>
+      <View
+        style={{
+          width: "100%",
+          height: 1,
+          marginBottom: 20,
+          backgroundColor: "#EBEBEB",
+        }}
+      />
       <View style={{ flex: 1 }}>
         <Text style={styles.alarmTitle}>알림 설정</Text>
         <Text style={styles.alarmDescription}>
@@ -315,7 +323,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingVertical: 18,
     paddingHorizontal: 24,
-    marginBottom: 20,
+    //marginBottom: 20,
   },
   icon: {
     width: 24,
@@ -414,22 +422,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 46,
+    borderWidth: 1,
+    borderColor: "white",
   },
   enabledDay: {
-    backgroundColor: "#78BA7D",
+    backgroundColor: theme.green50,
+    borderColor: theme.green500,
   },
   disabledDay: {
     backgroundColor: "#EFEFEF",
+    borderColor: "#EFEFEF",
   },
   dayText: {
     fontSize: 16,
     fontFamily: "Pretendard-Medium",
   },
   enabledText: {
-    color: "#FFFFFF",
+    color: theme.green500,
   },
   disabledText: {
-    color: "white",
+    color: theme.grey400,
   },
   confirmButton: {
     height: 56,

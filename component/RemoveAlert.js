@@ -32,7 +32,9 @@ export default function RemoveAlert({ visible, onClose, onRemove }) {
                   onPress={onClose}
                   style={{ ...styles.button, backgroundColor: theme.grey200 }}
                 >
-                  <Text style={styles.buttonText}>취소</Text>
+                  <Text style={{ ...styles.buttonText, color: theme.grey400 }}>
+                    취소
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.5}

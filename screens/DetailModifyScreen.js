@@ -8,8 +8,6 @@ import {
   Image,
 } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
-import { Feather } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect, useCallback } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
