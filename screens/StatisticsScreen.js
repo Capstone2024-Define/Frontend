@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import { WithLocalSvg } from "react-native-svg/css";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import { LineChart } from "react-native-chart-kit";
+import Svg, { Line, Polyline, Circle } from "react-native-svg";
 
 export default function StatisticsScreen({ setState }) {
   const today = new Date().toLocaleDateString("sv-SE", {
@@ -21,13 +23,22 @@ export default function StatisticsScreen({ setState }) {
   const [week, setWeek] = useState([]);
   const [weekNumber, setWeekNumber] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date(today)); // 현재 기준이 되는 날짜
+  const [dayState, setDayState] = useState([0, 0, 1, 2, 2, null, 1]);
+  const [segments, setSegments] = useState([]);
 
   useEffect(() => {
     // 선택 날짜로 주차 초기화
     const { weekDates, weekOfMonth } = getCurrentWeek(new Date(selectedDate));
     setWeek(weekDates);
     setWeekNumber(weekOfMonth);
+
+    // !!dayState 업데이트 구현예정
   }, [selectedDate]);
+
+  useEffect(() => {
+    // 꺾은선 그래프 변경
+    dayStateSegments();
+  }, [dayState]);
 
   // 현재 날짜의 주 날짜, 주차 계산
   const getCurrentWeek = (date) => {
@@ -55,10 +66,42 @@ export default function StatisticsScreen({ setState }) {
     return { weekDates, weekOfMonth };
   };
 
+  // 주 이동
   const moveWeek = (where) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(selectedDate.getDate() + where * 7); // 7일씩 이동
     setSelectedDate(newDate);
+  };
+
+  // 날짜 형식 MM.DD로 포맷
+  const formattedWeek = week.map((dateString) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1; // getMonth()는 0부터 시작하므로 +1
+    const day = date.getDate();
+    return `${month}.${day}`;
+  });
+
+  // null을 기준으로 데이터를 분할(꺾은선 그래프)
+  const dayStateSegments = () => {
+    const newSegments = [];
+    let currentSegment = [];
+
+    dayState.forEach((value, index) => {
+      if (value === null) {
+        if (currentSegment.length > 0) {
+          newSegments.push([...currentSegment]);
+          currentSegment = [];
+        }
+      } else {
+        currentSegment.push({ x: index * 36 + 24, y: 132 - value * 64 });
+      }
+    });
+
+    if (currentSegment.length > 0) {
+      newSegments.push(currentSegment);
+    }
+
+    setSegments(newSegments);
   };
 
   return (
@@ -176,6 +219,86 @@ export default function StatisticsScreen({ setState }) {
             <TouchableOpacity activeOpacity={0.5} onPress={() => moveWeek(1)}>
               <WithLocalSvg asset={Right} />
             </TouchableOpacity>
+          </View>
+          {/* 꺾은선 그래프 */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: 288,
+            }}
+          >
+            {/* y축 */}
+            <View>
+              <Text>
+                세{"\n"}로{"\n"}축
+              </Text>
+            </View>
+            {/* 그래프 */}
+            <Svg
+              height="138"
+              width="254"
+              style={{ marginTop: 11, backgroundColor: "white" }}
+            >
+              {/* x축 선 */}
+              <Line
+                x1="0"
+                y1="132"
+                x2="252"
+                y2="132"
+                stroke="#EBEBEB"
+                strokeWidth="1"
+              />
+              <Line
+                x1="0"
+                y1="68"
+                x2="252"
+                y2="68"
+                stroke="#EBEBEB"
+                strokeWidth="1"
+              />
+              <Line
+                x1="0"
+                y1="4"
+                x2="252"
+                y2="4"
+                stroke="#EBEBEB"
+                strokeWidth="1"
+              />
+              {/* 꺾은 선 */}
+              {segments.map((segment, index) => {
+                const points = segment
+                  .map((point) => `${point.x},${point.y}`)
+                  .join(" ");
+                return (
+                  <Polyline
+                    key={index}
+                    points={points}
+                    fill="none"
+                    stroke={theme.green500}
+                    strokeWidth="2"
+                  />
+                );
+              })}
+              {/* 점 */}
+              {dayState.map((value, index) => {
+                if (value !== null) {
+                  return (
+                    <Circle
+                      key={index}
+                      cx={index * 36 + 24}
+                      cy={132 - value * 64}
+                      r="3"
+                      fill="white"
+                      stroke={theme.green500}
+                      strokeWidth={2}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </Svg>
           </View>
         </View>
       </ScrollView>
