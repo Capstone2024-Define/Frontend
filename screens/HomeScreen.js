@@ -27,6 +27,7 @@ import Calender from "../assets/calendarNew.svg";
 import NoRecord from "../assets/norecord.svg";
 import { Shadow } from "react-native-shadow-2"; // 그림자 라이브러리
 import { LinearGradient } from "expo-linear-gradient"; // 그라데이션 라이브러리
+import axios from "axios";
 
 // 캘린더 모달창
 const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
@@ -63,20 +64,22 @@ export default function HomeScreen({ navigation }) {
   const [totalText, setTotalText] = useState("");
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
+  let user_id = 7274; // 유저 id
 
   // 홈 화면만 상태바 색 변경
-  useFocusEffect(
-    React.useCallback(() => {
-      StatusBar.setBarStyle("light-content");
-      StatusBar.setBackgroundColor(theme.green500);
+  // ios에는 적용안됨 수정함 하기
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     StatusBar.setBarStyle("light-content");
+  //     StatusBar.setBackgroundColor(theme.green500);
 
-      return () => {
-        // 홈 화면을 벗어날 때 StatusBar 초기화
-        StatusBar.setBarStyle("dark-content");
-        StatusBar.setBackgroundColor("#fff");
-      };
-    }, [])
-  );
+  //     return () => {
+  //       // 홈 화면을 벗어날 때 StatusBar 초기화
+  //       StatusBar.setBarStyle("dark-content");
+  //       StatusBar.setBackgroundColor("#fff");
+  //     };
+  //   }, [])
+  // );
 
   // 시작 시 오늘 날짜를 선택날짜로 함
   useEffect(() => {
@@ -91,33 +94,53 @@ export default function HomeScreen({ navigation }) {
         getWeeks(selectedDate);
 
         // 기록 로드
-        async function load() {
+        const load = async () => {
           try {
-            const rawRecord = await AsyncStorage.getItem(selectedDate);
-            const newRecord = JSON.parse(rawRecord);
+            // const rawRecord = await AsyncStorage.getItem(selectedDate);
+            // const newRecord = JSON.parse(rawRecord);
 
-            let newTotalText = "";
-            if (newRecord.home) {
-              newTotalText += newRecord.home;
-            }
-            if (newRecord.school) {
-              newTotalText += ` ${newRecord.school}`;
-            }
-            if (newRecord.hospital) {
-              newTotalText += ` ${newRecord.hospital}`;
-            }
-            setTotalText(newTotalText);
-            setImages(newRecord.image);
-            setSummaryText(newRecord.summaryText);
+            // let newTotalText = "";
+            // if (newRecord.home) {
+            //   newTotalText += newRecord.home;
+            // }
+            // if (newRecord.school) {
+            //   newTotalText += ` ${newRecord.school}`;
+            // }
+            // if (newRecord.hospital) {
+            //   newTotalText += ` ${newRecord.hospital}`;
+            // }
+            // setTotalText(newTotalText);
+            // setImages(newRecord.image);
+            // setSummaryText(newRecord.summaryText);
 
             //console.log(newRecord);
+
+            // user_id 가져오기
+            // try {
+            //   const value = await AsyncStorage.getItem("user_id");
+            //   if (value !== null) {
+            //     user_id = value;
+            //   } else {
+            //     console.log("user_id가 null입니다.");
+            //   }
+            // } catch (error) {
+            //   console.log("유저id 불러오기 실패");
+            // }
+
+            // 요약, 상태 가져옴
+            const response = await axios.get(
+              `http://192.168.123.159:8080/daily/records/${user_id}/${selectedDate}`
+            );
+
+            console.log("GET: ", response.data);
+            setTotalText(response.data.summary);
+            setSummaryText(response.data.summary);
           } catch (e) {
-            console.log("기록 로드 에러 혹은 기록 없음");
             // 기록 없는거니까 텍스트랑 이미지 비움
             setTotalText("");
             setImages([]);
           }
-        }
+        };
         load();
       }
     }, [selectedDate])
@@ -127,16 +150,16 @@ export default function HomeScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const fetchEmojiColors = async () => {
-        const newEmoji = [];
-        for (let i = 0; i < weeks.length; i++) {
-          try {
-            const color = await getEmojiColor(weeks[i]);
-            newEmoji.push(color);
-          } catch (error) {
-            console.error("fetchEmojiColors 에러", error);
-          }
-        }
-        //console.log(newEmoji);
+        const newEmoji = await Promise.all(
+          weeks.map(async (week) => {
+            try {
+              return await getEmojiColor(week);
+            } catch (error) {
+              console.error("fetchEmojiColors 에러", error);
+              return theme.grey150; // 에러 발생 시 기본 색상 반환
+            }
+          })
+        );
         setEmoji(newEmoji);
       };
 
@@ -208,30 +231,47 @@ export default function HomeScreen({ navigation }) {
     let emojiColor = theme.grey150;
 
     try {
-      const rawRecord = await AsyncStorage.getItem(date);
-      if (rawRecord !== null) {
-        const record = JSON.parse(rawRecord);
-        if (record.symptomList) {
-          const selectedCount = record.symptomList.length;
-          if (selectedCount <= 3) {
-            emojiColor = theme.green;
-          } else if (selectedCount <= 9) {
-            emojiColor = theme.yellow;
-          } else {
-            emojiColor = theme.pink;
-          }
-        }
-      }
+      //const rawRecord = await AsyncStorage.getItem(date);
+      // if (rawRecord !== null) {
+      //   const record = JSON.parse(rawRecord);
+      //   if (record.symptomList) {
+      //     const selectedCount = record.symptomList.length;
+      //     if (selectedCount <= 3) {
+      //       emojiColor = theme.green;
+      //     } else if (selectedCount <= 9) {
+      //       emojiColor = theme.yellow;
+      //     } else {
+      //       emojiColor = theme.pink;
+      //     }
+      //   }
+      // }
 
-      return emojiColor;
+      const response = await axios.get(
+        `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
+      );
+      const dayState = response.data.state;
+
+      switch (dayState) {
+        case 2:
+          emojiColor = theme.green;
+          break;
+        case 1:
+          emojiColor = theme.yellow;
+          break;
+        case 0:
+          emojiColor = theme.pink;
+          break;
+        default:
+          emojiColor = theme.grey150;
+      }
     } catch (error) {
       console.log("getEmojiColor 에러", error);
     }
+    return emojiColor;
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={theme.green500} />
       {/* <ImageBackground
         source={require("../assets/background.png")}
         style={styles.backgroundImage}
@@ -418,7 +458,10 @@ export default function HomeScreen({ navigation }) {
                     style={styles.recordContainer}
                     activeOpacity={0.5}
                     onPress={() =>
-                      navigation.push("DetailHistory", { date: selectedDate })
+                      navigation.push("DetailHistory", {
+                        date: selectedDate,
+                        user_id: user_id,
+                      })
                     }
                   >
                     <View style={styles.recordHeader}>
@@ -564,6 +607,7 @@ export default function HomeScreen({ navigation }) {
                       images.length > 0 || totalText
                         ? navigation.push("DetailModify", {
                             date: selectedDate,
+                            user_id: user_id,
                           })
                         : navigation.push("SymptomCheck", {
                             date: selectedDate,

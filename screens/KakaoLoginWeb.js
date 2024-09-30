@@ -3,9 +3,10 @@ import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
 import * as AuthSession from "expo-auth-session";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const REST_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
-const REDIRECT_URI = "http://192.168.123.130:8081/Login";
+const REDIRECT_URI = "http://192.168.123.159:8081/Login";
 // const REDIRECT_URI = AuthSession.makeRedirectUri({
 //   useProxy: true, // Expo Proxy 사용
 //   scheme: "clobit",
@@ -65,11 +66,22 @@ export default function KakaoLoginWeb({ navigation }) {
       .then((response) => {
         // response.date ex. {"connected_at": "2024-09-22T10:07:10Z", "id": 3715761500}
         console.log("유저 고유 ID: ", response.data.id);
+        save(response.data.id);
         navigation.replace("StartInfo", { user_id: response.data.id }); // 다음페이지로 id 전달
       })
       .catch((error) => {
         console.error("error: ", error.response ? error.response.data : error);
       });
+  };
+
+  // 아싱크스토리지에 해당 유저 id 저장(키: user_id)
+  const save = async (toSave) => {
+    try {
+      // await AsyncStorage.clear()
+      await AsyncStorage.setItem("user_id", toSave.toString());
+    } catch (error) {
+      console.log("유저 ID 저장 에러 ", error);
+    }
   };
 
   return (

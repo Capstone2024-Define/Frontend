@@ -23,14 +23,7 @@ import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summary from "./SummaryAPI";
 import { LinearGradient } from "expo-linear-gradient";
-
-// 상세 기록 DB
-// 날짜(date), 유저아이디(user_id)
-// 가정기록(detail_home), 학교기록(detail_school), 병원기록(detail_hospital)
-
-// 사진 DB
-// 날짜(date), 유저아이디(user_id)
-// 인덱스(index, 0~9), 사진(image)
+import axios from "axios";
 
 export default function DetailRecordScreen({ navigation, route }) {
   const date = route.params.date;
@@ -48,26 +41,6 @@ export default function DetailRecordScreen({ navigation, route }) {
   // 이미지 객체 id 설정 위한 변수
   const [id, setId] = useState(0);
   let k = 0;
-
-  console.log(route.params.checkList);
-  console.log(route.params.symptomList);
-
-  // 네이버 summary api
-  // useEffect(() => {
-
-  //   const handleSummary = async () => {
-  //     try {
-  //       const result = await summary(totalText);
-  //       setSummaryText(result.summary);
-  //       // console.log(result.summary);
-  //     } catch (error) {
-  //       console.log("서머리 에러", error.response.data.error.errorCode);
-  //     }
-  //   };
-  //   if (totalText) {
-  //     handleSummary();
-  //   }
-  // }, [totalText]);
 
   useEffect(() => {
     let newTotalText = "";
@@ -153,39 +126,79 @@ export default function DetailRecordScreen({ navigation, route }) {
   };
 
   // 저장
-  const save = async (toSave) => {
-    try {
-      //await AsyncStorage.clear();
-      await AsyncStorage.setItem(date, JSON.stringify(toSave));
-    } catch (error) {
-      console.log("기록 저장 에러");
-    }
-  };
+  // const save = async (toSave) => {
+  //   try {
+  //     //await AsyncStorage.clear();
+  //     await AsyncStorage.setItem(date, JSON.stringify(toSave));
+  //   } catch (error) {
+  //     console.log("기록 저장 에러");
+  //   }
+  // };
 
-  // 네이버 summary api
-  const setStorage = async () => {
+  // 저장
+  const handlePost = async () => {
     try {
-      // 서머리
+      let user_id = null;
+
+      // user_id 가져오기
+      try {
+        const value = await AsyncStorage.getItem("user_id");
+        if (value !== null) {
+          user_id = value;
+        } else {
+          console.log("user_id가 null입니다.");
+        }
+      } catch (error) {
+        console.log("유저id 불러오기 실패");
+      }
+
+      // 전체 텍스트 요약
       const result = await summary(totalText);
       console.log(result.summary);
 
-      // 객체 설정
-      const newRecord = {
+      console.log("전송 데이터:", {
+        user_code: user_id,
         date: date,
         home: homeText,
         school: schoolText,
         hospital: hospitalText,
-        image: images,
-        checkList: route.params.checkList,
-        symptomList: route.params.symptomList,
-        summaryText: result.summary,
-      };
-      console.log("기록하기: ", newRecord);
+        summary: result.summary,
+        state: 2,
+      });
 
-      // 스토리지 저장
-      await save(newRecord);
+      const response = axios.post("http://192.168.123.159:8080/daily/post", {
+        user_code: user_id,
+        date: date,
+        home: homeText,
+        school: schoolText,
+        hospital: hospitalText,
+        summary: result.summary,
+        state: 2,
+      });
+
+      console.log("Post 응답:", response.data);
+
+      // 서머리
+      // const result = await summary(totalText);
+      // console.log(result.summary);
+
+      // // 객체 설정
+      // const newRecord = {
+      //   date: date,
+      //   home: homeText,
+      //   school: schoolText,
+      //   hospital: hospitalText,
+      //   image: images,
+      //   checkList: route.params.checkList,
+      //   symptomList: route.params.symptomList,
+      //   summaryText: result.summary,
+      // };
+      // console.log("기록하기: ", newRecord);
+
+      // // 스토리지 저장
+      // await save(newRecord);
     } catch (error) {
-      console.log("저장 에러", error.response.data.error.errorCode);
+      console.log("저장 에러", error);
     }
   };
 
@@ -199,33 +212,9 @@ export default function DetailRecordScreen({ navigation, route }) {
           navigation.pop();
         }}
         onRightPress={async () => {
-          await setStorage();
+          await handlePost();
           navigation.popToTop();
           showToast("기록이 완료되었어요");
-
-          // // DB에 저장
-          // console.log(homeText);
-          // console.log(schoolText);
-          // console.log(hospitalText);
-          // for (let i = 0; i < images.length; i++) {
-          //   console.log(i, images[i].uri);
-          // }
-
-          // // 객체 설정
-          // const newRecord = {
-          //   date: date,
-          //   home: homeText,
-          //   school: schoolText,
-          //   hospital: hospitalText,
-          //   image: images,
-          //   checkList: route.params.checkList,
-          //   symptomList: route.params.symptomList,
-          //   summaryText: summaryText,
-          // };
-          // console.log(newRecord);
-
-          // // 스토리지 저장
-          // await save(newRecord);
         }}
         line={false}
       />

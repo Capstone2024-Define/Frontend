@@ -29,6 +29,7 @@ import Edit from "../assets/modal_blackEdit.svg";
 import Delete from "../assets/modal_redDelete.svg";
 import RemoveAlert from "../component/RemoveAlert";
 import ModalCloseButton from "../component/ModalCloseButton";
+import axios from "axios";
 
 const Modal2 = ({
   visible,
@@ -37,6 +38,7 @@ const Modal2 = ({
   checkList,
   setVisible,
   setRemoveModalVisible,
+  user_id,
 }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
@@ -73,7 +75,8 @@ const Modal2 = ({
                 setVisible(false);
                 navigation.push("DetailModify", {
                   date: date,
-                  checkList: checkList,
+                  // checkList: checkList,
+                  user_id: user_id,
                 });
               }}
               style={{
@@ -113,21 +116,20 @@ const Modal2 = ({
 };
 
 export default function DetailHistoryScreen({ navigation, route }) {
-  // 상세 기록 state
+  const user_id = route.params.user_id;
+  const date = route.params.date;
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
   const [images, setImages] = useState([]);
-  const [date, setDate] = useState(route.params.date);
   const [checkList, setCheckList] = useState([]);
   const [symptomList, setSymptomList] = useState([]);
-  const [headerColor, setHeaderColor] = useState(theme.green500);
-
-  const [remindVisible, setRemindVisible] = useState(false); // 되돌아보기 드롭다운 활성화
-  const [totalText, setTotalText] = useState(""); // 서머리 요약을 위한 전체 텍스트
+  const [headerColor, setHeaderColor] = useState(theme.grey150);
   const [summaryText, setSummaryText] = useState(""); // 서머리  결과
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
+  const [dayState, setDayState] = useState(null);
 
+  const [remindVisible, setRemindVisible] = useState(false); // 되돌아보기 드롭다운 활성화
   const [visible, setVisible] = useState(false); // 모달 상태
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
@@ -136,34 +138,41 @@ export default function DetailHistoryScreen({ navigation, route }) {
     useCallback(() => {
       async function load() {
         try {
-          const rawRecord = await AsyncStorage.getItem(date);
-          const newRecord = JSON.parse(rawRecord);
+          // const rawRecord = await AsyncStorage.getItem(date);
+          // const newRecord = JSON.parse(rawRecord);
 
-          setHomeText(newRecord.home);
-          setSchoolText(newRecord.school);
-          setHospitalText(newRecord.hospital);
-          setImages(newRecord.image);
-          setDate(newRecord.date);
-          setCheckList(newRecord.checkList);
-          setSymptomList(newRecord.symptomList);
-          setSummaryText(newRecord.summaryText);
+          // setHomeText(newRecord.home);
+          // setSchoolText(newRecord.school);
+          // setHospitalText(newRecord.hospital);
+          // setImages(newRecord.image);
+          // setDate(newRecord.date);
+          // setCheckList(newRecord.checkList);
+          // setSymptomList(newRecord.symptomList);
+          // setSummaryText(newRecord.summaryText);
 
-          // totalText
-          let newTotalText = "";
-          if (newRecord.home) {
-            newTotalText += newRecord.home;
-          }
-          if (newRecord.school) {
-            newTotalText += ` ${newRecord.school}`;
-          }
-          if (newRecord.hospital) {
-            newTotalText += ` ${newRecord.hospital}`;
-          }
-          setTotalText(newTotalText);
+          // // totalText
+          // let newTotalText = "";
+          // if (newRecord.home) {
+          //   newTotalText += newRecord.home;
+          // }
+          // if (newRecord.school) {
+          //   newTotalText += ` ${newRecord.school}`;
+          // }
+          // if (newRecord.hospital) {
+          //   newTotalText += ` ${newRecord.hospital}`;
+          // }
+          // setTotalText(newTotalText);
 
-          // console.log(newRecord);
-        } catch (e) {
-          console.log("기록 로드 에러");
+          const response = await axios.get(
+            `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
+          );
+          setHomeText(response.data.home);
+          setSchoolText(response.data.school);
+          setHospitalText(response.data.hospital);
+          setSummaryText(response.data.summary);
+          setDayState(response.data.state);
+        } catch (error) {
+          console.log("기록 로드 에러: ", error);
         }
       }
       load();
@@ -174,17 +183,16 @@ export default function DetailHistoryScreen({ navigation, route }) {
   // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
     useCallback(() => {
-      if (symptomList) {
-        const selectedCount = symptomList.length;
-        if (selectedCount <= 3) {
+      if (dayState) {
+        if (dayState == 2) {
           setHeaderColor(theme.green);
-        } else if (selectedCount <= 9) {
+        } else if (dayState == 1) {
           setHeaderColor(theme.yellow);
-        } else {
+        } else if (dayState == 0) {
           setHeaderColor(theme.pink);
         }
       }
-    }, [symptomList])
+    }, [dayState])
   );
 
   // 음성 기록
@@ -397,6 +405,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         onClose={() => setVisible(false)}
         date={date}
         checkList={checkList}
+        user_id={user_id}
         setVisible={setVisible}
         setRemoveModalVisible={setRemoveModalVisible}
       />

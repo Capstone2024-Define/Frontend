@@ -11,6 +11,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TestPage() {
   // GET
@@ -19,13 +20,18 @@ export default function TestPage() {
 
   const navigation = useNavigation();
 
+  // GET 요청 형식
+  // const response = await axios.get(
+  //   `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
+  // );
   useEffect(() => {
     // GET 요청
+
     console.log("GET 요청 시작");
     axios
-      .get("http://192.168.123.159:8080/daily/records/1000/2024-09-23")
+      .get("http://192.168.123.159:8080/daily/records/1000/2024-09-30")
       .then((response) => {
-        console.log("response: ", response);
+        console.log("GET 성공적");
         setData(response.data);
       })
       .catch((error) => {
@@ -39,11 +45,11 @@ export default function TestPage() {
     axios
       .post("http://192.168.123.159:8080/daily/post", {
         user_code: 1000,
-        date: "2024-09-26",
+        date: "2024-08-20",
         home: "9월 24일 home 테스트",
         school: "9월 24일 school 테스트",
         hospital: "9월 24일 hospital 테스트",
-        summary: "프론트 테스트중",
+        summary: "으아아아아악",
         state: 2,
       })
       .then((response) => {
@@ -52,6 +58,26 @@ export default function TestPage() {
       .catch((error) => {
         console.error("Post error:", error);
       });
+  };
+
+  // 카카오 연결끊기
+  const logoutKakao = async () => {
+    try {
+      const response = await axios({
+        method: "POST",
+        url: "https://kapi.kakao.com/v1/user/unlink",
+        headers: {
+          Authorization: `Bearer RyAzEUsE1jsjetFirfBcQb9IAnD2P8OFAAAAAQopyNkAAAGSQn9Ouqew61y3DOUZ`, // 본인 토큰
+        },
+      });
+      console.log("로그아웃 성공: ", response.data);
+      await AsyncStorage.removeItem("user_id"); // 저장된 사용자 정보 삭제
+    } catch (error) {
+      console.error(
+        "로그아웃 실패: ",
+        error.response ? error.response.data : error
+      );
+    }
   };
 
   return (
@@ -76,6 +102,13 @@ export default function TestPage() {
             style={styles.button}
           >
             <Text style={styles.buttonText}>카카오 로그인</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={logoutKakao}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>카카오 로그아웃</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
@@ -129,7 +162,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 15,
-    fontFamily: "Pretendard-Meidum",
+    fontFamily: "Pretendard-Medium",
   },
   s_text: {
     fontSize: 12,
