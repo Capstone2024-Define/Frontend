@@ -436,7 +436,7 @@ export default function HomeScreen({ navigation }) {
                           <FontAwesome
                             name="circle"
                             size={25}
-                            color={emoji[index]}
+                            color={emoji[index] ? emoji[index] : theme.grey100}
                           />
                         </TouchableOpacity>
                       </LinearGradient>

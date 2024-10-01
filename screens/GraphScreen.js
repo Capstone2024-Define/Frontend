@@ -8,23 +8,63 @@ import {
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { WithLocalSvg } from "react-native-svg/css";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Svg, { Line, Polyline, Circle } from "react-native-svg";
 import { PieChart } from "react-native-chart-kit";
 
-export default function StatisticsScreen({ setState }) {
+export default function GraphScreen({ setState }) {
   const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
+  const symptomList = [
+    "불순응",
+    "반항",
+    "떼쓰기",
+    "자기연민성",
+    "부정적인발언",
+    "꾀병",
+    "조르기",
+    "끼어들기",
+    "학교성적부진",
+    "읽기능력부진",
+    "주의력결핍",
+    "무기력",
+    "빈둥거리기",
+    "고자질",
+    "가족과다툼",
+    "공격성",
+    "거짓말",
+  ];
   const [isWeek, setIsWeek] = useState(true); // 주간/월간 구분
   const [week, setWeek] = useState([]);
   const [weekNumber, setWeekNumber] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date(today)); // 현재 기준이 되는 날짜
-  const [dayState, setDayState] = useState([0, 0, 1, 2, 2, null, 1]);
-  const [segments, setSegments] = useState([]);
+  const [dayState_week, setDayState_week] = useState([0, 0, 1, 2, 2, null, 1]);
+  const [dayState_month, setDayState_month] = useState([
+    2,
+    2,
+    1,
+    2,
+    2,
+    null,
+    1,
+    2,
+    0,
+    1,
+    2,
+    2,
+    1,
+    0,
+  ]);
+  const [beforeSelectedWeek, setBeforeSelectedWeek] = useState(new Date(today));
+  const [symptomCount, setSymptomCount] = useState([
+    10, 5, 1, 2, 6, 7, 8, 1, 0, 6, 9, 8, 3, 4, 5, 1, 0,
+  ]);
+  const [stateCount, setStateCount] = useState([0, 0, 0]);
+  const previousWeek = useRef(week); // 변경 전 주
 
   useEffect(() => {
     // 선택 날짜로 주차 초기화
@@ -32,13 +72,24 @@ export default function StatisticsScreen({ setState }) {
     setWeek(weekDates);
     setWeekNumber(weekOfMonth);
 
-    // !!dayState 업데이트 구현예정
+    // 구현예정
+    // 주 날짜가 바꼈을때
+    if (previousWeek.current[0] !== weekDates[0]) {
+      // dayState_week 업데이트
+    }
+    // selectedDate 월이 변할때
+    if (beforeSelectedWeek.getMonth() !== selectedDate.getMonth()) {
+      // dayState_month 업데이트
+    }
+    previousWeek.current = weekDates;
+    setBeforeSelectedWeek(selectedDate);
+
+    console.log("선택날짜: ", selectedDate);
   }, [selectedDate]);
 
   useEffect(() => {
-    // 꺾은선 그래프 변경
-    dayStateSegments();
-  }, [dayState]);
+    getStateCount();
+  }, [dayState_month]);
 
   // 현재 날짜의 주 날짜, 주차 계산
   const getCurrentWeek = (date) => {
@@ -61,7 +112,6 @@ export default function StatisticsScreen({ setState }) {
     const weekOfMonth = Math.ceil((date.getDate() + startOfMonth.getDay()) / 7);
 
     console.log(weekDates);
-    console.log(weekOfMonth);
 
     return { weekDates, weekOfMonth };
   };
@@ -69,19 +119,25 @@ export default function StatisticsScreen({ setState }) {
   // 주 이동
   const moveWeek = (where) => {
     const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + where * 7); // 7일씩 이동
+
+    if (isWeek) {
+      newDate.setDate(selectedDate.getDate() + where * 7); // 7일씩 이동
+    } else {
+      newDate.setMonth(selectedDate.getMonth() + where * 1);
+    }
+
     setSelectedDate(newDate);
   };
 
-  // null을 기준으로 데이터를 분할(꺾은선 그래프)
-  const dayStateSegments = () => {
-    const newSegments = [];
+  // 주간 꺾은선 그래프(null을 기준으로 데이터를 분할)
+  const draw_weekSegments = () => {
+    const segments = [];
     let currentSegment = [];
 
-    dayState.forEach((value, index) => {
+    dayState_week.forEach((value, index) => {
       if (value === null) {
         if (currentSegment.length > 0) {
-          newSegments.push([...currentSegment]);
+          segments.push([...currentSegment]);
           currentSegment = [];
         }
       } else {
@@ -91,20 +147,35 @@ export default function StatisticsScreen({ setState }) {
     });
 
     if (currentSegment.length > 0) {
-      newSegments.push(currentSegment);
+      segments.push(currentSegment);
     }
 
-    setSegments(newSegments);
+    return segments;
   };
 
-  // 원 그래프 데이터
+  // 월간 꺾은선 그래프(null 무시)
+  const draw_monthSegments = () => {
+    const segments = [];
+    dayState_month.forEach((value, index) => {
+      if (value !== null) {
+        segments.push({ x: index * 8 + 16, y: 132 - value * 64 });
+      }
+    });
+
+    return segments.length === 0 ? null : [segments];
+  };
+
+  // 원 그래프 데이터(최고, 보통, 아쉬움)
   const pieData = [
-    { name: "Good", count: 10, color: theme.green, label: "최고" },
-    { name: "Normal", count: 4, color: theme.yellow, label: "보통" },
-    { name: "Bad", count: 1, color: theme.pink, label: "아쉬움" },
+    { count: stateCount[0], color: theme.green },
+    {
+      count: stateCount[1],
+      color: theme.yellow,
+    },
+    { count: stateCount[2], color: theme.pink },
   ];
 
-  // 원 그래프 레이블/데이터
+  // 원 그래프 레이블/데이터 컴포넌트
   const PieLabel = ({ label, count, color }) => (
     <View style={styles.pieLabelContainer}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -134,6 +205,23 @@ export default function StatisticsScreen({ setState }) {
       </View>
     </View>
   );
+
+  // 원 그래프 증상결과 카운트
+  const getStateCount = () => {
+    const newStateCount = [0, 0, 0]; // 최고, 보통, 아쉬움
+
+    dayState_month.map((state) => {
+      if (state === 2) {
+        newStateCount[0]++;
+      } else if (state === 1) {
+        newStateCount[1]++;
+      } else if (state == 0) {
+        newStateCount[2]++;
+      }
+    });
+
+    setStateCount(newStateCount);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -237,7 +325,11 @@ export default function StatisticsScreen({ setState }) {
               <WithLocalSvg asset={Left} />
             </TouchableOpacity>
             <Text style={{ ...styles.title, fontFamily: "Pretendard-Medium" }}>
-              {selectedDate.getMonth() + 1}월 {weekNumber}주차
+              {isWeek
+                ? `${selectedDate.getMonth() + 1}월 ${weekNumber}주차`
+                : `${selectedDate.getFullYear()}년 ${
+                    selectedDate.getMonth() + 1
+                  }월`}
             </Text>
             <TouchableOpacity activeOpacity={0.5} onPress={() => moveWeek(1)}>
               <WithLocalSvg asset={Right} />
@@ -290,38 +382,58 @@ export default function StatisticsScreen({ setState }) {
                 stroke="#EBEBEB"
                 strokeWidth="1"
               />
-              {/* 꺾은 선 */}
-              {segments.map((segment, index) => {
-                const points = segment
-                  .map((point) => `${point.x},${point.y}`)
-                  .join(" ");
-                return (
-                  <Polyline
-                    key={index}
-                    points={points}
-                    fill="none"
-                    stroke={theme.green500}
-                    strokeWidth="2"
-                  />
-                );
-              })}
-              {/* 점 */}
-              {dayState.map((value, index) => {
-                if (value !== null) {
-                  return (
-                    <Circle
-                      key={index}
-                      cx={index * 37 + 13}
-                      cy={132 - value * 64}
-                      r="3"
-                      fill="white"
-                      stroke={theme.green500}
-                      strokeWidth={2}
-                    />
-                  );
-                }
-                return null;
-              })}
+              {/* 주간 그래프 */}
+              {isWeek
+                ? draw_weekSegments().map((segment, index) => {
+                    const points = segment
+                      .map((point) => `${point.x},${point.y}`)
+                      .join(" ");
+                    return (
+                      <Polyline
+                        key={index}
+                        points={points}
+                        fill="none"
+                        stroke={theme.green500}
+                        strokeWidth="2"
+                      />
+                    );
+                  })
+                : null}
+              {isWeek
+                ? dayState_week.map((value, index) => {
+                    if (value !== null) {
+                      return (
+                        <Circle
+                          key={index}
+                          cx={index * 37 + 13}
+                          cy={132 - value * 64}
+                          r="3"
+                          fill="white"
+                          stroke={theme.green500}
+                          strokeWidth={2}
+                        />
+                      );
+                    }
+                    return null;
+                  })
+                : null}
+              {/* 월간 그래프 */}
+              {!isWeek
+                ? draw_monthSegments().map((segment, index) => {
+                    const points = segment
+                      .map((point) => `${point.x},${point.y}`)
+                      .join(" ");
+                    return (
+                      <Polyline
+                        key={index}
+                        points={points}
+                        fill="none"
+                        stroke={theme.green500}
+                        strokeWidth="2"
+                      />
+                    );
+                  })
+                : null}
             </Svg>
           </View>
           <View style={styles.line} />
@@ -333,26 +445,50 @@ export default function StatisticsScreen({ setState }) {
               marginTop: 8,
             }}
           >
-            {week.map((day, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 37,
-                }}
-              >
-                <Text
+            {/* 주간 날짜 */}
+            {isWeek &&
+              week.map((day, index) => (
+                <View
+                  key={index}
                   style={{
-                    ...styles.s_text,
-                    fontFamily: "Pretendard-Medium",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 37,
                   }}
                 >
-                  {new Date(day).getMonth() + 1}.{new Date(day).getDate()}
-                </Text>
-              </View>
-            ))}
+                  <Text
+                    style={{
+                      ...styles.s_text,
+                      fontFamily: "Pretendard-Medium",
+                    }}
+                  >
+                    {new Date(day).getMonth() + 1}.{new Date(day).getDate()}
+                  </Text>
+                </View>
+              ))}
+            {/* 월간 날짜 */}
+            {!isWeek &&
+              [1, 8, 15, 22, 28].map((day, index) => (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 53,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...styles.s_text,
+                      fontFamily: "Pretendard-Medium",
+                    }}
+                  >
+                    {selectedDate.getMonth() + 1}.{day}
+                  </Text>
+                </View>
+              ))}
           </View>
         </View>
         {/* 증상체크 차트 */}
@@ -389,9 +525,21 @@ export default function StatisticsScreen({ setState }) {
               hasLegend={false}
             />
             <View style={{ flex: 1, marginLeft: 24 }}>
-              <PieLabel label={"최고"} count={10} color={theme.green} />
-              <PieLabel label={"보통"} count={4} color={theme.yellow} />
-              <PieLabel label={"아쉬움"} count={1} color={theme.pink} />
+              <PieLabel
+                label={"최고"}
+                count={stateCount[0]}
+                color={theme.green}
+              />
+              <PieLabel
+                label={"보통"}
+                count={stateCount[1]}
+                color={theme.yellow}
+              />
+              <PieLabel
+                label={"아쉬움"}
+                count={stateCount[2]}
+                color={theme.pink}
+              />
             </View>
           </View>
           <View
@@ -410,7 +558,9 @@ export default function StatisticsScreen({ setState }) {
               }}
             >
               <Text style={styles.s_text}>기록한 날짜</Text>
-              <Text style={styles.s_text}>총 15일</Text>
+              <Text style={styles.s_text}>
+                총 {stateCount[0] + stateCount[1] + stateCount[2]}일
+              </Text>
             </View>
           </View>
         </View>
@@ -431,6 +581,28 @@ export default function StatisticsScreen({ setState }) {
               0
             ).getDate()}
           </Text>
+        </View>
+        <View style={styles.subContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {/* 바 그래프 */}
+            {symptomList.map((symptom, index) => (
+              <View key={index} style={styles.barContainer}>
+                <Text style={{ ...styles.barText, marginBottom: 4 }}>
+                  {symptomCount[index]}회
+                </Text>
+                <LinearGradient
+                  colors={["#79BA7E", "#AFCA85"]}
+                  style={[styles.bar, { height: 11 * symptomCount[index] }]}
+                />
+                <View style={{ ...styles.line, marginBottom: 8 }} />
+                <View style={styles.Keyword}>
+                  <Text style={{ ...styles.barText, color: theme.green800 }}>
+                    {symptom}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
         </View>
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -531,5 +703,30 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: theme.grey500,
+  },
+  barContainer: {
+    width: 96,
+    height: 170,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  barText: {
+    fontSize: 12,
+    lineHeight: 20,
+    color: theme.grey600,
+    fontFamily: "Pretendard-Medium",
+  },
+  bar: {
+    width: 30,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  Keyword: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 24,
+    backgroundColor: theme.green100,
   },
 });

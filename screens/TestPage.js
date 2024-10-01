@@ -119,6 +119,13 @@ export default function TestPage() {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
+            onPress={() => navigation.push("AlarmPage")}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>알림 페이지</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
             onPress={handlePost}
             style={styles.button}
           >

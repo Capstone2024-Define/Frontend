@@ -130,8 +130,6 @@ export default function AlarmSettingsPage({ navigation }) {
           trigger: {
             date: triggerTime,
             repeats: false,
-            repeats: true, // 반복 설정
-            weekday: (index + 1) % 7,
           },
         });
       }

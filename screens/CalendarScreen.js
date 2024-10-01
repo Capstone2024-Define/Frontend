@@ -15,7 +15,7 @@ import Right from "../assets/chevron_right.svg";
 import Edit_white from "../assets/notes_white.svg";
 import { WithLocalSvg } from "react-native-svg/css";
 import { useEffect, useState } from "react";
-import StatisticsScreen from "./StatisticsScreen";
+import GraphScreen from "./GraphScreen";
 
 const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 
@@ -307,7 +307,7 @@ export default function CalendarScreen({ navigation }) {
           </View>
         </>
       ) : (
-        <StatisticsScreen setState={setState} />
+        <GraphScreen setState={setState} />
       )}
     </SafeAreaView>
   );

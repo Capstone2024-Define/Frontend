@@ -28,7 +28,7 @@ import KakaoLoginScreen from "./screens/KakaoLoginScreen";
 import KakaoLoginWeb from "./screens/KakaoLoginWeb";
 import ExportRecordScreen from "./screens/ExportRecordScreen";
 import CalendarScreen from "./screens/CalendarScreen";
-import StatisticsScreen from "./screens/StatisticsScreen";
+import GraphScreen from "./screens/GraphScreen";
 import TestPage from "./screens/TestPage";
 
 // 스택 내비게이터 생성
@@ -186,8 +186,8 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="Statistics"
-              component={StatisticsScreen}
+              name="Graph"
+              component={GraphScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen
