@@ -64,7 +64,8 @@ export default function HomeScreen({ navigation }) {
   const [totalText, setTotalText] = useState("");
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
-  let user_id = 7274; // 유저 id
+  const ipnumber = "192.168.123.110";
+  let user_code = 7274; // 유저 id
 
   // 홈 화면만 상태바 색 변경
   // ios에는 적용안됨 수정함 하기
@@ -115,13 +116,13 @@ export default function HomeScreen({ navigation }) {
 
             //console.log(newRecord);
 
-            // user_id 가져오기
+            // user_code 가져오기
             // try {
-            //   const value = await AsyncStorage.getItem("user_id");
+            //   const value = await AsyncStorage.getItem("user_code");
             //   if (value !== null) {
-            //     user_id = value;
+            //     user_code = value;
             //   } else {
-            //     console.log("user_id가 null입니다.");
+            //     console.log("user_code가 null입니다.");
             //   }
             // } catch (error) {
             //   console.log("유저id 불러오기 실패");
@@ -129,7 +130,7 @@ export default function HomeScreen({ navigation }) {
 
             // 요약, 상태 가져옴
             const response = await axios.get(
-              `http://192.168.123.159:8080/daily/records/${user_id}/${selectedDate}`
+              `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
             );
 
             console.log("GET: ", response.data);
@@ -247,7 +248,7 @@ export default function HomeScreen({ navigation }) {
       // }
 
       const response = await axios.get(
-        `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
+        `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
       );
       const dayState = response.data.state;
 
@@ -265,7 +266,7 @@ export default function HomeScreen({ navigation }) {
           emojiColor = theme.grey150;
       }
     } catch (error) {
-      console.log("getEmojiColor 에러", error);
+      // 하루기록이 없음
     }
     return emojiColor;
   };
@@ -460,7 +461,7 @@ export default function HomeScreen({ navigation }) {
                     onPress={() =>
                       navigation.push("DetailHistory", {
                         date: selectedDate,
-                        user_id: user_id,
+                        user_code: user_code,
                       })
                     }
                   >
@@ -607,7 +608,7 @@ export default function HomeScreen({ navigation }) {
                       images.length > 0 || totalText
                         ? navigation.push("DetailModify", {
                             date: selectedDate,
-                            user_id: user_id,
+                            user_code: user_code,
                           })
                         : navigation.push("SymptomCheck", {
                             date: selectedDate,

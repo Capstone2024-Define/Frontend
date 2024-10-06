@@ -14,13 +14,13 @@ import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Edit_white from "../assets/notes_white.svg";
 import { WithLocalSvg } from "react-native-svg/css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import GraphScreen from "./GraphScreen";
-
-const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
+import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CalendarScreen({ navigation }) {
-  const norecord = useState(true); // 기록 유무
   const daysOfWeek = [
     "일요일",
     "월요일",
@@ -32,16 +32,107 @@ export default function CalendarScreen({ navigation }) {
   ];
   const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
   const [selectedDate, setSelectedDate] = useState(today); // 달력 시작날짜 -> today
-  const [state, setState] = useState(false); // false : 캘린더, true : 통계
+  const [isCalendar, setIsCalendar] = useState(true); // true : 캘린더, false : 통계
+  const [dayStates, setDayStates] = useState(null);
+  const [currentYear, setCurrentYear] = useState(new Date(today).getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date(today).getMonth() + 1
+  );
+  const [record, setRecord] = useState({});
+  const [user_code, setUserCode] = useState(7274);
+  const ipnumber = "192.168.123.110";
 
-  // 잘되나 확인
   useEffect(() => {
-    console.log(selectedDate);
-  }, [selectedDate]);
+    const getUserCode = async () => {
+      try {
+        // // user_code
+        // const value = await AsyncStorage.getItem("user_code");
+        // if (value !== null) {
+        //   setUserCode(value);
+        // } else {
+        //   console.log("user_code가 null입니다.");
+        // }
+      } catch (error) {
+        console.log("유저 코드 불러오기 실패: ", error);
+      }
+    };
+    getUserCode();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const load = async () => {
+        try {
+          const response = await axios.get(
+            `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
+          );
+          // console.log(response.data);
+          setRecord(response.data);
+        } catch (error) {
+          console.log("선택 날짜 GET: ", error);
+        }
+      };
+      load();
+      console.log("선택 날짜 : ", selectedDate);
+    }, [selectedDate])
+  );
+
+  useEffect(() => {
+    load();
+  }, [currentMonth]);
+
+  // 기록 로드
+  // 이전/현재/다음 달 전부 로드(앞뒤로 이전/다음달이 보일때가 있음)
+  const load = async () => {
+    try {
+      const yearMonth = `${currentYear}-${String(currentMonth).padStart(
+        2,
+        "0"
+      )}`;
+      const beforeYearMonth =
+        currentMonth == 1
+          ? `${currentYear - 1}-12`
+          : `${currentYear}-${String(currentMonth - 1).padStart(2, "0")}`;
+      const afterYearMonth =
+        currentMonth == 12
+          ? `${currentYear + 1}-01`
+          : `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+
+      //console.log(`${beforeYearMonth} ${yearMonth} ${afterYearMonth}`);
+
+      const responseDates = [];
+
+      const beforeResponse = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${beforeYearMonth}`
+      );
+      responseDates.push(...beforeResponse.data);
+
+      const response = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+      );
+      responseDates.push(...response.data);
+
+      const afterResponse = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${afterYearMonth}`
+      );
+      responseDates.push(...afterResponse.data);
+
+      //console.log("GET: ", responseDates);
+      setDayStates(responseDates);
+    } catch (error) {
+      console.log("GET 에러: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {!state ? (
+      {isCalendar ? (
         <>
           {/* 헤더 */}
           <View style={styles.header}>
@@ -58,7 +149,7 @@ export default function CalendarScreen({ navigation }) {
             <View style={{ flex: 1 }}>
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => setState(true)}
+                onPress={() => setIsCalendar(false)}
                 style={styles.headerTab}
               >
                 <Text style={{ ...styles.subTitle, color: theme.grey300 }}>
@@ -73,6 +164,13 @@ export default function CalendarScreen({ navigation }) {
           <View style={styles.calendarContainer}>
             <Calendar
               current={selectedDate}
+              onMonthChange={(date) => {
+                const newYear = date.year;
+                const newMonth = date.month;
+
+                setCurrentYear(newYear);
+                setCurrentMonth(newMonth);
+              }}
               // 헤더 커스터마이징
               customHeader={(props) => {
                 // props 제공 -> month(Date 객체), addMonth(달 이동)
@@ -160,6 +258,28 @@ export default function CalendarScreen({ navigation }) {
                 const isSelected = date.dateString === selectedDate;
                 const isFuture = new Date(date.dateString) > new Date(today); // 미래인지 확인
 
+                // 현재 날짜에 대한 상태 찾기
+                const dayState = dayStates?.find(
+                  (day) => day.date === date.dateString
+                );
+
+                let dayColor = "transparent";
+                if (dayState) {
+                  switch (dayState.state) {
+                    case 0:
+                      dayColor = theme.pink;
+                      break;
+                    case 1:
+                      dayColor = theme.yellow;
+                      break;
+                    case 2:
+                      dayColor = theme.green;
+                      break;
+                    default:
+                      dayColor = "transparent";
+                  }
+                }
+
                 return (
                   <View style={styles.dayContainer}>
                     <TouchableOpacity
@@ -190,10 +310,7 @@ export default function CalendarScreen({ navigation }) {
                         {date.day}
                       </Text>
                       <View
-                        style={[
-                          styles.dayColor,
-                          !isFuture && { backgroundColor: theme.yellow },
-                        ]}
+                        style={[styles.dayColor, { backgroundColor: dayColor }]}
                       />
                     </TouchableOpacity>
                   </View>
@@ -207,7 +324,13 @@ export default function CalendarScreen({ navigation }) {
             <TouchableOpacity
               activeOpacity={0.6}
               style={styles.record}
-              disabled={norecord ? true : false}
+              disabled={record ? false : true}
+              onPress={() =>
+                navigation.push("DetailHistory", {
+                  date: selectedDate,
+                  user_code: user_code,
+                })
+              }
             >
               <View style={styles.recordHeader}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -226,13 +349,21 @@ export default function CalendarScreen({ navigation }) {
                   <FontAwesome
                     name="circle"
                     size={20}
-                    color={norecord ? "transparent" : theme.yellow}
+                    color={
+                      record
+                        ? record.state == 2
+                          ? theme.green
+                          : record.state == 1
+                          ? theme.yellow
+                          : theme.pink
+                        : "transparent"
+                    }
                   />
                 </View>
-                {!norecord && <Text style={styles.dubogi}>더보기</Text>}
+                {record && <Text style={styles.dubogi}>더보기</Text>}
               </View>
               <View style={styles.line} />
-              {norecord ? (
+              {!record ? (
                 <View
                   style={{
                     flex: 1,
@@ -282,7 +413,7 @@ export default function CalendarScreen({ navigation }) {
                 </View>
               ) : (
                 <>
-                  <View style={{ flexDirection: "row", marginVertical: 12 }}>
+                  {/* <View style={{ flexDirection: "row", marginVertical: 12 }}>
                     {images.map((image) => (
                       <View key={image.id}>
                         <Image
@@ -292,13 +423,11 @@ export default function CalendarScreen({ navigation }) {
                         />
                       </View>
                     ))}
-                  </View>
+                  </View> */}
                   <Text
                     style={{ ...styles.norecordText, color: theme.grey800 }}
                   >
-                    {summaryText && summaryText !== ""
-                      ? summaryText.slice(0, 92).replace(/\n/g, " ")
-                      : totalText.slice(0, 92).replace(/\n/g, " ")}
+                    {(record.summary || "").slice(0, 70).replace(/\n/g, " ")}
                     ...
                   </Text>
                 </>
@@ -307,7 +436,7 @@ export default function CalendarScreen({ navigation }) {
           </View>
         </>
       ) : (
-        <GraphScreen setState={setState} />
+        <GraphScreen setIsCalendar={setIsCalendar} />
       )}
     </SafeAreaView>
   );
@@ -362,7 +491,6 @@ const styles = StyleSheet.create({
     height: 7,
     marginTop: 1.6,
     borderRadius: 30,
-    backgroundColor: "transparent",
   },
   recordContainer: {
     width: "100%",

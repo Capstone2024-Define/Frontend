@@ -61,6 +61,7 @@ export default function SymptomCheckParent({ route, navigation }) {
             symptomList: route.params.symptomList,
             checkList: selectedChecklistItems,
             date: route.params.date,
+            state: route.params.state,
           });
         }}
         line={false}

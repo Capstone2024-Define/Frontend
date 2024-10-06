@@ -24,6 +24,8 @@ import { useLayoutEffect } from "react";
 import { Calendar } from "react-native-calendars";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -36,11 +38,19 @@ const CalendarModal = ({
   startDate,
   setStartDate,
   setEndDate,
+  user_code,
 }) => {
   const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const slideAnim = useRef(new Animated.Value(300)).current; // 애니메이션
+  const [dayStates, setDayStates] = useState(null);
+  const [currentYear, setCurrentYear] = useState(new Date(today).getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date(today).getMonth() + 1
+  );
+  const ipnumber = "192.168.123.110";
 
+  // 애니메이션
   useEffect(() => {
     if (visible) {
       Animated.timing(slideAnim, {
@@ -64,6 +74,52 @@ const CalendarModal = ({
     }
   }, [visible]);
 
+  useEffect(() => {
+    load();
+  }, [currentMonth]);
+
+  // 기록 로드
+  const load = async () => {
+    try {
+      const yearMonth = `${currentYear}-${String(currentMonth).padStart(
+        2,
+        "0"
+      )}`;
+      const beforeYearMonth =
+        currentMonth == 1
+          ? `${currentYear - 1}-12`
+          : `${currentYear}-${String(currentMonth - 1).padStart(2, "0")}`;
+      const afterYearMonth =
+        currentMonth == 12
+          ? `${currentYear + 1}-01`
+          : `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+
+      console.log(`${beforeYearMonth} ${yearMonth} ${afterYearMonth}`);
+
+      const responseDates = [];
+
+      const beforeResponse = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${beforeYearMonth}`
+      );
+      responseDates.push(...beforeResponse.data);
+
+      const response = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+      );
+      responseDates.push(...response.data);
+
+      const afterResponse = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${afterYearMonth}`
+      );
+      responseDates.push(...afterResponse.data);
+
+      //console.log("GET: ", responseDates);
+      setDayStates(responseDates);
+    } catch (error) {
+      console.log("GET 에러: ", error);
+    }
+  };
+
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
@@ -75,6 +131,13 @@ const CalendarModal = ({
               <View style={styles.calendarContainer}>
                 <Calendar
                   current={selectedDate ? selectedDate : today}
+                  onMonthChange={(date) => {
+                    const newYear = date.year;
+                    const newMonth = date.month;
+
+                    setCurrentYear(newYear);
+                    setCurrentMonth(newMonth);
+                  }}
                   // 헤더 커스터마이징
                   customHeader={(props) => {
                     // props 제공 -> month(Date 객체), addMonth(달 이동)
@@ -165,6 +228,27 @@ const CalendarModal = ({
                     const isBeforeStart =
                       new Date(date.dateString) < new Date(startDate); // 시작일자 이후인지 확인
 
+                    const dayState = dayStates?.find(
+                      (day) => day.date === date.dateString
+                    );
+
+                    let dayColor = "transparent";
+                    if (dayState) {
+                      switch (dayState.state) {
+                        case 0:
+                          dayColor = theme.pink;
+                          break;
+                        case 1:
+                          dayColor = theme.yellow;
+                          break;
+                        case 2:
+                          dayColor = theme.green;
+                          break;
+                        default:
+                          dayColor = "transparent";
+                      }
+                    }
+
                     return (
                       <View style={styles.dayContainer}>
                         <TouchableOpacity
@@ -200,7 +284,7 @@ const CalendarModal = ({
                           <View
                             style={[
                               styles.dayColor,
-                              !isFuture && { backgroundColor: theme.yellow },
+                              { backgroundColor: dayColor },
                             ]}
                           />
                         </TouchableOpacity>
@@ -278,6 +362,7 @@ export default function ExportRecordScreen({ navigation }) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [visible, setVisible] = useState(false); // 모달 상태
   const [calendarNum, setCalendarNum] = useState(null);
+  const [user_code, setUserCode] = useState(7274);
 
   // 키보드 활성화 시 감지
   useLayoutEffect(() => {
@@ -298,6 +383,23 @@ export default function ExportRecordScreen({ navigation }) {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    const getUserCode = async () => {
+      try {
+        // // user_code
+        // const value = await AsyncStorage.getItem("user_code");
+        // if (value !== null) {
+        //   setUserCode(value);
+        // } else {
+        //   console.log("user_code가 null입니다.");
+        // }
+      } catch (error) {
+        console.log("유저 코드 불러오기 실패: ", error);
+      }
+    };
+    getUserCode();
   }, []);
 
   // 휴대폰 뒤로가기 버튼 커스터마이징
@@ -590,6 +692,7 @@ export default function ExportRecordScreen({ navigation }) {
         startDate={startDate}
         setStartDate={setStartDate}
         setEndDate={setEndDate}
+        user_code={user_code}
       />
     </SafeAreaView>
   );

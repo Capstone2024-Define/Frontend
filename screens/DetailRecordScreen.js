@@ -163,18 +163,21 @@ export default function DetailRecordScreen({ navigation, route }) {
         school: schoolText,
         hospital: hospitalText,
         summary: result.summary,
-        state: 2,
+        state: route.params.state,
       });
 
-      const response = axios.post("http://192.168.123.159:8080/daily/post", {
-        user_code: user_id,
-        date: date,
-        home: homeText,
-        school: schoolText,
-        hospital: hospitalText,
-        summary: result.summary,
-        state: 2,
-      });
+      const response = await axios.post(
+        "http://192.168.123.110:8080/daily/post",
+        {
+          user_code: 7274,
+          date: date,
+          home: homeText,
+          school: schoolText,
+          hospital: hospitalText,
+          summary: result.summary,
+          state: route.params.state,
+        }
+      );
 
       console.log("Post 응답:", response.data);
 

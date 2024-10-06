@@ -38,7 +38,7 @@ const Modal2 = ({
   checkList,
   setVisible,
   setRemoveModalVisible,
-  user_id,
+  user_code,
 }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
@@ -76,7 +76,7 @@ const Modal2 = ({
                 navigation.push("DetailModify", {
                   date: date,
                   // checkList: checkList,
-                  user_id: user_id,
+                  user_code: user_code,
                 });
               }}
               style={{
@@ -116,7 +116,8 @@ const Modal2 = ({
 };
 
 export default function DetailHistoryScreen({ navigation, route }) {
-  const user_id = route.params.user_id;
+  const ipnumber = "192.168.123.110";
+  const user_code = route.params.user_code;
   const date = route.params.date;
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
@@ -164,7 +165,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           // setTotalText(newTotalText);
 
           const response = await axios.get(
-            `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
+            `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
           );
           setHomeText(response.data.home);
           setSchoolText(response.data.school);
@@ -183,14 +184,12 @@ export default function DetailHistoryScreen({ navigation, route }) {
   // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
     useCallback(() => {
-      if (dayState) {
-        if (dayState == 2) {
-          setHeaderColor(theme.green);
-        } else if (dayState == 1) {
-          setHeaderColor(theme.yellow);
-        } else if (dayState == 0) {
-          setHeaderColor(theme.pink);
-        }
+      if (dayState == 2) {
+        setHeaderColor(theme.green);
+      } else if (dayState == 1) {
+        setHeaderColor(theme.yellow);
+      } else if (dayState == 0) {
+        setHeaderColor(theme.pink);
       }
     }, [dayState])
   );
@@ -213,6 +212,16 @@ export default function DetailHistoryScreen({ navigation, route }) {
       load();
     }, [])
   );
+
+  const deleteRecord = async () => {
+    try {
+      const response = await axios.delete(
+        `http://${ipnumber}:8080/daily/delete/${user_code}/${date}`
+      );
+    } catch (error) {
+      console.log("삭제 오류: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -405,16 +414,14 @@ export default function DetailHistoryScreen({ navigation, route }) {
         onClose={() => setVisible(false)}
         date={date}
         checkList={checkList}
-        user_id={user_id}
+        user_code={user_code}
         setVisible={setVisible}
         setRemoveModalVisible={setRemoveModalVisible}
       />
       <RemoveAlert
         visible={removeModalVisible}
         onClose={() => setRemoveModalVisible(false)}
-        onRemove={() => {
-          console.log("상세기록 삭제 기능");
-        }}
+        onRemove={deleteRecord}
       />
     </SafeAreaView>
   );

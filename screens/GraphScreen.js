@@ -5,17 +5,23 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  ImageBackground,
+  Image,
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { WithLocalSvg } from "react-native-svg/css";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import Y from "../assets/axisY.svg";
 import Svg, { Line, Polyline, Circle } from "react-native-svg";
 import { PieChart } from "react-native-chart-kit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { BlurView } from "expo-blur";
 
-export default function GraphScreen({ setState }) {
+export default function GraphScreen({ setIsCalendar }) {
   const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
@@ -43,28 +49,38 @@ export default function GraphScreen({ setState }) {
   const [weekNumber, setWeekNumber] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date(today)); // 현재 기준이 되는 날짜
   const [dayState_week, setDayState_week] = useState([0, 0, 1, 2, 2, null, 1]);
-  const [dayState_month, setDayState_month] = useState([
-    2,
-    2,
-    1,
-    2,
-    2,
-    null,
-    1,
-    2,
-    0,
-    1,
-    2,
-    2,
-    1,
-    0,
-  ]);
+  const [dayState_month, setDayState_month] = useState([0]);
   const [beforeSelectedWeek, setBeforeSelectedWeek] = useState(new Date(today));
   const [symptomCount, setSymptomCount] = useState([
     10, 5, 1, 2, 6, 7, 8, 1, 0, 6, 9, 8, 3, 4, 5, 1, 0,
   ]);
   const [stateCount, setStateCount] = useState([0, 0, 0]);
   const previousWeek = useRef(week); // 변경 전 주
+  const [user_code, setUserCode] = useState(7274);
+  const [weekStateNull, setWeekStateNull] = useState(false); // 주간 기록이 없을때 확인
+  const ipnumber = "192.168.123.110";
+
+  useEffect(() => {
+    const getUserCode = async () => {
+      try {
+        // // user_code
+        // const value = await AsyncStorage.getItem("user_code");
+        // if (value !== null) {
+        //   setUserCode(value);
+        // } else {
+        //   console.log("user_code가 null입니다.");
+        // }
+      } catch (error) {
+        console.log("유저 코드 불러오기 실패: ", error);
+      }
+    };
+
+    const start = async () => {
+      await getUserCode();
+      await monthLoad();
+    };
+    start();
+  }, []);
 
   useEffect(() => {
     // 선택 날짜로 주차 초기화
@@ -72,14 +88,9 @@ export default function GraphScreen({ setState }) {
     setWeek(weekDates);
     setWeekNumber(weekOfMonth);
 
-    // 구현예정
-    // 주 날짜가 바꼈을때
-    if (previousWeek.current[0] !== weekDates[0]) {
-      // dayState_week 업데이트
-    }
     // selectedDate 월이 변할때
     if (beforeSelectedWeek.getMonth() !== selectedDate.getMonth()) {
-      // dayState_month 업데이트
+      monthLoad();
     }
     previousWeek.current = weekDates;
     setBeforeSelectedWeek(selectedDate);
@@ -87,9 +98,77 @@ export default function GraphScreen({ setState }) {
     console.log("선택날짜: ", selectedDate);
   }, [selectedDate]);
 
+  // 월간 state 바꼈을때 월간 state count
   useEffect(() => {
     getStateCount();
   }, [dayState_month]);
+
+  // 주 날짜 바꼈을때 주간 state 로드
+  useEffect(() => {
+    weekLoad();
+  }, [week]);
+
+  // 주간 state 로드
+  const weekLoad = async () => {
+    try {
+      const requests = week.map((wek) =>
+        axios.get(`http://${ipnumber}:8080/daily/records/${user_code}/${wek}`)
+      );
+
+      // 모든 요청이 완료될 때까지 대기
+      const responses = await Promise.all(requests);
+      const newDayStateWeek = responses.map((response) => {
+        return response.data && response.data.state !== undefined
+          ? response.data.state
+          : null;
+      });
+
+      console.log("주간 state : ", newDayStateWeek);
+
+      // 모든 값이 null인지 확인
+      const allNull = newDayStateWeek.every((state) => state === null);
+
+      if (allNull) {
+        setWeekStateNull(true);
+      } else {
+        setWeekStateNull(false);
+      }
+
+      setDayState_week(newDayStateWeek);
+    } catch (error) {
+      console.log("week 로드 실패 : ", error);
+    }
+  };
+
+  // 한 달 state 로드
+  const monthLoad = async () => {
+    try {
+      const yearMonth = `${selectedDate.getFullYear()}-${String(
+        selectedDate.getMonth() + 1
+      ).padStart(2, "0")}`;
+
+      const response = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+      );
+
+      //console.log(response.data);
+
+      // dayState_month 초기화
+      const monthDays = 31;
+      const newDayStateMonth = Array(monthDays).fill(null);
+
+      response.data.forEach((item) => {
+        const day = new Date(item.date).getDate(); // 일(day) 값 추출
+        newDayStateMonth[day - 1] = item.state; // 해당 인덱스에 state 값 할당
+      });
+
+      console.log(newDayStateMonth);
+
+      setDayState_month(newDayStateMonth);
+    } catch (error) {
+      console.log("month 로드 실패: ", error);
+    }
+  };
 
   // 현재 날짜의 주 날짜, 주차 계산
   const getCurrentWeek = (date) => {
@@ -156,6 +235,7 @@ export default function GraphScreen({ setState }) {
   // 월간 꺾은선 그래프(null 무시)
   const draw_monthSegments = () => {
     const segments = [];
+
     dayState_month.forEach((value, index) => {
       if (value !== null) {
         segments.push({ x: index * 8 + 16, y: 132 - value * 64 });
@@ -164,6 +244,7 @@ export default function GraphScreen({ setState }) {
 
     return segments.length === 0 ? null : [segments];
   };
+  const monthSegments = useMemo(() => draw_monthSegments(), [dayState_month]);
 
   // 원 그래프 데이터(최고, 보통, 아쉬움)
   const pieData = [
@@ -210,7 +291,7 @@ export default function GraphScreen({ setState }) {
   const getStateCount = () => {
     const newStateCount = [0, 0, 0]; // 최고, 보통, 아쉬움
 
-    dayState_month.map((state) => {
+    dayState_month.forEach((state) => {
       if (state === 2) {
         newStateCount[0]++;
       } else if (state === 1) {
@@ -230,7 +311,7 @@ export default function GraphScreen({ setState }) {
         <View style={{ flex: 1 }}>
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => setState(false)}
+            onPress={() => setIsCalendar(true)}
             style={styles.headerTab}
           >
             <Text style={{ ...styles.subTitle, color: theme.grey300 }}>
@@ -338,157 +419,198 @@ export default function GraphScreen({ setState }) {
           {/* 꺾은선 그래프 */}
           <View
             style={{
-              flexDirection: "row",
+              width: "100%",
               alignItems: "center",
-              justifyContent: "space-between",
-              width: 288,
-              marginBottom: 27,
+              justifyContent: "center",
             }}
           >
-            {/* y축 */}
-            <View>
-              <Text>
-                세{"\n"}로{"\n"}축
-              </Text>
-            </View>
-            {/* 그래프 */}
-            <Svg
-              height="138"
-              width="254"
-              style={{ marginTop: 11, backgroundColor: "white" }}
+            {/* 블러 처리 */}
+            {((!isWeek && !monthSegments) || (isWeek && weekStateNull)) && (
+              <ImageBackground
+                source={require("../assets/NoData1.png")}
+                style={styles.absolute}
+                resizeMode="cover"
+              >
+                <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+                <Text style={styles.noDataText}>
+                  하루기록으로 증상을 체크해주세요!
+                </Text>
+              </ImageBackground>
+              // <BlurView intensity={100} style={styles.overlay}>
+              //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              //   <Text style={styles.noDataText}>
+              //     하루기록으로 증상을 체크해주세요!
+              //   </Text>
+              // </BlurView>
+            )}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: 288,
+                marginBottom: 24,
+              }}
             >
-              {/* x축 선 */}
-              <Line
-                x1="0"
-                y1="132"
-                x2="248"
-                y2="132"
-                stroke="#EBEBEB"
-                strokeWidth="1"
-              />
-              <Line
-                x1="0"
-                y1="68"
-                x2="248"
-                y2="68"
-                stroke="#EBEBEB"
-                strokeWidth="1"
-              />
-              <Line
-                x1="0"
-                y1="4"
-                x2="248"
-                y2="4"
-                stroke="#EBEBEB"
-                strokeWidth="1"
-              />
-              {/* 주간 그래프 */}
-              {isWeek
-                ? draw_weekSegments().map((segment, index) => {
-                    const points = segment
-                      .map((point) => `${point.x},${point.y}`)
-                      .join(" ");
-                    return (
-                      <Polyline
-                        key={index}
-                        points={points}
-                        fill="none"
-                        stroke={theme.green500}
-                        strokeWidth="2"
-                      />
-                    );
-                  })
-                : null}
-              {isWeek
-                ? dayState_week.map((value, index) => {
-                    if (value !== null) {
+              {/* y축 */}
+              <View style={{ marginLeft: 4 }}>
+                <WithLocalSvg asset={Y} />
+              </View>
+              {/* 그래프 */}
+              <Svg
+                height="148"
+                width="254"
+                style={{ marginTop: 11, backgroundColor: "white" }}
+              >
+                {/* x축 선 */}
+                <Line
+                  x1="0"
+                  y1="132"
+                  x2="248"
+                  y2="132"
+                  stroke="#EBEBEB"
+                  strokeWidth="1"
+                />
+                <Line
+                  x1="0"
+                  y1="68"
+                  x2="248"
+                  y2="68"
+                  stroke="#EBEBEB"
+                  strokeWidth="1"
+                />
+                <Line
+                  x1="0"
+                  y1="4"
+                  x2="248"
+                  y2="4"
+                  stroke="#EBEBEB"
+                  strokeWidth="1"
+                />
+                {/* 주간 그래프 */}
+                {isWeek
+                  ? draw_weekSegments().map((segment, index) => {
+                      const points = segment
+                        .map((point) => `${point.x},${point.y}`)
+                        .join(" ");
                       return (
-                        <Circle
+                        <Polyline
                           key={index}
-                          cx={index * 37 + 13}
-                          cy={132 - value * 64}
-                          r="3"
-                          fill="white"
+                          points={points}
+                          fill="none"
                           stroke={theme.green500}
-                          strokeWidth={2}
+                          strokeWidth="2"
                         />
                       );
-                    }
-                    return null;
-                  })
-                : null}
-              {/* 월간 그래프 */}
-              {!isWeek
-                ? draw_monthSegments().map((segment, index) => {
-                    const points = segment
-                      .map((point) => `${point.x},${point.y}`)
-                      .join(" ");
-                    return (
-                      <Polyline
-                        key={index}
-                        points={points}
-                        fill="none"
-                        stroke={theme.green500}
-                        strokeWidth="2"
-                      />
-                    );
-                  })
-                : null}
-            </Svg>
-          </View>
-          <View style={styles.line} />
-          {/* 날짜 */}
-          <View
-            style={{
-              ...styles.rowContainer,
-              justifyContent: "flex-end",
-              marginTop: 8,
-            }}
-          >
-            {/* 주간 날짜 */}
-            {isWeek &&
-              week.map((day, index) => (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 37,
-                  }}
-                >
-                  <Text
+                    })
+                  : null}
+                {isWeek
+                  ? dayState_week.map((value, index) => {
+                      if (value !== null) {
+                        return (
+                          <Circle
+                            key={index}
+                            cx={index * 37 + 13}
+                            cy={132 - value * 64}
+                            r="3"
+                            fill="white"
+                            stroke={theme.green500}
+                            strokeWidth={2}
+                          />
+                        );
+                      }
+                      return null;
+                    })
+                  : null}
+                {/* 월간 그래프 */}
+                {!isWeek && monthSegments
+                  ? monthSegments.map((segment, index) => {
+                      const points = segment
+                        .map((point) => `${point.x},${point.y}`)
+                        .join(" ");
+                      return (
+                        <Polyline
+                          key={index}
+                          points={points}
+                          fill="none"
+                          stroke={theme.green500}
+                          strokeWidth="2"
+                        />
+                      );
+                    })
+                  : null}
+                {!isWeek
+                  ? dayState_month.map((value, index) => {
+                      if (value !== null) {
+                        return (
+                          <Circle
+                            key={index}
+                            cx={index * 8 + 16}
+                            cy={132 - value * 64}
+                            r="1"
+                            fill={theme.green500}
+                          />
+                        );
+                      }
+                      return null;
+                    })
+                  : null}
+              </Svg>
+            </View>
+            <View style={styles.line} />
+            {/* 날짜 */}
+            <View
+              style={{
+                ...styles.rowContainer,
+                justifyContent: "flex-end",
+                marginTop: 8,
+              }}
+            >
+              {/* 주간 날짜 */}
+              {isWeek &&
+                week.map((day, index) => (
+                  <View
+                    key={index}
                     style={{
-                      ...styles.s_text,
-                      fontFamily: "Pretendard-Medium",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 37,
                     }}
                   >
-                    {new Date(day).getMonth() + 1}.{new Date(day).getDate()}
-                  </Text>
-                </View>
-              ))}
-            {/* 월간 날짜 */}
-            {!isWeek &&
-              [1, 8, 15, 22, 28].map((day, index) => (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 53,
-                  }}
-                >
-                  <Text
+                    <Text
+                      style={{
+                        ...styles.s_text,
+                        fontFamily: "Pretendard-Medium",
+                      }}
+                    >
+                      {new Date(day).getMonth() + 1}.{new Date(day).getDate()}
+                    </Text>
+                  </View>
+                ))}
+              {/* 월간 날짜 */}
+              {!isWeek &&
+                [1, 8, 15, 22, 28].map((day, index) => (
+                  <View
+                    key={index}
                     style={{
-                      ...styles.s_text,
-                      fontFamily: "Pretendard-Medium",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 53,
                     }}
                   >
-                    {selectedDate.getMonth() + 1}.{day}
-                  </Text>
-                </View>
-              ))}
+                    <Text
+                      style={{
+                        ...styles.s_text,
+                        fontFamily: "Pretendard-Medium",
+                      }}
+                    >
+                      {selectedDate.getMonth() + 1}.{day}
+                    </Text>
+                  </View>
+                ))}
+            </View>
           </View>
         </View>
         {/* 증상체크 차트 */}
@@ -511,19 +633,66 @@ export default function GraphScreen({ setState }) {
         </View>
         {/* 원 차트 */}
         <View style={styles.subContainer}>
+          {/* 블러 처리 */}
+          {!monthSegments && (
+            <ImageBackground
+              source={require("../assets/NoData2.png")}
+              style={styles.absolute}
+              resizeMode="contain"
+            >
+              <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              <Text style={styles.noDataText}>
+                하루기록으로 증상을 체크해주세요!
+              </Text>
+            </ImageBackground>
+            // <BlurView intensity={100} style={styles.absolute}>
+            //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+            //   <Text style={styles.noDataText}>
+            //     하루기록으로 증상을 체크해주세요!
+            //   </Text>
+            // </BlurView>
+          )}
           <View style={styles.rowContainer}>
-            <PieChart
-              data={pieData}
-              width={100}
-              height={100}
-              chartConfig={{
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            <View
+              style={{
+                width: 82,
+                height: 82,
+                borderRadius: 60,
+                borderWidth: 1,
+                borderColor: theme.grey500,
+                justifyContent: "center",
+                alignItems: "center",
+                margin: 9,
               }}
-              center={[25, 0]}
-              accessor={"count"}
-              backgroundColor={"transparent"}
-              hasLegend={false}
-            />
+            >
+              <PieChart
+                data={pieData}
+                width={100}
+                height={100}
+                chartConfig={{
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                center={[25, 0]}
+                accessor={"count"}
+                backgroundColor={"transparent"}
+                hasLegend={false}
+              />
+              {/* <VictoryPie
+                data={[
+                  { x: "A", y: 50 },
+                  { x: "B", y: 30 },
+                  { x: "C", y: 20 },
+                ]}
+                colorScale={["#A3D1A3", "#F9D084", "#F28B82"]}
+                innerRadius={50}
+                style={{
+                  data: {
+                    stroke: "gray", // 테두리 색상
+                    strokeWidth: 2,
+                  },
+                }}
+              /> */}
+            </View>
             <View style={{ flex: 1, marginLeft: 24 }}>
               <PieLabel
                 label={"최고"}
@@ -682,6 +851,12 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Regular",
     color: theme.grey600,
   },
+  noDataText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey800,
+  },
   button: {
     flex: 1,
     alignItems: "center",
@@ -728,5 +903,15 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 24,
     backgroundColor: theme.green100,
+  },
+  absolute: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
   },
 });

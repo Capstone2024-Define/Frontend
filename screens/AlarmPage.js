@@ -64,6 +64,19 @@ export default function AlarmPage({ navigation }) {
     }, [])
   );
 
+  const printScheduledAlarms = async () => {
+    try {
+      // 스케줄된 모든 알림 가져오기
+      const scheduledNotifications =
+        await Notifications.getAllScheduledNotificationsAsync();
+
+      // 콘솔에 스케줄된 알림 출력
+      console.log("스케줄된 알림:", scheduledNotifications);
+    } catch (error) {
+      console.error("스케줄된 알림을 가져오는 중 오류 발생:", error);
+    }
+  };
+
   // 삭제모드 시 뒤로가기 커스텀(기본 모드로 변경되게)
   useEffect(() => {
     const onBackPress = () => {
@@ -118,6 +131,18 @@ export default function AlarmPage({ navigation }) {
       const newAlarms = alarms.filter(
         (_, index) => !selectedAlarms.includes(index)
       );
+
+      // 삭제할 알람의 스케줄된 알림을 모두 취소
+      for (let index of selectedAlarms) {
+        const alarmToDelete = alarms[index];
+        if (alarmToDelete.notificationIds) {
+          for (let notificationId of alarmToDelete.notificationIds) {
+            await Notifications.cancelScheduledNotificationAsync(
+              notificationId
+            );
+          }
+        }
+      }
 
       try {
         await AsyncStorage.setItem("alarm", JSON.stringify(newAlarms));

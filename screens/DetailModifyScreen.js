@@ -35,7 +35,8 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const [totalText, setTotalText] = useState("");
   const date = route.params.date;
-  const user_id = route.params.user_id;
+  const user_code = route.params.user_code;
+  const ipnumber = "192.168.123.110";
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -63,7 +64,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
 
         // 이미지 저장 DB 로직 짜여지면 이미지 id 관리 윗줄처럼
         const response = await axios.get(
-          `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
+          `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
         );
         setHomeText(response.data.home);
         setSchoolText(response.data.school);
@@ -194,7 +195,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
       console.log(result.summary);
 
       console.log("전송 데이터:", {
-        user_code: user_id,
+        user_code: user_code,
         date: date,
         home: homeText,
         school: schoolText,
@@ -203,18 +204,19 @@ export default function DetailHistoryScreen({ navigation, route }) {
         state: 2,
       });
 
-      // 삭제 로직
-
-      // 저장
-      const response = axios.post("http://192.168.123.159:8080/daily/post", {
-        user_code: user_id,
-        date: date,
-        home: homeText,
-        school: schoolText,
-        hospital: hospitalText,
-        summary: result.summary,
-        state: 2,
-      });
+      // 수정
+      const response = await axios.put(
+        `http://${ipnumber}:8080/daily/records/edit/${user_code}/${date}`,
+        {
+          user_code: user_code,
+          date: date,
+          home: homeText,
+          school: schoolText,
+          hospital: hospitalText,
+          summary: result.summary,
+          state: 2,
+        }
+      );
 
       console.log("Post 응답:", response.data);
 
@@ -237,7 +239,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
       // // 스토리지 저장
       // await save(newRecord);
     } catch (error) {
-      console.log("저장 에러", error);
+      console.log("수정 에러", error);
     }
   };
 

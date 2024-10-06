@@ -67,7 +67,7 @@ export default function TestPage() {
         method: "POST",
         url: "https://kapi.kakao.com/v1/user/unlink",
         headers: {
-          Authorization: `Bearer RyAzEUsE1jsjetFirfBcQb9IAnD2P8OFAAAAAQopyNkAAAGSQn9Ouqew61y3DOUZ`, // 본인 토큰
+          Authorization: `Bearer ELC5V3f78_lTQ0sUpFxwf5npWasjcLR8AAAAAQoqJQ0AAAGSS_-gHaew61y3DOUZ`, // 본인 토큰
         },
       });
       console.log("로그아웃 성공: ", response.data);
@@ -98,20 +98,6 @@ export default function TestPage() {
         >
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => navigation.push("KakaoLogin")}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>카카오 로그인</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={logoutKakao}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>카카오 로그아웃</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
             onPress={() => navigation.push("StartInfo", { user_id: 1 })}
             style={styles.button}
           >
@@ -123,6 +109,20 @@ export default function TestPage() {
             style={styles.button}
           >
             <Text style={styles.buttonText}>알림 페이지</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => navigation.push("KakaoLogin")}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>카카오 로그인</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={logoutKakao}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>카카오 로그아웃</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}

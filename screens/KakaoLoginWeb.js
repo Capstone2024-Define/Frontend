@@ -78,7 +78,7 @@ export default function KakaoLoginWeb({ navigation }) {
   const save = async (toSave) => {
     try {
       // await AsyncStorage.clear()
-      await AsyncStorage.setItem("user_id", toSave.toString());
+      await AsyncStorage.setItem("user_code", toSave.toString());
     } catch (error) {
       console.log("유저 ID 저장 에러 ", error);
     }

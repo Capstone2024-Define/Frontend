@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, SafeAreaView } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
 
 const resultImages = {
   최고예요: require("../assets/high.png"), // 최고예요 이미지 경로
@@ -16,16 +17,20 @@ export default function SymptomResultScreen({ route, navigation }) {
 
   let resultText = "";
   let resultImage = null;
+  let state = 0;
 
   if (selectedCount <= 3) {
     resultText = "최고예요!";
     resultImage = resultImages["최고예요"];
+    state = 2;
   } else if (selectedCount <= 9) {
     resultText = "보통이에요!";
     resultImage = resultImages["보통이에요"];
+    state = 1;
   } else {
     resultText = "아쉬워요!";
     resultImage = resultImages["아쉬워요"];
+    state = 0;
   }
 
   return (
@@ -41,6 +46,7 @@ export default function SymptomResultScreen({ route, navigation }) {
           navigation.push("SymptomCheckParent", {
             date: route.params.date,
             symptomList: route.params.symptomList,
+            state: state,
           });
         }}
         line={false}

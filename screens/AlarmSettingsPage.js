@@ -109,9 +109,10 @@ export default function AlarmSettingsPage({ navigation }) {
   const scheduleAlarm = async (hour, minute, ampm, selectedDays) => {
     const now = new Date();
     const currentDay = now.getDay();
+    const notificationIds = []; // 스케줄된 알림 ID를 저장할 배열
 
-    selectedDays.forEach((isSelected, index) => {
-      if (isSelected) {
+    for (let index = 0; index < selectedDays.length; index++) {
+      if (selectedDays[index]) {
         const alarmDay = (index + 7 - currentDay) % 7;
         const triggerTime = new Date(now);
 
@@ -122,7 +123,8 @@ export default function AlarmSettingsPage({ navigation }) {
         triggerTime.setMinutes(parseInt(minute));
         triggerTime.setSeconds(0);
 
-        Notifications.scheduleNotificationAsync({
+        // 스케줄된 알림의 ID를 저장
+        const notificationId = await Notifications.scheduleNotificationAsync({
           content: {
             title: "Clobit",
             body: "설정된 시간입니다!",
@@ -132,29 +134,35 @@ export default function AlarmSettingsPage({ navigation }) {
             repeats: false,
           },
         });
+
+        // 각 알림의 notificationId를 배열에 추가
+        notificationIds.push(notificationId);
       }
-    });
+    }
+
+    return notificationIds; // 알림 ID 배열 반환
   };
 
   const handleComplete = async () => {
     if (selectedDays.every((day) => !day)) {
       return; // 요일이 하나도 선택되지 않은 경우, 확인 버튼 클릭을 방지
     }
-    const newAlarm = {
-      hour: selectedHour,
-      minute: selectedMinute,
-      ampm: selectedAmPm,
-      days: selectedDays,
-    };
-    console.log("새로운 알람", newAlarm);
 
-    // 알림 스케줄링
-    await scheduleAlarm(
+    const notificationIds = await scheduleAlarm(
       selectedHour,
       selectedMinute,
       selectedAmPm,
       selectedDays
     );
+
+    const newAlarm = {
+      hour: selectedHour,
+      minute: selectedMinute,
+      ampm: selectedAmPm,
+      days: selectedDays,
+      notificationIds: notificationIds,
+    };
+    console.log("새로운 알람", newAlarm);
 
     await save(newAlarm);
     navigation.pop();
@@ -296,11 +304,12 @@ export default function AlarmSettingsPage({ navigation }) {
         <LinearGradient
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          colors={["#79BA7E", "#AFCA85"]}
-          style={[
-            styles.confirmButton,
-            selectedDays.every((day) => !day) && { opacity: 0.5 },
-          ]}
+          colors={
+            selectedDays.every((day) => !day)
+              ? ["#C1C1C1", "#C1C1C1"]
+              : ["#79BA7E", "#AFCA85"]
+          }
+          style={[styles.confirmButton]}
         >
           <Text style={styles.confirmButtonText}>확인</Text>
         </LinearGradient>
