@@ -20,6 +20,7 @@ import { PieChart } from "react-native-chart-kit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BlurView } from "expo-blur";
+// import { VictoryPie } from "victory-native";
 
 export default function GraphScreen({ setIsCalendar }) {
   const today = new Date().toLocaleDateString("sv-SE", {
@@ -167,6 +168,27 @@ export default function GraphScreen({ setIsCalendar }) {
       setDayState_month(newDayStateMonth);
     } catch (error) {
       console.log("month 로드 실패: ", error);
+    }
+  };
+
+  // 증상체크 count 로드
+  const SymptomCheckCount = async () => {
+    try {
+      const response = await axios.get(
+        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+      );
+
+      const newSymtomCount = Array(symptomList.length).fill(0);
+      response.data.forEach((item) => {
+        item.checklist.forEach((list, index) => {
+          if (list == 1) {
+            newSymtomCount[index]++;
+          }
+        });
+      });
+      setSymptomCount(newSymtomCount);
+    } catch (error) {
+      console.log("symptom 로드 실패: ", error);
     }
   };
 
@@ -679,18 +701,10 @@ export default function GraphScreen({ setIsCalendar }) {
               />
               {/* <VictoryPie
                 data={[
-                  { x: "A", y: 50 },
-                  { x: "B", y: 30 },
-                  { x: "C", y: 20 },
+                  { x: "Cats", y: 35 },
+                  { x: "Dogs", y: 40 },
+                  { x: "Birds", y: 55 },
                 ]}
-                colorScale={["#A3D1A3", "#F9D084", "#F28B82"]}
-                innerRadius={50}
-                style={{
-                  data: {
-                    stroke: "gray", // 테두리 색상
-                    strokeWidth: 2,
-                  },
-                }}
               /> */}
             </View>
             <View style={{ flex: 1, marginLeft: 24 }}>

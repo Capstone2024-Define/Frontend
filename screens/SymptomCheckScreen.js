@@ -68,10 +68,42 @@ const SymptomCheckScreen = ({ route, navigation }) => {
   const handleNextPress = () => {
     navigation.push("SymptomResult", {
       selectedCount: selectedSymptoms.length,
-      symptomList: selectedSymptoms,
+      symptomList: formatSymptomList(),
       date: route.params.date,
     });
+  };
+
+  const formatSymptomList = () => {
+    const symptomList = [
+      "불순응",
+      "반항",
+      "떼쓰기",
+      "자기연민성발언",
+      "부정적인발언",
+      "꾀병",
+      "조르기",
+      "끼어들기",
+      "학교성적부진",
+      "읽기능력부진",
+      "주의력결핍",
+      "무기력",
+      "빈둥거리기",
+      "고자질",
+      "가족과다툼",
+      "공격성",
+      "거짓말",
+    ];
+    const newSymptomList = Array(symptomList.length).fill(0);
+
     console.log(selectedSymptoms);
+    symptomList.forEach((symptom, index) => {
+      if (selectedSymptoms.includes(symptom)) {
+        newSymptomList[index] = 1;
+      }
+    });
+    console.log(newSymptomList);
+
+    return newSymptomList;
   };
 
   return (

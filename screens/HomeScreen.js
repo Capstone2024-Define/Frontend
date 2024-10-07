@@ -64,6 +64,7 @@ export default function HomeScreen({ navigation }) {
   const [totalText, setTotalText] = useState("");
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
+  const [totalDay, setTotalDay] = useState(0);
   const ipnumber = "192.168.123.110";
   let user_code = 7274; // 유저 id
 
@@ -136,6 +137,12 @@ export default function HomeScreen({ navigation }) {
             console.log("GET: ", response.data);
             setTotalText(response.data.summary);
             setSummaryText(response.data.summary);
+
+            // 몇일째 기록하는중인지 가져옴
+            const response_total = await axios.get(
+              `http://${ipnumber}:8080/daily/records/${user_code}`
+            );
+            setTotalDay(response_total.data.length);
           } catch (e) {
             // 기록 없는거니까 텍스트랑 이미지 비움
             setTotalText("");
@@ -300,7 +307,7 @@ export default function HomeScreen({ navigation }) {
             >
               <Text style={styles.title}>{"오늘도 같이 기록해볼까요?"}</Text>
               <View style={{ flexDirection: "row", alignItems: "baseline" }}>
-                <Text style={styles.boldTitle}>12일째 </Text>
+                <Text style={styles.boldTitle}>{totalDay}일째 </Text>
                 <Text style={styles.title}>기록하는 중</Text>
               </View>
             </View>

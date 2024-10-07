@@ -13,7 +13,6 @@ const resultImages = {
 
 export default function SymptomResultScreen({ route, navigation }) {
   const { selectedCount } = route.params;
-  //console.log(selectedCount);
 
   let resultText = "";
   let resultImage = null;

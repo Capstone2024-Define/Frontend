@@ -164,9 +164,11 @@ export default function DetailRecordScreen({ navigation, route }) {
         hospital: hospitalText,
         summary: result.summary,
         state: route.params.state,
+        checklist: route.params.symptomList,
+        parentlist: route.params.checkList,
       });
 
-      const response = await axios.post(
+      const response_daily = await axios.post(
         "http://192.168.123.110:8080/daily/post",
         {
           user_code: 7274,
@@ -179,7 +181,31 @@ export default function DetailRecordScreen({ navigation, route }) {
         }
       );
 
-      console.log("Post 응답:", response.data);
+      console.log("daily Post 응답:", response_daily.data);
+
+      // ***체크리스트 DB되면 주석풀것
+      // const response_symptomCheck = await axios.post(
+      //   "http://192.168.123.110:8080/daily/post",
+      //   {
+      //     user_code: 7274,
+      //     date: date,
+      //     checklist: route.params.symptomList,
+      //   }
+      // );
+
+      // console.log("symptomCheck Post 응답:", response_symptomCheck.data);
+
+      // const response_parentCheck = await axios.post(
+      //   "http://192.168.123.110:8080/daily/post",
+      //   {
+      //     user_code: 7274,
+      //     date: date,
+      //     checklist:route.params.checkList
+      //   }
+      // );
+
+      // console.log("parentCheck Post 응답:", response_parentCheck.data);
+      // ***
 
       // 서머리
       // const result = await summary(totalText);

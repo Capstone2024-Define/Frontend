@@ -181,6 +181,25 @@ export default function DetailHistoryScreen({ navigation, route }) {
     }, [])
   );
 
+  // 체크리스트 띄움 (수정 불가능)
+  useEffect(() => {
+    async function load() {
+      try {
+        // ** 체크리스트 DB 완료시에 주석 풀기
+        // const response_symptomCheck = await axios.get(
+        //   `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
+        // );
+        // setSymptomList(response_symptomCheck.data.checklist);
+        // const response_parentCheck = await axios.get(
+        //   `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
+        // );
+        // setCheckList(response_parentCheck.data.checklist);
+      } catch (error) {
+        console.log("체크리스트 로드 에러: ", error);
+      }
+    }
+  }, []);
+
   // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
     useCallback(() => {
@@ -218,6 +237,13 @@ export default function DetailHistoryScreen({ navigation, route }) {
       const response = await axios.delete(
         `http://${ipnumber}:8080/daily/delete/${user_code}/${date}`
       );
+      // ** 체크리스트 DB 만들어지면 주석 해제
+      // const response_symptomCheck = await axios.delete(
+      //   `http://${ipnumber}:8080/daily/delete/${user_code}/${date}`
+      // );
+      // const response_parentCheck = await axios.delete(
+      //   `http://${ipnumber}:8080/daily/delete/${user_code}/${date}`
+      // );
     } catch (error) {
       console.log("삭제 오류: ", error);
     }
