@@ -26,6 +26,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import summary from "./SummaryAPI";
 import RemoveAlert from "../component/RemoveAlert";
 import ModalCloseButton from "../component/ModalCloseButton";
+import summarize from "./ChatgptAPI";
 
 // 음성녹음 창에서 올때는 이 날 기록보기, 삭제하기를 띄움
 // 기록 창에서 올때는 삭제하기만 띄움
@@ -219,7 +220,10 @@ export default function DetailVoiceScreen({ navigation, route }) {
     useCallback(() => {
       const handleSummary = async () => {
         try {
+          // 서머리
           const result = await summary(text);
+          // 챗지피티 (요금때문에 일단 주석)
+          // const summarizeText = await summarize(text);
           setSummaryText(result.summary);
           // console.log(result.summary);
         } catch (error) {

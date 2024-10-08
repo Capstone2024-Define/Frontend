@@ -116,7 +116,7 @@ const Modal2 = ({
 };
 
 export default function DetailHistoryScreen({ navigation, route }) {
-  const ipnumber = "192.168.123.110";
+  const ipnumber = "192.168.123.159";
   const user_code = route.params.user_code;
   const date = route.params.date;
   const [homeText, setHomeText] = useState("");

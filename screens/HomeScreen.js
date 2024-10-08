@@ -61,11 +61,11 @@ export default function HomeScreen({ navigation }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
   const [images, setImages] = useState([]);
-  const [totalText, setTotalText] = useState("");
+  // const [totalText, setTotalText] = useState("");
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
   const [totalDay, setTotalDay] = useState(0);
-  const ipnumber = "192.168.123.110";
+  const ipnumber = "192.168.123.159";
   let user_code = 7274; // 유저 id
 
   // 홈 화면만 상태바 색 변경
@@ -134,8 +134,8 @@ export default function HomeScreen({ navigation }) {
               `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
             );
 
-            console.log("GET: ", response.data);
-            setTotalText(response.data.summary);
+            // console.log("GET: ", response.data);
+            // setTotalText(response.data.summary);
             setSummaryText(response.data.summary);
 
             // 몇일째 기록하는중인지 가져옴
@@ -455,7 +455,7 @@ export default function HomeScreen({ navigation }) {
             </Shadow>
             <View style={{ marginBottom: 16 }} />
 
-            {images.length > 0 || totalText ? (
+            {images.length > 0 || summaryText ? (
               <View style={{ flex: 1 }}>
                 <Shadow
                   distance={5}
@@ -497,9 +497,11 @@ export default function HomeScreen({ navigation }) {
                       ))}
                     </View>
                     <Text style={styles.recordText}>
-                      {summaryText && summaryText !== ""
+                      {/* {summaryText && summaryText !== ""
                         ? summaryText.slice(0, 92).replace(/\n/g, " ")
-                        : totalText.slice(0, 92).replace(/\n/g, " ")}
+                        : totalText.slice(0, 92).replace(/\n/g, " ")} */}
+                      {summaryText &&
+                        summaryText.slice(0, 100).replace(/\n/g, " ")}
                       ...
                     </Text>
                   </TouchableOpacity>
@@ -612,7 +614,7 @@ export default function HomeScreen({ navigation }) {
                   <TouchableOpacity
                     style={styles.greenButton}
                     onPress={() =>
-                      images.length > 0 || totalText
+                      images.length > 0 || summaryText
                         ? navigation.push("DetailModify", {
                             date: selectedDate,
                             user_code: user_code,
@@ -622,7 +624,7 @@ export default function HomeScreen({ navigation }) {
                           })
                     }
                   >
-                    {images.length > 0 || totalText ? (
+                    {images.length > 0 || summaryText ? (
                       <WithLocalSvg asset={Edit_white} />
                     ) : (
                       <WithLocalSvg asset={Note_white} />
@@ -636,7 +638,9 @@ export default function HomeScreen({ navigation }) {
                         fontFamily: "Pretendard-Bold",
                       }}
                     >
-                      {images.length > 0 || totalText ? "수정하기" : "하루기록"}
+                      {images.length > 0 || summaryText
+                        ? "수정하기"
+                        : "하루기록"}
                     </Text>
                   </TouchableOpacity>
                 </LinearGradient>

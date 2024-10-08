@@ -59,7 +59,7 @@ export default function GraphScreen({ setIsCalendar }) {
   const previousWeek = useRef(week); // 변경 전 주
   const [user_code, setUserCode] = useState(7274);
   const [weekStateNull, setWeekStateNull] = useState(false); // 주간 기록이 없을때 확인
-  const ipnumber = "192.168.123.110";
+  const ipnumber = "192.168.123.159";
 
   useEffect(() => {
     const getUserCode = async () => {

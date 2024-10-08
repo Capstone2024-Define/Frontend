@@ -40,7 +40,7 @@ export default function CalendarScreen({ navigation }) {
   );
   const [record, setRecord] = useState({});
   const [user_code, setUserCode] = useState(7274);
-  const ipnumber = "192.168.123.110";
+  const ipnumber = "192.168.123.159";
 
   useEffect(() => {
     const getUserCode = async () => {
