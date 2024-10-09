@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
@@ -13,12 +12,10 @@ import Header from "../component/Header";
 import { theme } from "../colors/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summarize from "./ChatgptAPI";
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
 
 export default function TestPage() {
-  // GET
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-
   const navigation = useNavigation();
 
   // GET 요청 형식
@@ -30,14 +27,12 @@ export default function TestPage() {
 
     console.log("GET 요청 시작");
     axios
-      .get("http://192.168.123.159:8080/daily/records/1000/2024-09-30")
+      .get("http://192.168.123.159:8080/daily/records/7274/2024-09-30")
       .then((response) => {
-        console.log("GET 성공적");
-        setData(response.data);
+        console.log("GET : ", response.data);
       })
       .catch((error) => {
         console.log("Get 에러: ", error);
-        setError(error);
       });
   }, []);
 
@@ -88,6 +83,28 @@ export default function TestPage() {
     console.log(response); // 응답 내용 출력
   };
 
+  const textToPdf = async (text) => {
+    const html = `
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+        </head>
+        <body style="text-align: center;">
+          <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
+            ${text}
+          </h1>
+          <img
+            src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
+            style="width: 90vw;" />
+        </body>
+      </html>
+      `;
+    const { uri } = await Print.printToFileAsync({ html });
+    console.log("File has been saved to:", uri);
+    // 이 아래 코드를 이메일에 전송하는걸로 갈아채야댐
+    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header
@@ -100,7 +117,6 @@ export default function TestPage() {
           style={{
             flex: 2,
             alignItems: "center",
-            justifyContent: "center",
             paddingVertical: 20,
           }}
         >
@@ -141,24 +157,18 @@ export default function TestPage() {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
+            onPress={() => textToPdf("pdf 테스트중")}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>PDF 테스트</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
             onPress={handlePost}
             style={styles.button}
           >
             <Text style={styles.buttonText}>POST 요청 테스트</Text>
           </TouchableOpacity>
-        </View>
-        <View style={{ flex: 1.5, paddingVertical: 20 }}>
-          {error && (
-            <Text style={{ ...styles.s_text, marginBottom: 4 }}>
-              Error: {error.message}
-            </Text>
-          )}
-          {data && (
-            <Text style={styles.s_text}>
-              GET{"\n"}
-              {JSON.stringify(data)}
-            </Text>
-          )}
         </View>
       </View>
     </SafeAreaView>
