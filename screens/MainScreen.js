@@ -18,6 +18,7 @@ import MyGreen from "../assets/my_gradient.svg";
 import ChatGray from "../assets/chat_gray.svg";
 import ChatGreen from "../assets/chat_gradient.svg";
 import ChatbotScreen from "./ChatBotScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,6 +35,26 @@ function InfoScreen() {
 }
 
 export default function MainScreen() {
+  let user_code = 7274;
+  const ipnumber = "192.168.123.198";
+
+  useState(() => {
+    // user_code 가져오기
+    const load = async () => {
+      try {
+        const value = await AsyncStorage.getItem("user_code");
+        if (value !== null) {
+          user_code = value;
+        } else {
+          console.log("user_code가 null입니다.");
+        }
+      } catch (error) {
+        console.log("유저id 불러오기 실패");
+      }
+    };
+    // load()
+  }, []);
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -64,6 +85,10 @@ export default function MainScreen() {
               <SvgIcon asset={HomeGray} />
             ),
         }}
+        initialParams={{
+          ipnumber: ipnumber,
+          user_code: user_code,
+        }}
       />
       <Tab.Screen
         name="Info"
@@ -76,6 +101,10 @@ export default function MainScreen() {
             ) : (
               <SvgIcon asset={InfoGray} />
             ),
+        }}
+        initialParams={{
+          ipnumber: ipnumber,
+          user_code: user_code,
         }}
       />
       <Tab.Screen
@@ -90,6 +119,10 @@ export default function MainScreen() {
               <SvgIcon asset={ChatGray} />
             ),
         }}
+        initialParams={{
+          ipnumber: ipnumber,
+          user_code: user_code,
+        }}
       />
       <Tab.Screen
         name="Calendar"
@@ -103,6 +136,10 @@ export default function MainScreen() {
               <SvgIcon asset={CalendarGray} />
             ),
         }}
+        initialParams={{
+          ipnumber: ipnumber,
+          user_code: user_code,
+        }}
       />
       <Tab.Screen
         name="MyPage"
@@ -115,6 +152,10 @@ export default function MainScreen() {
             ) : (
               <SvgIcon asset={MyGray} />
             ),
+        }}
+        initialParams={{
+          ipnumber: ipnumber,
+          user_code: user_code,
         }}
       />
     </Tab.Navigator>

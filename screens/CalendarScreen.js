@@ -3,7 +3,6 @@ import {
   View,
   Text,
   SafeAreaView,
-  Dimensions,
   TouchableOpacity,
 } from "react-native";
 import { theme } from "../colors/color";
@@ -20,7 +19,7 @@ import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function CalendarScreen({ navigation }) {
+export default function CalendarScreen({ navigation, route }) {
   const daysOfWeek = [
     "일요일",
     "월요일",
@@ -39,25 +38,7 @@ export default function CalendarScreen({ navigation }) {
     new Date(today).getMonth() + 1
   );
   const [record, setRecord] = useState({});
-  const [user_code, setUserCode] = useState(7274);
-  const ipnumber = "192.168.123.159";
-
-  useEffect(() => {
-    const getUserCode = async () => {
-      try {
-        // // user_code
-        // const value = await AsyncStorage.getItem("user_code");
-        // if (value !== null) {
-        //   setUserCode(value);
-        // } else {
-        //   console.log("user_code가 null입니다.");
-        // }
-      } catch (error) {
-        console.log("유저 코드 불러오기 실패: ", error);
-      }
-    };
-    getUserCode();
-  }, []);
+  const { ipnumber, user_code } = route.params;
 
   useFocusEffect(
     useCallback(() => {
@@ -287,7 +268,7 @@ export default function CalendarScreen({ navigation }) {
                       onPress={() => {
                         setSelectedDate(date.dateString);
                       }}
-                      disabled={isDisabled || isFuture}
+                      disabled={isFuture}
                       style={[
                         styles.selectedDay,
                         isSelected && { backgroundColor: theme.green500 },
@@ -436,7 +417,11 @@ export default function CalendarScreen({ navigation }) {
           </View>
         </>
       ) : (
-        <GraphScreen setIsCalendar={setIsCalendar} />
+        <GraphScreen
+          user_code={user_code}
+          ipnumber={ipnumber}
+          setIsCalendar={setIsCalendar}
+        />
       )}
     </SafeAreaView>
   );

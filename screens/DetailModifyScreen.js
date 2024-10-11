@@ -31,13 +31,11 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
-  const [checkList, setCheckList] = useState([]);
-  const [symptomList, setSymptomList] = useState([]);
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const [totalText, setTotalText] = useState("");
   const date = route.params.date;
   const user_code = route.params.user_code;
-  const ipnumber = "192.168.123.159";
+  const ipnumber = "192.168.123.198";
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -261,29 +259,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
           await handlePost();
           navigation.pop();
           showToast("기록이 완료되었어요");
-
-          // // DB에 저장
-          // console.log(homeText);
-          // console.log(schoolText);
-          // console.log(hospitalText);
-          // for (let i = 0; i < images.length; i++) {
-          //   console.log(i, images[i].uri);
-          // }
-
-          // // 객체 설정
-          // const newRecord = {
-          //   date: date,
-          //   home: homeText,
-          //   school: schoolText,
-          //   hospital: hospitalText,
-          //   image: images,
-          //   checkList: checkList,
-          //   symptomList: symptomList,
-          // };
-          // console.log(newRecord);
-
-          // // 스토리지 저장
-          // await save(newRecord);
         }}
         line={true}
       />

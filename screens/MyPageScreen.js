@@ -11,7 +11,9 @@ import Notice from "../assets/notice.svg";
 import Docs from "../assets/forward_to_inbox.svg";
 import Bookmark from "../assets/bookmark.svg";
 
-export default function MyPageScreen({ navigation }) {
+export default function MyPageScreen({ navigation, route }) {
+  const { ipnumber, user_code } = route.params;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.subContainer}>
@@ -94,7 +96,10 @@ export default function MyPageScreen({ navigation }) {
           activeOpacity={0.5}
           onPress={() => {
             console.log("test");
-            navigation.push("Test");
+            navigation.push("Test", {
+              ipnumber: ipnumber,
+              user_code: user_code,
+            });
           }}
         >
           <Text

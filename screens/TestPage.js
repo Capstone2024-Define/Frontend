@@ -15,7 +15,8 @@ import summarize from "./ChatgptAPI";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 
-export default function TestPage() {
+export default function TestPage({ route }) {
+  const { ipnumber, user_code } = route.params;
   const navigation = useNavigation();
 
   // GET 요청 형식
@@ -27,7 +28,7 @@ export default function TestPage() {
 
     console.log("GET 요청 시작");
     axios
-      .get("http://192.168.123.159:8080/daily/records/7274/2024-09-30")
+      .get(`http://${ipnumber}:8080/daily/records/${user_code}/2024-09-30`)
       .then((response) => {
         console.log("GET : ", response.data);
       })
@@ -39,13 +40,13 @@ export default function TestPage() {
   // POST 요청 핸들러
   const handlePost = () => {
     axios
-      .post("http://192.168.123.159:8080/daily/post", {
+      .post(`http://${ipnumber}:8080/daily/post`, {
         user_code: 1000,
         date: "2024-08-20",
         home: "9월 24일 home 테스트",
         school: "9월 24일 school 테스트",
         hospital: "9월 24일 hospital 테스트",
-        summary: "으아아아아악",
+        summary: "으아아아아",
         state: 2,
       })
       .then((response) => {

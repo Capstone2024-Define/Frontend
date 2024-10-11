@@ -7,9 +7,10 @@ import {
   Linking,
   Image,
   SafeAreaView,
+  Keyboard,
 } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
 import { showToast } from "../component/Toast";
@@ -25,9 +26,13 @@ import summary from "./SummaryAPI";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import summarize from "./ChatgptAPI";
+import { bottomBtn } from "../component/BottomButton";
 
 export default function DetailRecordScreen({ navigation, route }) {
+  const ipnumber = route.params.ipnumber;
   const date = route.params.date;
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
@@ -36,12 +41,32 @@ export default function DetailRecordScreen({ navigation, route }) {
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-
   // 이미지 배열
   const [images, setImages] = useState([]);
   // 이미지 객체 id 설정 위한 변수
   const [id, setId] = useState(0);
   let k = 0;
+
+  // 키보드 활성화 시 감지
+  useLayoutEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     let newTotalText = "";
@@ -99,6 +124,8 @@ export default function DetailRecordScreen({ navigation, route }) {
           });
           setImages(images.concat(newImage));
           setId(id + k);
+
+          console.log(await fetchImageFromUri(newImage[0].uri));
         }
       } catch (error) {
         console.log(error);
@@ -107,6 +134,13 @@ export default function DetailRecordScreen({ navigation, route }) {
     } else {
       showToast("이미지는 최대 10장입니다");
     }
+  };
+
+  // 이미지 서버에 올릴 형태로 바꿈
+  const fetchImageFromUri = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return blob;
   };
 
   // 이미지 삭제
@@ -139,20 +173,6 @@ export default function DetailRecordScreen({ navigation, route }) {
   // 저장
   const handlePost = async () => {
     try {
-      let user_id = null;
-
-      // user_id 가져오기
-      try {
-        const value = await AsyncStorage.getItem("user_id");
-        if (value !== null) {
-          user_id = value;
-        } else {
-          console.log("user_id가 null입니다.");
-        }
-      } catch (error) {
-        console.log("유저id 불러오기 실패");
-      }
-
       // 전체 텍스트 요약
       // 서머리
       const result = await summary(totalText);
@@ -162,7 +182,7 @@ export default function DetailRecordScreen({ navigation, route }) {
       // const summarizeText = await summarize(totalText);
 
       console.log("전송 데이터:", {
-        user_code: user_id,
+        user_code: route.params.user_code,
         date: date,
         home: homeText,
         school: schoolText,
@@ -173,44 +193,32 @@ export default function DetailRecordScreen({ navigation, route }) {
         parentlist: route.params.checkList,
       });
 
-      const response_daily = await axios.post(
-        "http://192.168.123.159:8080/daily/post",
-        {
-          user_code: 7274,
-          date: date,
-          home: homeText,
-          school: schoolText,
-          hospital: hospitalText,
-          summary: result.summary,
-          state: route.params.state,
-        }
-      );
+      // 줄글 저장
+      await axios.post(`http://${ipnumber}:8080/daily/post`, {
+        user_code: route.params.user_code,
+        date: date,
+        home: homeText,
+        school: schoolText,
+        hospital: hospitalText,
+        summary: result.summary,
+        state: route.params.state,
+      });
 
-      console.log("daily Post 응답:", response_daily.data);
+      // 증상 체크리스트 저장
+      await axios.post(`http://${ipnumber}:8080/sx/post`, {
+        user_code: 7274,
+        date: date,
+        checklist: route.params.symptomList,
+      });
 
-      // ***체크리스트 DB되면 주석풀것
-      // const response_symptomCheck = await axios.post(
-      //   "http://192.168.123.110:8080/daily/post",
-      //   {
-      //     user_code: 7274,
-      //     date: date,
-      //     checklist: route.params.symptomList,
-      //   }
-      // );
+      // 부모 체크리스트 저장
+      await axios.post(`http://${ipnumber}:8080/prnt/post`, {
+        user_code: 7274,
+        date: date,
+        checklist: route.params.checkList,
+      });
 
-      // console.log("symptomCheck Post 응답:", response_symptomCheck.data);
-
-      // const response_parentCheck = await axios.post(
-      //   "http://192.168.123.110:8080/daily/post",
-      //   {
-      //     user_code: 7274,
-      //     date: date,
-      //     checklist:route.params.checkList
-      //   }
-      // );
-
-      // console.log("parentCheck Post 응답:", response_parentCheck.data);
-      // ***
+      console.log("POST 성공");
 
       // 서머리
       // const result = await summary(totalText);
@@ -239,18 +247,11 @@ export default function DetailRecordScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <Header
-        left="이전"
+        left="leftArrow"
         title="기록하기"
-        right="완료"
         onLeftPress={() => {
           navigation.pop();
         }}
-        onRightPress={async () => {
-          await handlePost();
-          navigation.popToTop();
-          showToast("기록이 완료되었어요");
-        }}
-        line={false}
       />
       <LinearGradient
         colors={["#79BA7E", "#AFCA85"]}
@@ -443,8 +444,54 @@ export default function DetailRecordScreen({ navigation, route }) {
             alignItems: "flex-end",
           }}
         ></View>
-        <View style={{ marginBottom: 70 }}></View>
+        <View style={{ marginBottom: 80 }}></View>
       </ScrollView>
+      {!isKeyboardVisible && (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: 0,
+            right: 0,
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            activeOpacity={0.5}
+            disabled={
+              !totalText ||
+              homeText.length > 800 ||
+              schoolText.length > 600 ||
+              hospitalText.length > 600
+            }
+            onPress={async () => {
+              await handlePost();
+              navigation.popToTop();
+              showToast("기록이 완료되었어요");
+            }}
+          >
+            <LinearGradient
+              colors={["#79BA7E", "#AFCA85"]}
+              style={bottomBtn.button}
+            >
+              <View
+                style={[
+                  bottomBtn.button,
+                  { backgroundColor: theme.grey250 },
+                  totalText &&
+                    homeText.length <= 800 &&
+                    schoolText.length <= 600 &&
+                    hospitalText.length <= 600 && {
+                      backgroundColor: "transparent",
+                    },
+                ]}
+              >
+                <Text style={bottomBtn.buttonText}>완료</Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

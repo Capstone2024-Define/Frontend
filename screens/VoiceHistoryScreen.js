@@ -18,8 +18,11 @@ import Search from "../assets/search.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 
-export default function VoiceHistoryScreen({ navigation }) {
+export default function VoiceHistoryScreen({ navigation, route }) {
+  const user_code = route.params.user_code;
+  const ipnumber = route.params.ipnumber;
   const [filter, setFilter] = useState("all"); // all, school, hospital
   const [contents, setContents] = useState([]);
   const [search, setSearch] = useState(""); // 검색내용
@@ -29,12 +32,12 @@ export default function VoiceHistoryScreen({ navigation }) {
     useCallback(() => {
       async function load() {
         try {
-          const rawVoice = await AsyncStorage.getItem("voice");
-          const voice = JSON.parse(rawVoice);
-          setContents(voice);
-          //console.log(voice);
-        } catch (e) {
-          console.log("기록 로드 에러");
+          const voice = await axios.get(
+            `http://${ipnumber}:8080/record/list-up/${user_code}`
+          );
+          setContents(voice.data);
+        } catch (error) {
+          console.log("GET 에러 : ", error);
         }
       }
       load();
@@ -50,7 +53,7 @@ export default function VoiceHistoryScreen({ navigation }) {
   const handleSearch = () => {
     if (search) {
       const filtered = contents.filter((content) =>
-        content.text.toLowerCase().includes(search.toLowerCase())
+        content.contents.toLowerCase().includes(search.toLowerCase())
       );
       setFilteredContents(filtered);
     } else {
@@ -68,6 +71,17 @@ export default function VoiceHistoryScreen({ navigation }) {
     const dayName = dayOfWeek[newDate.getDay()];
 
     return `${month}.${day} ${dayName}`;
+  };
+
+  const getTime = (time) => {
+    const newTime = new Date(time);
+    const hours = newTime.getHours();
+    const minutes = newTime.getMinutes();
+    const period = hours >= 12 ? "오후" : "오전";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    return `${period} ${formattedHours}:${formattedMinutes}`;
   };
 
   return (
@@ -125,19 +139,19 @@ export default function VoiceHistoryScreen({ navigation }) {
               .slice()
               .reverse()
               .map((content, index) =>
-                content.place === filter || filter === "all" ? (
+                content.location === filter || filter === "all" ? (
                   <View key={index}>
                     <VoiceDateButton
-                      place={content.place}
-                      date={getDate(content.date)}
-                      time={content.time}
-                      text={content.text}
+                      place={content.location}
+                      date={getDate(content.timestamp)}
+                      time={getTime(content.timestamp)}
+                      text={content.contents}
                       onPress={() =>
                         navigation.push("DetailVoice", {
                           detail: true,
-                          place: content.place,
-                          date: content.date,
-                          time: content.time,
+                          user_code: user_code,
+                          ipnumber: ipnumber,
+                          timestamp: content.timestamp,
                         })
                       }
                     />

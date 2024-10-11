@@ -19,10 +19,11 @@ import Svg, { Line, Polyline, Circle } from "react-native-svg";
 import { PieChart } from "react-native-chart-kit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { BlurView } from "expo-blur";
+// import { BlurView } from "expo-blur";
+// import PieChart from "react-native-pie-chart";
 // import { VictoryPie } from "victory-native";
 
-export default function GraphScreen({ setIsCalendar }) {
+export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
   const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
@@ -53,31 +54,14 @@ export default function GraphScreen({ setIsCalendar }) {
   const [dayState_month, setDayState_month] = useState([0]);
   const [beforeSelectedWeek, setBeforeSelectedWeek] = useState(new Date(today));
   const [symptomCount, setSymptomCount] = useState([
-    10, 5, 1, 2, 6, 7, 8, 1, 0, 6, 9, 8, 3, 4, 5, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
   const [stateCount, setStateCount] = useState([0, 0, 0]);
   const previousWeek = useRef(week); // 변경 전 주
-  const [user_code, setUserCode] = useState(7274);
   const [weekStateNull, setWeekStateNull] = useState(false); // 주간 기록이 없을때 확인
-  const ipnumber = "192.168.123.159";
 
   useEffect(() => {
-    const getUserCode = async () => {
-      try {
-        // // user_code
-        // const value = await AsyncStorage.getItem("user_code");
-        // if (value !== null) {
-        //   setUserCode(value);
-        // } else {
-        //   console.log("user_code가 null입니다.");
-        // }
-      } catch (error) {
-        console.log("유저 코드 불러오기 실패: ", error);
-      }
-    };
-
     const start = async () => {
-      await getUserCode();
       await monthLoad();
     };
     start();
@@ -141,56 +125,68 @@ export default function GraphScreen({ setIsCalendar }) {
     }
   };
 
-  // 한 달 state 로드
+  // 월간 로드
   const monthLoad = async () => {
     try {
       const yearMonth = `${selectedDate.getFullYear()}-${String(
         selectedDate.getMonth() + 1
       ).padStart(2, "0")}`;
 
-      const response = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
-      );
-
-      //console.log(response.data);
+      // 월간 state, 증상 로드(병렬)
+      const [response_state, response_symptomCheck] = await Promise.all([
+        await axios.get(
+          `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+        ),
+        await axios.get(
+          `http://${ipnumber}:8080/sx/frequency/${user_code}/${yearMonth}`
+        ),
+      ]);
 
       // dayState_month 초기화
       const monthDays = 31;
       const newDayStateMonth = Array(monthDays).fill(null);
 
-      response.data.forEach((item) => {
+      response_state.data.forEach((item) => {
         const day = new Date(item.date).getDate(); // 일(day) 값 추출
         newDayStateMonth[day - 1] = item.state; // 해당 인덱스에 state 값 할당
       });
-
       console.log(newDayStateMonth);
-
       setDayState_month(newDayStateMonth);
+
+      // symptomCount 초기화
+      const newSymptomCount = Array(symptomList.length).fill(0);
+      symptomList.forEach((symptom, index) => {
+        if (symptom === "자기연민성") symptom = "자기연민성발언";
+
+        response_symptomCheck.data.forEach((item) => {
+          if (item.checklist_item === symptom) {
+            newSymptomCount[index] = item.frequency;
+          }
+        });
+      });
+      console.log(newSymptomCount);
+      setSymptomCount(newSymptomCount);
     } catch (error) {
       console.log("month 로드 실패: ", error);
     }
   };
 
   // 증상체크 count 로드
-  const SymptomCheckCount = async () => {
-    try {
-      const response = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
-      );
-
-      const newSymtomCount = Array(symptomList.length).fill(0);
-      response.data.forEach((item) => {
-        item.checklist.forEach((list, index) => {
-          if (list == 1) {
-            newSymtomCount[index]++;
-          }
-        });
-      });
-      setSymptomCount(newSymtomCount);
-    } catch (error) {
-      console.log("symptom 로드 실패: ", error);
-    }
-  };
+  // const SymptomCheckCount = async () => {
+  //   try {
+  //     const newSymtomCount = Array(symptomList.length).fill(0);
+  //     response.data.forEach((item) => {
+  //       item.checklist.forEach((list, index) => {
+  //         if (list == 1) {
+  //           newSymtomCount[index]++;
+  //         }
+  //       });
+  //     });
+  //     setSymptomCount(newSymtomCount);
+  //   } catch (error) {
+  //     console.log("symptom 로드 실패: ", error);
+  //   }
+  // };
 
   // 현재 날짜의 주 날짜, 주차 계산
   const getCurrentWeek = (date) => {
@@ -699,6 +695,38 @@ export default function GraphScreen({ setIsCalendar }) {
                 backgroundColor={"transparent"}
                 hasLegend={false}
               />
+              {/* <PieChart
+                widthAndHeight={80}
+                series={[3, 0.04, 3, 0.04, 2, 0.04]}
+                sliceColor={[
+                  theme.green,
+                  theme.grey500,
+                  theme.yellow,
+                  theme.grey500,
+                  theme.pink,
+                  theme.grey500,
+                ]}
+                coverRadius={0.5}
+                coverFill="#fff"
+              />
+              <View
+                style={{
+                  position: "absolute",
+                  top: 20,
+                  left: 20,
+                  bottom: 20,
+                  right: 20,
+                  width: 40,
+                  heigth: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "transparent",
+                  borderRadius: 100,
+                  borderWidth: 1,
+                  borderColor: theme.grey500,
+                }}
+              /> */}
+
               {/* <VictoryPie
                 data={[
                   { x: "Cats", y: 35 },

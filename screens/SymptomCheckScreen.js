@@ -5,10 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
+import { bottomBtn } from "../component/BottomButton";
 
 const symptoms = {
   행동조작: ["불순응", "반항", "떼쓰기"],
@@ -68,54 +70,55 @@ const SymptomCheckScreen = ({ route, navigation }) => {
   const handleNextPress = () => {
     navigation.push("SymptomResult", {
       selectedCount: selectedSymptoms.length,
-      symptomList: formatSymptomList(),
+      symptomList: selectedSymptoms,
       date: route.params.date,
+      user_code: route.params.user_code,
+      ipnumber: route.params.ipnumber,
     });
   };
 
-  const formatSymptomList = () => {
-    const symptomList = [
-      "불순응",
-      "반항",
-      "떼쓰기",
-      "자기연민성발언",
-      "부정적인발언",
-      "꾀병",
-      "조르기",
-      "끼어들기",
-      "학교성적부진",
-      "읽기능력부진",
-      "주의력결핍",
-      "무기력",
-      "빈둥거리기",
-      "고자질",
-      "가족과다툼",
-      "공격성",
-      "거짓말",
-    ];
-    const newSymptomList = Array(symptomList.length).fill(0);
+  // 체크리스트를 [0,1,1,0,..] 바꿈
+  // const formatSymptomList = () => {
+  //   const symptomList = [
+  //     "불순응",
+  //     "반항",
+  //     "떼쓰기",
+  //     "자기연민성발언",
+  //     "부정적인발언",
+  //     "꾀병",
+  //     "조르기",
+  //     "끼어들기",
+  //     "학교성적부진",
+  //     "읽기능력부진",
+  //     "주의력결핍",
+  //     "무기력",
+  //     "빈둥거리기",
+  //     "고자질",
+  //     "가족과다툼",
+  //     "공격성",
+  //     "거짓말",
+  //   ];
+  //   const newSymptomList = Array(symptomList.length).fill(0);
 
-    console.log(selectedSymptoms);
-    symptomList.forEach((symptom, index) => {
-      if (selectedSymptoms.includes(symptom)) {
-        newSymptomList[index] = 1;
-      }
-    });
-    console.log(newSymptomList);
+  //   console.log(selectedSymptoms);
+  //   symptomList.forEach((symptom, index) => {
+  //     if (selectedSymptoms.includes(symptom)) {
+  //       newSymptomList[index] = 1;
+  //     }
+  //   });
+  //   console.log(newSymptomList);
 
-    return newSymptomList;
-  };
+  //   return newSymptomList;
+  // };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="leftArrow"
         title="증상체크"
-        right="다음"
         onLeftPress={() => {
           navigation.popToTop();
         }}
-        onRightPress={handleNextPress}
         line={false}
       />
       <View style={styles.progressBar}>
@@ -129,17 +132,46 @@ const SymptomCheckScreen = ({ route, navigation }) => {
         </LinearGradient>
         <View style={styles.progressBarInactive} />
       </View>
-      <View style={{ backgroundColor: "#FFFFFF", flex: 1 }}>
-        <Text style={styles.mainTitle}>
-          먼저 아이의{"\n"}
-          증상을 체크해주세요
-        </Text>
-        <Text style={styles.subTitle}>
-          증상이 없었을 경우 선택하지 않고{"\n"}다음을 눌러주세요
-        </Text>
-        {Object.entries(symptoms).map(([category, symptoms]) =>
-          renderSymptoms(category, symptoms)
-        )}
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          flex: 1,
+          alignItems: "center",
+        }}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
+        >
+          <Text style={styles.mainTitle}>
+            먼저 아이의{"\n"}
+            증상을 체크해주세요
+          </Text>
+          <Text style={styles.subTitle}>
+            증상이 없었을 경우 선택하지 않고{"\n"}다음을 눌러주세요
+          </Text>
+          {Object.entries(symptoms).map(([category, symptoms]) =>
+            renderSymptoms(category, symptoms)
+          )}
+        </ScrollView>
+        <View
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: 0,
+            right: 0,
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity activeOpacity={0.5} onPress={handleNextPress}>
+            <LinearGradient
+              colors={["#79BA7E", "#AFCA85"]}
+              style={bottomBtn.button}
+            >
+              <Text style={bottomBtn.buttonText}>다음</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

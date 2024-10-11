@@ -11,6 +11,7 @@ import {
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
+import { bottomBtn } from "../component/BottomButton";
 
 export default function SymptomCheckParent({ route, navigation }) {
   const [selectedChecklistItems, setSelectedChecklistItems] = useState([]);
@@ -50,21 +51,11 @@ export default function SymptomCheckParent({ route, navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
-        left="이전"
+        left="leftArrow"
         title="되돌아보기"
-        right="다음"
         onLeftPress={() => {
           navigation.pop();
         }}
-        onRightPress={() => {
-          navigation.push("DetailRecord", {
-            symptomList: route.params.symptomList,
-            checkList: selectedChecklistItems,
-            date: route.params.date,
-            state: route.params.state,
-          });
-        }}
-        line={false}
       />
       <View style={styles.progressView}>
         <LinearGradient
@@ -77,7 +68,10 @@ export default function SymptomCheckParent({ route, navigation }) {
         </LinearGradient>
         <View style={styles.progressRight} />
       </View>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         <Text style={styles.headerText}>
           오늘 지현님은 {"\n"}어떻게 하셨나요?
         </Text>
@@ -109,11 +103,40 @@ export default function SymptomCheckParent({ route, navigation }) {
             </TouchableOpacity>
           ))}
         </View>
-        <View style={{ marginBottom: 40 }} />
       </ScrollView>
       {/* <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
         <Text style={styles.nextButtonText}>다음</Text>
       </TouchableOpacity> */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+        }}
+      >
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            navigation.push("DetailRecord", {
+              symptomList: route.params.symptomList,
+              checkList: selectedChecklistItems,
+              date: route.params.date,
+              state: route.params.state,
+              user_code: route.params.user_code,
+              ipnumber: route.params.ipnumber,
+            });
+          }}
+        >
+          <LinearGradient
+            colors={["#79BA7E", "#AFCA85"]}
+            style={bottomBtn.button}
+          >
+            <Text style={bottomBtn.buttonText}>다음</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }

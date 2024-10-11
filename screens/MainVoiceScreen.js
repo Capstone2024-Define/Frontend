@@ -27,7 +27,11 @@ export default function MainVoiceScreen({ route, navigation }) {
           title: "새녹음",
           headerShown: false,
         })}
-        initialParams={{ date: route.params.date }}
+        initialParams={{
+          date: route.params.date,
+          user_code: route.params.user_code,
+          ipnumber: route.params.ipnumber,
+        }}
       />
       <Tab.Screen
         name="VoiceHistory"
@@ -36,6 +40,10 @@ export default function MainVoiceScreen({ route, navigation }) {
           title: "목록",
           headerShown: false,
         })}
+        initialParams={{
+          user_code: route.params.user_code,
+          ipnumber: route.params.ipnumber,
+        }}
       />
     </Tab.Navigator>
   );

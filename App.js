@@ -11,7 +11,7 @@ import Toast from "react-native-toast-message";
 import { toastConfig } from "./component/Toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MainVoiceScreen from "./screens/MainVoiceScreen";
-import DetailVoiceScreen from "./screens/DetailVoiceScreen";
+import VoiceDetailScreen from "./screens/VoiceDetailScreen";
 import VoiceModifyScreen from "./screens/VoiceModifyScreen";
 import SymptomCheckScreen from "./screens/SymptomCheckScreen";
 import SymptomInfoScreen from "./screens/SymptomInfoScreen";
@@ -122,7 +122,7 @@ export default function App() {
             />
             <Stack.Screen
               name="DetailVoice"
-              component={DetailVoiceScreen}
+              component={VoiceDetailScreen}
               options={{ headerShown: false, animation: "slide_from_bottom" }}
             />
             <Stack.Screen
