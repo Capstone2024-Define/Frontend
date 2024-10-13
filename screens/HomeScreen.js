@@ -541,7 +541,7 @@ export default function HomeScreen({ navigation, route }) {
                         justifyContent: "center",
                       }}
                     >
-                      <WithLocalSvg asset={NoRecord} />
+                      {/* <WithLocalSvg asset={NoRecord} /> */}
                       <Text
                         style={{
                           color: "#6F6F6F",

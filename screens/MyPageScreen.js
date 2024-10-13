@@ -53,7 +53,12 @@ export default function MyPageScreen({ navigation, route }) {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => navigation.push("ExportRecord")}
+            onPress={() =>
+              navigation.push("ExportRecord", {
+                user_code: user_code,
+                ipnumber: ipnumber,
+              })
+            }
             style={{ justifyContent: "center", alignItems: "center" }}
           >
             <WithLocalSvg asset={Docs} />

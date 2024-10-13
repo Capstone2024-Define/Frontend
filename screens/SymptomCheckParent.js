@@ -70,7 +70,7 @@ export default function SymptomCheckParent({ route, navigation }) {
       </View>
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 94 }}
       >
         <Text style={styles.headerText}>
           오늘 지현님은 {"\n"}어떻게 하셨나요?

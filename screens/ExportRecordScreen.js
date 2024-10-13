@@ -26,6 +26,8 @@ import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -39,6 +41,7 @@ const CalendarModal = ({
   setStartDate,
   setEndDate,
   user_code,
+  ipnumber,
 }) => {
   const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
   const [selectedDate, setSelectedDate] = useState(currentDate);
@@ -48,7 +51,6 @@ const CalendarModal = ({
   const [currentMonth, setCurrentMonth] = useState(
     new Date(today).getMonth() + 1
   );
-  const ipnumber = "192.168.123.110";
 
   // 애니메이션
   useEffect(() => {
@@ -353,7 +355,7 @@ const CalendarModal = ({
 };
 
 // 스크린 화면
-export default function ExportRecordScreen({ navigation }) {
+export default function ExportRecordScreen({ navigation, route }) {
   const [page, setPage] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -362,7 +364,7 @@ export default function ExportRecordScreen({ navigation }) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [visible, setVisible] = useState(false); // 모달 상태
   const [calendarNum, setCalendarNum] = useState(null);
-  const [user_code, setUserCode] = useState(7274);
+  const { ipnumber, user_code } = route.params;
 
   // 키보드 활성화 시 감지
   useLayoutEffect(() => {
@@ -383,23 +385,6 @@ export default function ExportRecordScreen({ navigation }) {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, []);
-
-  useEffect(() => {
-    const getUserCode = async () => {
-      try {
-        // // user_code
-        // const value = await AsyncStorage.getItem("user_code");
-        // if (value !== null) {
-        //   setUserCode(value);
-        // } else {
-        //   console.log("user_code가 null입니다.");
-        // }
-      } catch (error) {
-        console.log("유저 코드 불러오기 실패: ", error);
-      }
-    };
-    getUserCode();
   }, []);
 
   // 휴대폰 뒤로가기 버튼 커스터마이징
@@ -428,16 +413,57 @@ export default function ExportRecordScreen({ navigation }) {
     console.log("종료 날짜: ", endDate);
   }, [startDate, endDate]);
 
-  // 이메일 유효성 체크
-  useEffect(() => {
-    setIsValidEmail(validateEmail(email));
-    console.log("이메일: ", email);
-  }, [email]);
+  // // 이메일 유효성 체크
+  // useEffect(() => {
+  //   setIsValidEmail(validateEmail(email));
+  //   console.log("이메일: ", email);
+  // }, [email]);
 
-  // 이메일 유효성 체크
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  // // 이메일 유효성 체크
+  // const validateEmail = (email) => {
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   return emailRegex.test(email);
+  // };
+
+  const textToPdf = async (text) => {
+    setTimeout(async () => {
+      const html = `
+        <html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+          </head>
+          <body style="text-align: center;">
+            <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
+              ${text}
+            </h1>
+            <img
+              src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
+              style="width: 90vw;" />
+          </body>
+        </html>
+        `;
+      const { uri } = await Print.printToFileAsync({
+        html,
+        fileName: "Clobit.pdf",
+      });
+      console.log("File has been saved to:", uri);
+
+      try {
+        const result = await shareAsync(uri, {
+          UTI: ".pdf",
+          mimeType: "application/pdf",
+        });
+        // 사용자가 공유를 성공적으로 완료한 경우
+        if (result && result.action === "sharedAction") {
+          setPage(3);
+        } else {
+          setPage(1);
+        }
+      } catch (error) {
+        console.error("파일 공유 실패 :", error);
+        setPage(1);
+      }
+    }, 800);
   };
 
   return (
@@ -469,7 +495,9 @@ export default function ExportRecordScreen({ navigation }) {
       ) : page !== 3 ? (
         // ***1,2번째 페이지***
         <View style={styles.subContainer}>
-          <View style={{ flexDirection: "row", marginVertical: 20 }}>
+          <View
+            style={{ flexDirection: "row", marginTop: 20, marginBottom: 24 }}
+          >
             <View
               style={[
                 styles.circle,
@@ -495,10 +523,10 @@ export default function ExportRecordScreen({ navigation }) {
               <Text style={styles.number}>2</Text>
             </View>
           </View>
-          <Text style={{ ...styles.subText, marginBottom: 20 }}>
+          <Text style={{ ...styles.title, marginBottom: 20 }}>
             {page == 1
-              ? "불러올 기록의 범위를 선택해주세요"
-              : "기록을 내보낼 곳을 입력해주세요"}
+              ? `불러올 기록의 범위를${"\n"}선택해주세요`
+              : `기록을 내보낼 곳을${"\n"}선택해주세요`}
           </Text>
           {page == 1 ? (
             <View>
@@ -584,28 +612,29 @@ export default function ExportRecordScreen({ navigation }) {
               </View>
             </View>
           ) : (
-            <View>
-              <Text style={styles.subTitle}>이메일</Text>
-              <TextInput
-                placeholder="example@naver.com"
-                style={[
-                  styles.input,
-                  email.length > 0 &&
-                    isValidEmail && { backgroundColor: theme.green50 },
-                  email.length > 0 &&
-                    isValidEmail &&
-                    !isKeyboardVisible && { borderColor: theme.green500 },
-                  email.length > 0 &&
-                    !isValidEmail &&
-                    !isKeyboardVisible && { borderColor: theme.red },
-                ]}
-                placeholderTextColor={theme.grey400}
-                onChangeText={setEmail}
-                returnKeyType="done"
-                value={email}
-                keyboardType="email-address"
-              />
-            </View>
+            // <View>
+            //   <Text style={styles.subTitle}>이메일</Text>
+            //   <TextInput
+            //     placeholder="example@naver.com"
+            //     style={[
+            //       styles.input,
+            //       email.length > 0 &&
+            //         isValidEmail && { backgroundColor: theme.green50 },
+            //       email.length > 0 &&
+            //         isValidEmail &&
+            //         !isKeyboardVisible && { borderColor: theme.green500 },
+            //       email.length > 0 &&
+            //         !isValidEmail &&
+            //         !isKeyboardVisible && { borderColor: theme.red },
+            //     ]}
+            //     placeholderTextColor={theme.grey400}
+            //     onChangeText={setEmail}
+            //     returnKeyType="done"
+            //     value={email}
+            //     keyboardType="email-address"
+            //   />
+            // </View>
+            textToPdf()
           )}
         </View>
       ) : (
@@ -642,9 +671,9 @@ export default function ExportRecordScreen({ navigation }) {
                 ? setPage(1)
                 : page == 1
                 ? setPage(2)
-                : page == 2
-                ? setPage(3)
-                : navigation.pop();
+                : // : page == 2
+                  // ? setPage(3)
+                  navigation.pop();
             }}
             disabled={
               (page == 1 && !(startDate && endDate)) ||
@@ -693,6 +722,7 @@ export default function ExportRecordScreen({ navigation }) {
         setStartDate={setStartDate}
         setEndDate={setEndDate}
         user_code={user_code}
+        ipnumber={ipnumber}
       />
     </SafeAreaView>
   );
@@ -739,6 +769,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0, // 뷰의 아래쪽에 위치
     height: 10, // 그림자 높이
+  },
+  title: {
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: "Pretendard-Bold",
+    color: theme.grey800,
   },
   boldText: {
     fontSize: 16,

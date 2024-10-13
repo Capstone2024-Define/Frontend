@@ -21,6 +21,19 @@ const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 
 export default function KakaoLoginScreen({ navigation }) {
   const [activePage, setActivePage] = useState(0); // 현재 페이지 상태
+  const title = ["하루기록/음성기록", "정보", "캘린더", "내보내기"];
+  const contentTop = [
+    "ADHD 증상체크부터",
+    "ADHD에 대한 정보를 제공하고",
+    "기록한 내용을 날짜별로 확인하고,",
+    "기록한 내용을 치료에",
+  ];
+  const contentBottom = [
+    "부모행동까지 기록을 한번에!",
+    "챗봇으로 정보 탐색을 도와드려요",
+    "분석된 그래프를 제공해요",
+    "활용할 수 있도록 문서화해드려요!",
+  ];
 
   // 스크롤 시 페이지 감지
   const handleScroll = (e) => {
@@ -45,7 +58,7 @@ export default function KakaoLoginScreen({ navigation }) {
               }}
             >
               <Image
-                source={require("../assets/LoginImage.png")}
+                source={require("../assets/LoginImage1.png")}
                 style={styles.phone}
                 resizeMode="contain"
               />
@@ -57,7 +70,19 @@ export default function KakaoLoginScreen({ navigation }) {
               }}
             >
               <Image
-                source={require("../assets/LoginImage.png")}
+                source={require("../assets/LoginImage2.png")}
+                style={{ ...styles.phone }}
+                resizeMode="contain"
+              />
+            </View>
+            <View
+              style={{
+                ...styles.imageContainer,
+                backgroundColor: theme.yellow25,
+              }}
+            >
+              <Image
+                source={require("../assets/LoginImage3.png")}
                 style={styles.phone}
                 resizeMode="contain"
               />
@@ -69,19 +94,7 @@ export default function KakaoLoginScreen({ navigation }) {
               }}
             >
               <Image
-                source={require("../assets/LoginImage.png")}
-                style={styles.phone}
-                resizeMode="contain"
-              />
-            </View>
-            <View
-              style={{
-                ...styles.imageContainer,
-                backgroundColor: theme.yellow25,
-              }}
-            >
-              <Image
-                source={require("../assets/LoginImage.png")}
+                source={require("../assets/LoginImage4.png")}
                 style={styles.phone}
                 resizeMode="contain"
               />
@@ -106,11 +119,10 @@ export default function KakaoLoginScreen({ navigation }) {
             ))}
           </View>
           <Text style={{ ...styles.title, marginBottom: 8 }}>
-            하루기록/음성기록
+            {title[activePage]}
           </Text>
-          <Text style={styles.subText}>
-            증상체크부터 부모행동까지 기록을 한번에!
-          </Text>
+          <Text style={styles.subText}>{contentTop[activePage]}</Text>
+          <Text style={styles.subText}>{contentBottom[activePage]}</Text>
         </View>
       </View>
       <TouchableOpacity
@@ -136,16 +148,16 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: SCREEN_WIDTH,
-    height: 430,
+    height: 396,
     alignItems: "center",
   },
   phone: {
-    marginTop: 80,
+    marginTop: 47,
     width: 194,
     height: 410,
     borderWidth: 4,
     borderColor: theme.grey500,
-    borderRadius: 12,
+    borderRadius: 8,
   },
   subContainer: {
     alignItems: "center",
@@ -161,14 +173,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontFamily: "Pretendard-Medium",
-    color: theme.grey800,
+    color: theme.grey600,
   },
   button: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: 312,
-    height: 48,
+    width: 320,
+    height: 56,
     borderRadius: 16,
     backgroundColor: "#FEE500",
   },

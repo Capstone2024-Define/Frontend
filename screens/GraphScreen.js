@@ -291,7 +291,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
         </Text>
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ ...styles.title, color: theme.green500 }}>{count}</Text>
+        <Text style={{ ...styles.title, color: theme.grey800 }}>{count}</Text>
         <Text
           style={{
             ...styles.title,
@@ -299,7 +299,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
             fontFamily: "Pretendard-Regular",
           }}
         >
-          /15
+          /{stateCount[0] + stateCount[1] + stateCount[2]}
         </Text>
       </View>
     </View>
@@ -794,6 +794,24 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           </Text>
         </View>
         <View style={styles.subContainer}>
+          {!monthSegments && (
+            <ImageBackground
+              source={require("../assets/NoData2.png")}
+              style={styles.absolute}
+              resizeMode="contain"
+            >
+              <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              <Text style={styles.noDataText}>
+                하루기록으로 증상을 체크해주세요!
+              </Text>
+            </ImageBackground>
+            // <BlurView intensity={100} style={styles.absolute}>
+            //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+            //   <Text style={styles.noDataText}>
+            //     하루기록으로 증상을 체크해주세요!
+            //   </Text>
+            // </BlurView>
+          )}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* 바 그래프 */}
             {symptomList.map((symptom, index) => (
