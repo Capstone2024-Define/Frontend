@@ -18,7 +18,11 @@ import MyGreen from "../assets/my_gradient.svg";
 import ChatGray from "../assets/chat_gray.svg";
 import ChatGreen from "../assets/chat_gradient.svg";
 import ChatbotScreen from "./ChatBotScreen";
+<<<<<<< HEAD
+import InfoScreen from "./InfoScreen";
+=======
 import AsyncStorage from "@react-native-async-storage/async-storage";
+>>>>>>> 7814d6a1d24d8ddab58d396254377af48541cae5
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +30,7 @@ const SvgIcon = ({ asset }) => (
   <WithLocalSvg width="25" height="25" asset={asset} />
 );
 
-function InfoScreen() {
+function InfoPage() {
   return (
     <SafeAreaView style={{ padding: 50 }}>
       <Text>정보 페이지</Text>
