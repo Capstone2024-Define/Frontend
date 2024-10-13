@@ -23,13 +23,17 @@ import SymptomCheckParent from "./screens/SymptomCheckParent";
 import StartInfoScreen from "./screens/StartInfoScreen";
 import ProfileModifyScreen from "./screens/ProfileModifyScreen";
 import AlarmPage from "./screens/AlarmPage";
-import AlarmSettingsPage from "./screens/AlarmSettingsPage"; // AlarmSettingsPage 추가
+import AlarmSettingsPage from "./screens/AlarmSettingsPage"; 
 import KakaoLoginScreen from "./screens/KakaoLoginScreen";
 import KakaoLoginWeb from "./screens/KakaoLoginWeb";
 import ExportRecordScreen from "./screens/ExportRecordScreen";
 import CalendarScreen from "./screens/CalendarScreen";
 import GraphScreen from "./screens/GraphScreen";
 import TestPage from "./screens/TestPage";
+import InfoScreen from "./screens/InfoScreen";  
+import InfoSearch from "./screens/InfoSearch";  
+import InfoSearchResult from "./screens/InfoSearchResult";  
+import InfoScreenDetail from "./screens/InfoScreenDetail"; 
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -58,12 +62,31 @@ export default function App() {
               animation: "fade",
             }}
           >
-            {/* 내비게이터로 이동할 화면들 추가 */}
+            {/* 기존 내비게이터에 있는 화면들 */}
             <Stack.Screen
               name="Main"
               component={MainScreen}
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="InfoScreen"
+              component={InfoScreen}
+              options={{ title: "정보 화면", headerShown: false }}
+            />
+            <Stack.Screen
+              name="InfoSearch"
+              component={InfoSearch}
+              options={{ title: "검색 화면", headerShown: false }}
+            />
+            <Stack.Screen
+              name="InfoSearchResult"
+              component={InfoSearchResult}
+              options={{ title: "검색 결과", headerShown: false }}
+            />
+             <Stack.Screen name="InfoScreenDetail" 
+             component={InfoScreenDetail} 
+             options={{ title: "정보 상세", headerShown: false }} />
+            {/* 나머지 화면들 */}
             <Stack.Screen
               name="SymptomCheck"
               component={SymptomCheckScreen}
