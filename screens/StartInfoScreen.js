@@ -12,6 +12,7 @@ import { theme } from "../colors/color";
 import { useEffect, useLayoutEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 
 export default function StartInfoScreen({ navigation, route }) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
@@ -126,6 +127,23 @@ export default function StartInfoScreen({ navigation, route }) {
       enteredDate.getDate() === day;
 
     return isValid;
+  };
+
+  const handlePost = async () => {
+    try {
+      const newBirth = birth.replace(/\s\/\s/g, "-");
+
+      await axios.post("http://192.168.123.198:8080/userinfo/post", {
+        //user_code: route.params.user_id,
+        user_code: 7274,
+        user_name: nickName,
+        child_name: name,
+        birth: newBirth,
+        sex: gender,
+      });
+    } catch (error) {
+      console.log("POST 에러 : ", error);
+    }
   };
 
   return (
@@ -442,7 +460,8 @@ export default function StartInfoScreen({ navigation, route }) {
                       gender
                     )
                   }
-                  onPress={() => {
+                  onPress={async () => {
+                    await handlePost();
                     navigation.navigate("Main");
                   }}
                 >

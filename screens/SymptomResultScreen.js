@@ -1,14 +1,21 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { bottomBtn } from "../component/BottomButton";
 
 const resultImages = {
-  최고예요: require("../assets/high.png"), // 최고예요 이미지 경로
-  보통이에요: require("../assets/medium.png"), // 보통이에요 이미지 경로
-  아쉬워요: require("../assets/low.png"), // 아쉬워요 이미지 경로
+  최고예요: require("../assets/highStroke.png"), // 최고예요 이미지 경로
+  보통이에요: require("../assets/mediumStroke.png"), // 보통이에요 이미지 경로
+  아쉬워요: require("../assets/lowStroke.png"), // 아쉬워요 이미지 경로
 };
 
 export default function SymptomResultScreen({ route, navigation }) {
@@ -35,20 +42,11 @@ export default function SymptomResultScreen({ route, navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
-        left="이전"
+        left="leftArrow"
         title="되돌아보기 결과"
-        right="다음"
         onLeftPress={() => {
           navigation.pop();
         }}
-        onRightPress={() => {
-          navigation.push("SymptomCheckParent", {
-            date: route.params.date,
-            symptomList: route.params.symptomList,
-            state: state,
-          });
-        }}
-        line={false}
       />
       <View style={styles.progressView}>
         <LinearGradient
@@ -62,9 +60,38 @@ export default function SymptomResultScreen({ route, navigation }) {
         <View style={styles.progressRight}></View>
       </View>
       <View style={styles.container}>
-        <Image source={resultImage} style={styles.resultImage} />
-        <Text style={styles.resultText}>오늘 지현님은</Text>
-        <Text style={styles.resultTextHighlight}>{resultText}</Text>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingTop: 30,
+          }}
+        >
+          <Image source={resultImage} style={styles.resultImage} />
+          <Text style={styles.resultText}>오늘 지현님은</Text>
+          <Text style={styles.resultTextHighlight}>{resultText}</Text>
+        </View>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            navigation.push("SymptomCheckParent", {
+              date: route.params.date,
+              symptomList: route.params.symptomList,
+              state: state,
+              user_code: route.params.user_code,
+              ipnumber: route.params.ipnumber,
+            });
+          }}
+          style={{ marginBottom: 20 }}
+        >
+          <LinearGradient
+            colors={["#79BA7E", "#AFCA85"]}
+            style={bottomBtn.button}
+          >
+            <Text style={bottomBtn.buttonText}>다음</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -73,7 +100,7 @@ export default function SymptomResultScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "white",
   },
@@ -91,8 +118,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.grey150,
   },
   resultImage: {
-    width: 250,
-    height: 250,
+    //250
+    width: 200,
+    height: 200,
+    marginBottom: 20,
   },
   resultText: {
     fontSize: 16,
@@ -100,7 +129,8 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Medium",
   },
   resultTextHighlight: {
-    fontSize: 16,
+    fontSize: 20,
+    lineHeight: 30,
     color: theme.green500,
     fontFamily: "Pretendard-Bold",
     marginTop: 4,

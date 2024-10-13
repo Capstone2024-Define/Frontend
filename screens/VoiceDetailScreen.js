@@ -27,6 +27,7 @@ import summary from "./SummaryAPI";
 import RemoveAlert from "../component/RemoveAlert";
 import ModalCloseButton from "../component/ModalCloseButton";
 import summarize from "./ChatgptAPI";
+import axios from "axios";
 
 // 음성녹음 창에서 올때는 이 날 기록보기, 삭제하기를 띄움
 // 기록 창에서 올때는 삭제하기만 띄움
@@ -173,45 +174,37 @@ const Modal2 = ({
   );
 };
 
-export default function DetailVoiceScreen({ navigation, route }) {
+export default function VoiceDetailScreen({ navigation, route }) {
   const [visible1, setVisible1] = useState(false);
   const [visible2, setVisible2] = useState(false); // 모달창 상태
   const [text, setText] = useState("");
   const [summaryText, setSummaryText] = useState("");
-  const [voiceList, setVoiceList] = useState([]); // 스토리지 내용
-  const [realDate, setRealDate] = useState("");
+  const [voice, setVoice] = useState({});
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
-  const { place, date, time } = route.params;
+  const { user_code, timestamp, ipnumber } = route.params;
 
   // 기록 불러오기
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
+      const load = async () => {
         try {
-          const rawVoice = await AsyncStorage.getItem("voice");
-          if (rawVoice) {
-            const data = JSON.parse(rawVoice);
-            setVoiceList(data);
+          const rawVoice = await axios.get(
+            `http://${ipnumber}:8080/record/list/${user_code}/${timestamp}`
+          );
 
-            // 목표하는 date와 time
-            const targetDate = date;
-            const targetTime = time;
-
-            // date와 time이 모두 일치하는 객체 필터링
-            const filtered = data.filter(
-              (item) => item.date === targetDate && item.time === targetTime
-            );
-
-            setText(filtered[0].text);
-            setRealDate(filtered[0].realDate);
+          // console.log(rawVoice.data);
+          if (rawVoice.data) {
+            setVoice(rawVoice.data);
+            setText(rawVoice.data.contents);
+            console.log(rawVoice.data.contents);
           }
         } catch (error) {
-          console.error("데이터 불러오기 실패:", error);
+          console.error("GET 에러:", error);
         }
       };
 
-      fetchData();
+      load();
     }, [route.params])
   );
 
@@ -225,7 +218,7 @@ export default function DetailVoiceScreen({ navigation, route }) {
           // 챗지피티 (요금때문에 일단 주석)
           // const summarizeText = await summarize(text);
           setSummaryText(result.summary);
-          // console.log(result.summary);
+          console.log(result.summary);
         } catch (error) {
           console.log("서머리 에러", error.response.data.error.errorCode);
         }
@@ -239,15 +232,10 @@ export default function DetailVoiceScreen({ navigation, route }) {
 
   // 기록 삭제 함수
   const remove = async () => {
-    console.log(date);
-    console.log(time);
-    const updatedList = voiceList.filter(
-      (voice) => !(voice.date === date && voice.time === time)
-    );
     try {
-      // 수정된 배열을 AsyncStorage에 저장
-      await AsyncStorage.setItem("voice", JSON.stringify(updatedList));
-      console.log(updatedList);
+      await axios.delete(
+        `http://${ipnumber}:8080/record/delete/${user_code}/${timestamp}`
+      );
     } catch (error) {
       console.error("객체 수정 실패:", error);
     }
@@ -256,15 +244,36 @@ export default function DetailVoiceScreen({ navigation, route }) {
   // 이 날 기록보기 함수
   const showRecord = async () => {
     try {
-      const rawRecord = await AsyncStorage.getItem(date);
-      if (rawRecord) {
-        navigation.navigate("DetailHistory", { date: date });
+      const record = await axios.get(
+        `http://${ipnumber}:8080/daily/records/${user_code}/${getYYYYMMDD(
+          timestamp
+        )}`
+      );
+
+      if (record.data) {
+        navigation.navigate("DetailHistory", {
+          user_code: user_code,
+          date: getYYYYMMDD(timestamp),
+          ipnumber: ipnumber,
+        });
       } else {
-        navigation.navigate("DetailNone", { date: date });
+        navigation.navigate("DetailNone", {
+          date: getYYYYMMDD(timestamp),
+          ipnumber: ipnumber,
+          user_code: user_code,
+        });
       }
     } catch (e) {
-      console.log("기록 로드 에러");
+      console.log("하루 기록 GET 에러 : ", error);
     }
+  };
+
+  const getYYYYMMDD = (date) => {
+    const newdate = new Date(date);
+
+    return `${newdate.getFullYear()}-${
+      newdate.getMonth() + 1
+    }-${newdate.getDate()}`;
   };
 
   // 날짜를 형식에 맞게 바꿔주는 함수
@@ -279,6 +288,17 @@ export default function DetailVoiceScreen({ navigation, route }) {
     return `${month}.${day} ${dayName}`;
   };
 
+  const getTime = (time) => {
+    const newTime = new Date(time);
+    const hours = newTime.getHours();
+    const minutes = newTime.getMinutes();
+    const period = hours >= 12 ? "오후" : "오전";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    return `${period} ${formattedHours}:${formattedMinutes}`;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -291,12 +311,6 @@ export default function DetailVoiceScreen({ navigation, route }) {
             alignItems: "center",
           }}
         >
-          {/* <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => setVisible1(true)}
-          >
-            <Text style={styles.headerText}>수정</Text>
-          </TouchableOpacity> */}
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => setVisible2(true)}
@@ -325,13 +339,13 @@ export default function DetailVoiceScreen({ navigation, route }) {
         </View>
       </View>
       <View style={styles.infoHeader}>
-        {place === "school" ? (
+        {voice.location === "school" ? (
           <WithLocalSvg width={20} height={20} asset={School} />
         ) : (
           <WithLocalSvg width={20} height={20} asset={Hospital} />
         )}
-        <Text style={styles.date}>{getDate(date)}</Text>
-        <Text style={styles.time}>{time}</Text>
+        <Text style={styles.date}>{getDate(timestamp)}</Text>
+        <Text style={styles.time}>{getTime(timestamp)}</Text>
       </View>
       <View style={styles.summaryBox}>
         <View style={{ flexDirection: "row", marginBottom: 12 }}>
@@ -340,13 +354,14 @@ export default function DetailVoiceScreen({ navigation, route }) {
         </View>
         <Text style={styles.summaryText}>{summaryText}</Text>
       </View>
-      <ScrollView>
+      <ScrollView style={{ width: "100%" }}>
         <Text style={{ ...styles.text, paddingBottom: 20 }}>{text}</Text>
       </ScrollView>
       <VoiceModifyScreen
         visible={visible1}
-        date={route.params.date}
-        time={route.params.time}
+        ipnumber={ipnumber}
+        user_code={user_code}
+        voice={voice}
         onClose={() => setVisible1(false)}
         onUpdateText={(updatedText) => setText(updatedText)}
       />

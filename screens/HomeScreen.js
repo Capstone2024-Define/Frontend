@@ -56,7 +56,7 @@ const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
 };
 
 // 홈 스크린
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, route }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
@@ -65,8 +65,7 @@ export default function HomeScreen({ navigation }) {
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
   const [totalDay, setTotalDay] = useState(0);
-  const ipnumber = "192.168.123.159";
-  let user_code = 7274; // 유저 id
+  const { ipnumber, user_code } = route.params;
 
   // 홈 화면만 상태바 색 변경
   // ios에는 적용안됨 수정함 하기
@@ -117,18 +116,6 @@ export default function HomeScreen({ navigation }) {
 
             //console.log(newRecord);
 
-            // user_code 가져오기
-            // try {
-            //   const value = await AsyncStorage.getItem("user_code");
-            //   if (value !== null) {
-            //     user_code = value;
-            //   } else {
-            //     console.log("user_code가 null입니다.");
-            //   }
-            // } catch (error) {
-            //   console.log("유저id 불러오기 실패");
-            // }
-
             // 요약, 상태 가져옴
             const response = await axios.get(
               `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
@@ -145,7 +132,7 @@ export default function HomeScreen({ navigation }) {
             setTotalDay(response_total.data.length);
           } catch (e) {
             // 기록 없는거니까 텍스트랑 이미지 비움
-            setTotalText("");
+            // setTotalText("");
             setImages([]);
           }
         };
@@ -469,6 +456,7 @@ export default function HomeScreen({ navigation }) {
                       navigation.push("DetailHistory", {
                         date: selectedDate,
                         user_code: user_code,
+                        ipnumber: ipnumber,
                       })
                     }
                   >
@@ -501,7 +489,7 @@ export default function HomeScreen({ navigation }) {
                         ? summaryText.slice(0, 92).replace(/\n/g, " ")
                         : totalText.slice(0, 92).replace(/\n/g, " ")} */}
                       {summaryText &&
-                        summaryText.slice(0, 100).replace(/\n/g, " ")}
+                        summaryText.slice(0, 95).replace(/\n/g, " ")}
                       ...
                     </Text>
                   </TouchableOpacity>
@@ -618,9 +606,12 @@ export default function HomeScreen({ navigation }) {
                         ? navigation.push("DetailModify", {
                             date: selectedDate,
                             user_code: user_code,
+                            ipnumber: ipnumber,
                           })
                         : navigation.push("SymptomCheck", {
                             date: selectedDate,
+                            user_code: user_code,
+                            ipnumber: ipnumber,
                           })
                     }
                   >
@@ -648,9 +639,14 @@ export default function HomeScreen({ navigation }) {
               {/* )} */}
 
               <TouchableOpacity
+                activeOpacity={0.8}
                 style={styles.whiteButton}
                 onPress={() =>
-                  navigation.push("MainVoice", { date: selectedDate })
+                  navigation.push("MainVoice", {
+                    date: selectedDate,
+                    user_code: user_code,
+                    ipnumber: ipnumber,
+                  })
                 }
               >
                 <Shadow

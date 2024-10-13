@@ -28,9 +28,12 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [transcriptArray, setTranscriptArray] = useState([]);
   const recordingRef = useRef(null);
+  const [isTranscribing, setIsTranscribing] = useState(false); // STT 진행 중 여부 상태
 
   // 기록 관련
-  const today = route.params.date; // 날짜
+  const today = route.params.date;
+  const user_code = route.params.user_code;
+  const ipnumber = route.params.ipnumber;
 
   useEffect(() => {
     return () => {
@@ -109,18 +112,24 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       console.log("Recording file info:", info);
 
       if (info.size > 0) {
-        const transcript = await sendToGoogleSTT(uri);
-        setTranscriptArray((prevArray) => [...prevArray, transcript]);
         setIsPaused(true);
         setIsRecording(false);
         clearInterval(intervalId);
         setIntervalId(null);
+
+        // STT
+        setIsTranscribing(true);
+        const transcript = await sendToGoogleSTT(uri);
+        setIsTranscribing(false);
+        setTranscriptArray((prevArray) => [...prevArray, transcript]);
+
         recordingRef.current = null;
       } else {
         console.error("Recording file is empty");
       }
     } catch (error) {
       console.error("Failed to stop recording", error);
+      setIsTranscribing(false);
     }
   };
 
@@ -180,23 +189,37 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   };
 
   const handleComplete = async () => {
-    const finalTranscript = transcriptArray.join(" ");
-    const time = getTime();
-    const newVoice = {
-      date: today,
-      place: mode,
-      time: time,
-      text: finalTranscript,
-    };
-    //console.log(newVoice);
-
-    // 스토리지 저장
-    await save(newVoice);
+    await handlePost(); // 저장
     setTranscriptArray([]);
     setRecordingTime(0);
     setIsPaused(false);
     showToast("기록이 완료되었어요");
     navigation.navigate("VoiceHistory");
+  };
+
+  const handlePost = async () => {
+    try {
+      const finalTranscript = transcriptArray.join(" ");
+      const time = getTime();
+
+      console.log(time);
+
+      console.log({
+        user_code: user_code,
+        timestamp: time,
+        location: mode,
+        contents: finalTranscript,
+      });
+
+      await axios.post(`http://${ipnumber}:8080/record/post`, {
+        user_code: user_code,
+        timestamp: time,
+        location: mode,
+        contents: finalTranscript,
+      });
+    } catch (error) {
+      console.log("POST 에러 : ", error);
+    }
   };
 
   const formatTime = (time) => {
@@ -205,44 +228,22 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  // 스토리지에 저장
-  const save = async (toSave) => {
-    try {
-      // 기존 저장된 기록 불러오기
-      const rawVoiceList = await AsyncStorage.getItem("voice");
-      let voiceList = [];
-      if (rawVoiceList) {
-        try {
-          voiceList = JSON.parse(rawVoiceList);
-        } catch (parseError) {
-          console.error("JSON 파싱 에러:", parseError);
-        }
-      }
-
-      //console.log("기존 기록 내용:", voiceList);
-
-      // 새로운 기록 추가
-      voiceList.push(toSave);
-      //console.log("새로운 기록이 추가된 리스트:", voiceList);
-
-      // 기록 저장
-      await AsyncStorage.setItem("voice", JSON.stringify(voiceList));
-      //console.log("기록 저장 성공:", voiceList);
-    } catch (error) {
-      console.error("기록 저장 에러:", error);
-    }
-  };
-
   // 녹음 시간 구하기
   const getTime = () => {
+    const todayDate = new Date(today);
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const period = hours >= 12 ? "오후" : "오전";
-    const formattedHours = hours % 12 || 12;
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
-    return `${period} ${formattedHours}:${formattedMinutes}`;
+    const year = todayDate.getFullYear();
+    const month = String(todayDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(todayDate.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    // YYYY-MM-DD 시:분:초
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return formattedDate;
   };
 
   return (
@@ -348,7 +349,13 @@ const VoiceRecordScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
               </LinearGradient>
               <TouchableOpacity
-                onPress={handleComplete}
+                onPress={() => {
+                  if (isTranscribing) {
+                    showToast("음성 분석 중입니다. 잠시만 기다려주세요.");
+                  } else {
+                    handleComplete();
+                  }
+                }}
                 style={styles.completeButton}
               >
                 <Text style={styles.completeButtonText}>완료</Text>

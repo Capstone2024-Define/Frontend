@@ -38,8 +38,8 @@ export default function RemoveAlert({ visible, onClose, onRemove }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.5}
-                  onPress={() => {
-                    onRemove();
+                  onPress={async () => {
+                    await onRemove();
                     navigation.pop();
                   }}
                   style={{ ...styles.button, backgroundColor: theme.red }}
