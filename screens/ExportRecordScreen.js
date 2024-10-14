@@ -453,17 +453,13 @@ export default function ExportRecordScreen({ navigation, route }) {
           UTI: ".pdf",
           mimeType: "application/pdf",
         });
-        // 사용자가 공유를 성공적으로 완료한 경우
-        if (result && result.action === "sharedAction") {
-          setPage(3);
-        } else {
-          setPage(1);
-        }
+        console.log(result);
+        setPage(3);
       } catch (error) {
         console.error("파일 공유 실패 :", error);
         setPage(1);
       }
-    }, 800);
+    }, 500);
   };
 
   return (
@@ -648,10 +644,10 @@ export default function ExportRecordScreen({ navigation, route }) {
         >
           <Image source={require("../assets/hi_rabbit.png")} />
           <Text style={{ ...styles.boldText, marginTop: 22, marginBottom: 4 }}>
-            메일로 기록을 보내드렸어요!
+            기록을 보내드렸어요!
           </Text>
           <Text style={{ ...styles.subText, color: theme.grey600 }}>
-            메일함을 확인해주세요
+            공유하기로 내보낸 파일을 확인해주세요!
           </Text>
         </View>
       )}
@@ -663,7 +659,7 @@ export default function ExportRecordScreen({ navigation, route }) {
           width: "100%",
         }}
       >
-        {!isKeyboardVisible && (
+        {!isKeyboardVisible && page !== 2 && (
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {

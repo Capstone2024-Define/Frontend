@@ -29,8 +29,7 @@ import summarize from "./ChatgptAPI";
 import { bottomBtn } from "../component/BottomButton";
 
 export default function DetailRecordScreen({ navigation, route }) {
-  const ipnumber = route.params.ipnumber;
-  const date = route.params.date;
+  const { ipnumber, date } = route.params;
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   // 상세 기록 state

@@ -310,6 +310,7 @@ export default function CalendarScreen({ navigation, route }) {
                 navigation.push("DetailHistory", {
                   date: selectedDate,
                   user_code: user_code,
+                  ipnumber: ipnumber,
                 })
               }
             >
@@ -374,6 +375,8 @@ export default function CalendarScreen({ navigation, route }) {
                       onPress={() => {
                         navigation.navigate("SymptomCheck", {
                           date: selectedDate,
+                          user_code: user_code,
+                          ipnumber: ipnumber,
                         });
                       }}
                       style={styles.button}

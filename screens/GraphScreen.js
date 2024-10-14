@@ -16,12 +16,11 @@ import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Y from "../assets/axisY.svg";
 import Svg, { Line, Polyline, Circle } from "react-native-svg";
-import { PieChart } from "react-native-chart-kit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 // import { BlurView } from "expo-blur";
-// import PieChart from "react-native-pie-chart";
-// import { VictoryPie } from "victory-native";
+import { VictoryPie } from "victory-native";
+import { PieChart } from "react-native-svg-charts";
 
 export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
   const today = new Date().toLocaleDateString("sv-SE", {
@@ -108,7 +107,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           : null;
       });
 
-      console.log("주간 state : ", newDayStateWeek);
+      //console.log("주간 state : ", newDayStateWeek);
 
       // 모든 값이 null인지 확인
       const allNull = newDayStateWeek.every((state) => state === null);
@@ -150,7 +149,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
         const day = new Date(item.date).getDate(); // 일(day) 값 추출
         newDayStateMonth[day - 1] = item.state; // 해당 인덱스에 state 값 할당
       });
-      console.log(newDayStateMonth);
+      //console.log(newDayStateMonth);
       setDayState_month(newDayStateMonth);
 
       // symptomCount 초기화
@@ -164,29 +163,12 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           }
         });
       });
-      console.log(newSymptomCount);
+      //console.log(newSymptomCount);
       setSymptomCount(newSymptomCount);
     } catch (error) {
       console.log("month 로드 실패: ", error);
     }
   };
-
-  // 증상체크 count 로드
-  // const SymptomCheckCount = async () => {
-  //   try {
-  //     const newSymtomCount = Array(symptomList.length).fill(0);
-  //     response.data.forEach((item) => {
-  //       item.checklist.forEach((list, index) => {
-  //         if (list == 1) {
-  //           newSymtomCount[index]++;
-  //         }
-  //       });
-  //     });
-  //     setSymptomCount(newSymtomCount);
-  //   } catch (error) {
-  //     console.log("symptom 로드 실패: ", error);
-  //   }
-  // };
 
   // 현재 날짜의 주 날짜, 주차 계산
   const getCurrentWeek = (date) => {
@@ -273,6 +255,32 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     },
     { count: stateCount[2], color: theme.pink },
   ];
+  const chartData = pieData
+    .filter((slice) => slice.count > 0)
+    .map((slice, index) => ({
+      value: slice.count,
+      svg: {
+        fill: slice.color, // 각 섹션의 색상 설정
+        stroke: theme.grey500, // 경계선 색상
+        strokeWidth: 1, // 경계선 두께
+      },
+      key: `pie-${index}`, // 고유한 키
+    }));
+  const data = () => {
+    let totalCount = stateCount[0] + stateCount[1] + stateCount[2];
+
+    if (totalCount == 0) totalCount = 1;
+
+    return [
+      { x: " ", y: (stateCount[0] / totalCount) * 100 },
+
+      {
+        x: " ",
+        y: (stateCount[1] / totalCount) * 100,
+      },
+      { x: " ", y: (stateCount[2] / totalCount) * 100 },
+    ];
+  };
 
   // 원 그래프 레이블/데이터 컴포넌트
   const PieLabel = ({ label, count, color }) => (
@@ -445,14 +453,14 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
             {/* 블러 처리 */}
             {((!isWeek && !monthSegments) || (isWeek && weekStateNull)) && (
               <ImageBackground
-                source={require("../assets/NoData1.png")}
+                source={require("../assets/NoData11.png")}
                 style={styles.absolute}
                 resizeMode="cover"
               >
-                <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+                {/* <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
                 <Text style={styles.noDataText}>
                   하루기록으로 증상을 체크해주세요!
-                </Text>
+                </Text> */}
               </ImageBackground>
               // <BlurView intensity={100} style={styles.overlay}>
               //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
@@ -654,14 +662,14 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           {/* 블러 처리 */}
           {!monthSegments && (
             <ImageBackground
-              source={require("../assets/NoData2.png")}
+              source={require("../assets/NoData22.png")}
               style={styles.absolute}
               resizeMode="contain"
             >
-              <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              {/* <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
               <Text style={styles.noDataText}>
                 하루기록으로 증상을 체크해주세요!
-              </Text>
+              </Text> */}
             </ImageBackground>
             // <BlurView intensity={100} style={styles.absolute}>
             //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
@@ -673,66 +681,42 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           <View style={styles.rowContainer}>
             <View
               style={{
-                width: 82,
-                height: 82,
+                width: 90,
+                height: 90,
                 borderRadius: 60,
-                borderWidth: 1,
-                borderColor: theme.grey500,
+                // borderWidth: 1,
+                // borderColor: theme.grey500,
                 justifyContent: "center",
                 alignItems: "center",
-                margin: 9,
+                padding: 9,
+                margin: 4,
               }}
             >
               <PieChart
-                data={pieData}
-                width={100}
-                height={100}
-                chartConfig={{
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                center={[25, 0]}
-                accessor={"count"}
-                backgroundColor={"transparent"}
-                hasLegend={false}
+                style={{ height: 90, width: 90 }}
+                data={chartData}
+                innerRadius={0}
+                padAngle={0}
+                outerRadius={"99%"}
               />
-              {/* <PieChart
-                widthAndHeight={80}
-                series={[3, 0.04, 3, 0.04, 2, 0.04]}
-                sliceColor={[
-                  theme.green,
-                  theme.grey500,
-                  theme.yellow,
-                  theme.grey500,
-                  theme.pink,
-                  theme.grey500,
-                ]}
-                coverRadius={0.5}
-                coverFill="#fff"
-              />
-              <View
-                style={{
-                  position: "absolute",
-                  top: 20,
-                  left: 20,
-                  bottom: 20,
-                  right: 20,
-                  width: 40,
-                  heigth: 40,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "transparent",
-                  borderRadius: 100,
-                  borderWidth: 1,
-                  borderColor: theme.grey500,
-                }}
-              /> */}
-
               {/* <VictoryPie
-                data={[
-                  { x: "Cats", y: 35 },
-                  { x: "Dogs", y: 40 },
-                  { x: "Birds", y: 55 },
-                ]}
+                data={data()}
+                colorScale={[theme.green, theme.yellow, theme.pink]}
+                innerRadius={0}
+                labels={() => null}
+                padAngle={0}
+                style={{
+                  data: {
+                    stroke: theme.grey500,
+                    strokeWidth: stateCount[0] == 0 ? 0 : 1,
+                  },
+                }}
+                width={stateCount[0] == 0 ? 188 : 190} 
+                height={stateCount[0] == 0 ? 188 : 190}
+                animate={{
+                  duration: 500,
+                  easing: "exp",
+                }}
               /> */}
             </View>
             <View style={{ flex: 1, marginLeft: 24 }}>
@@ -796,14 +780,14 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
         <View style={styles.subContainer}>
           {!monthSegments && (
             <ImageBackground
-              source={require("../assets/NoData2.png")}
+              source={require("../assets/NoData33.png")}
               style={styles.absolute}
               resizeMode="contain"
             >
-              <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              {/* <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
               <Text style={styles.noDataText}>
                 하루기록으로 증상을 체크해주세요!
-              </Text>
+              </Text> */}
             </ImageBackground>
             // <BlurView intensity={100} style={styles.absolute}>
             //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>

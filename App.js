@@ -23,17 +23,18 @@ import SymptomCheckParent from "./screens/SymptomCheckParent";
 import StartInfoScreen from "./screens/StartInfoScreen";
 import ProfileModifyScreen from "./screens/ProfileModifyScreen";
 import AlarmPage from "./screens/AlarmPage";
-import AlarmSettingsPage from "./screens/AlarmSettingsPage"; 
+import AlarmSettingsPage from "./screens/AlarmSettingsPage";
 import KakaoLoginScreen from "./screens/KakaoLoginScreen";
 import KakaoLoginWeb from "./screens/KakaoLoginWeb";
 import ExportRecordScreen from "./screens/ExportRecordScreen";
 import CalendarScreen from "./screens/CalendarScreen";
 import GraphScreen from "./screens/GraphScreen";
 import TestPage from "./screens/TestPage";
-import InfoScreen from "./screens/InfoScreen";  
-import InfoSearch from "./screens/InfoSearch";  
-import InfoSearchResult from "./screens/InfoSearchResult";  
-import InfoScreenDetail from "./screens/InfoScreenDetail"; 
+import InfoScreen from "./screens/InfoScreen";
+import InfoSearch from "./screens/InfoSearch";
+import InfoSearchResult from "./screens/InfoSearchResult";
+import InfoScreenDetail from "./screens/InfoScreenDetail";
+import ChatbotScreen from "./screens/ChatBotScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -83,9 +84,11 @@ export default function App() {
               component={InfoSearchResult}
               options={{ title: "검색 결과", headerShown: false }}
             />
-             <Stack.Screen name="InfoScreenDetail" 
-             component={InfoScreenDetail} 
-             options={{ title: "정보 상세", headerShown: false }} />
+            <Stack.Screen
+              name="InfoScreenDetail"
+              component={InfoScreenDetail}
+              options={{ title: "정보 상세", headerShown: false }}
+            />
             {/* 나머지 화면들 */}
             <Stack.Screen
               name="SymptomCheck"
@@ -216,6 +219,11 @@ export default function App() {
             <Stack.Screen
               name="Test"
               component={TestPage}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Chatbot"
+              component={ChatbotScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

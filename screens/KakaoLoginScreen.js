@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { theme } from "../colors/color";
 import { FontAwesome } from "@expo/vector-icons";
 import { WithLocalSvg } from "react-native-svg/css";
@@ -21,6 +21,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 
 export default function KakaoLoginScreen({ navigation }) {
   const [activePage, setActivePage] = useState(0); // 현재 페이지 상태
+  const scrollViewRef = useRef(null);
   const title = ["하루기록/음성기록", "정보", "캘린더", "내보내기"];
   const contentTop = [
     "ADHD 증상체크부터",
@@ -41,11 +42,31 @@ export default function KakaoLoginScreen({ navigation }) {
     setActivePage(pageNumber);
   };
 
+  // 15초마다 페이지 변경하는 효과
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setActivePage((prevPage) => {
+        const nextPage = (prevPage + 1) % 4;
+        if (scrollViewRef.current) {
+          scrollViewRef.current.scrollTo({
+            x: SCREEN_WIDTH * nextPage,
+            animated: true,
+          });
+        }
+        return nextPage;
+      });
+    }, 5000);
+
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 해제
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
         <View style={styles.imageContainer}>
           <ScrollView
+            // ref={scrollViewRef}
+            // scrollEventThrottle={5}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
