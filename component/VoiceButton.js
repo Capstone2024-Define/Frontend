@@ -5,6 +5,17 @@ import Voice from "../assets/graphic_eq.svg";
 import PropTypes from "prop-types";
 
 export default function VoiceButton({ time, text = "", onPress }) {
+  const getTime = (time) => {
+    const newTime = new Date(time);
+    const hours = newTime.getHours();
+    const minutes = newTime.getMinutes();
+    const period = hours >= 12 ? "오후" : "오전";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    return `${period} ${formattedHours}:${formattedMinutes}`;
+  };
+
   return (
     <View style={{ marginBottom: 8 }}>
       <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
@@ -13,7 +24,7 @@ export default function VoiceButton({ time, text = "", onPress }) {
             <View style={styles.voiceContentHeader}>
               <View style={{ flexDirection: "row" }}>
                 <WithLocalSvg width={18} height={18} asset={Voice} />
-                <Text style={styles.voiceTime}>{time}</Text>
+                <Text style={styles.voiceTime}>{getTime(time)}</Text>
               </View>
               <Text style={styles.dubogi}>더보기</Text>
             </View>

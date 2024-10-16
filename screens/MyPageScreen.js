@@ -31,7 +31,12 @@ export default function MyPageScreen({ navigation, route }) {
           <Text style={{ ...styles.L_text, marginTop: 4 }}>디파인님</Text>
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => navigation.push("ProfileModify")}
+            onPress={() =>
+              navigation.push("ProfileModify", {
+                user_code: user_code,
+                ipnumber: ipnumber,
+              })
+            }
             style={styles.button}
           >
             <Text style={styles.ss_text}>프로필수정</Text>

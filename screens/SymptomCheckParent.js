@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,9 +12,27 @@ import Header from "../component/Header";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
 import { bottomBtn } from "../component/BottomButton";
+import axios from "axios";
 
 export default function SymptomCheckParent({ route, navigation }) {
   const [selectedChecklistItems, setSelectedChecklistItems] = useState([]);
+  const { user_code, ipnumber } = route.params;
+  const [nickName, setNickName] = useState("");
+
+  // 닉네임(유저 이름) 가져오기
+  useEffect(() => {
+    async function load() {
+      try {
+        const response = await axios.get(
+          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+        );
+        setNickName(response.data.user_name);
+      } catch (error) {
+        console.log("유저 GET 에러: ", error);
+      }
+    }
+    load();
+  }, []);
 
   const toggleChecklistItem = (item) => {
     setSelectedChecklistItems((prevSelected) =>
@@ -73,7 +91,7 @@ export default function SymptomCheckParent({ route, navigation }) {
         contentContainerStyle={{ paddingBottom: 94 }}
       >
         <Text style={styles.headerText}>
-          오늘 지현님은 {"\n"}어떻게 하셨나요?
+          {`오늘 ${nickName}님은${"\n"}어떻게 하셨나요?`}
         </Text>
         <Text style={styles.subtitleText}>
           오늘 하루 아이와 어떻게 지냈는지 되돌아봐요.

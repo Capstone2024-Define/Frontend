@@ -28,6 +28,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
+import * as FileSystem from "expo-file-system";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -428,38 +429,217 @@ export default function ExportRecordScreen({ navigation, route }) {
   const textToPdf = async (text) => {
     setTimeout(async () => {
       const html = `
+       <!DOCTYPE html>
         <html>
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-          </head>
-          <body style="text-align: center;">
-            <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
-              ${text}
-            </h1>
-            <img
-              src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
-              style="width: 90vw;" />
+          <header>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+            <style>
+              body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 40px;
+              }
+              table {
+                width: 100%;
+                border: 1px solid black;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+              }
+              th,
+              td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 10px;
+              }
+              caption {
+                margin-top: 30px;
+                margin-bottom: 30px;
+                font: 20px sans-serif;
+              }
+              th.info {
+                color: rgb(161, 161, 161);
+                background-color: rgb(239, 239, 239);
+              }
+              th.date {
+                background-color: rgb(239, 239, 239);
+              }
+              td.title {
+                text-align: center;
+              }
+            </style>
+          </header>
+          <body>
+            <table>
+              <caption>
+                Clobit 하루 기록 일지
+              </caption>
+              <tr>
+                <th class="info">이름</th>
+                <td>홍길동</td>
+                <th class="info">생년월일</th>
+                <td>2014/07/27</td>
+              </tr>
+              <tr>
+                <th class="info">성별</th>
+                <td>여</td>
+                <th class="info">기록 기간</th>
+                <td>2014/07/27~2024/08/15</td>
+              </tr>
+            </table>
+            <table>
+                <tr>
+                  <th class="date" colspan="3">
+                    2024/10/16
+                  </th>
+                </tr>
+                <tr>
+                  <td colspan="2" class="title">
+                    증상체크
+                  </td>
+                  <td>불순응, 반항, 떼쓰기, 꾀병</td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="title">
+                    사진
+                  </td>
+                  <td>
+                    <img src="" width="100" height="100" alt="이미지" />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="title">
+                    요약
+                  </td>
+                  <td>
+                    집에서는 숙제 시간을 조정해 집중력을 높이는 방법을
+                    시도했으나, 도중에 잠시 짜증을 냈다. 오늘 아이는 학교에서
+                    집중을 잘 못했지만, 선생님의 도움으로 과제를 마쳤다.
+                    병원에서는 치료사와의 상담 후 새로운 관리 전략을 논의했다.
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="3" class="title">
+                    증상체크
+                  </td>
+                  <td class="title">가정</td>
+                  <td>
+                    아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침
+                    준비가 늦어짐. 저녁 식사 중간에 계속 자리를 떠서 여러 번
+                    주의를 줌. 식사 후 설거지를 도와주었음. 숙제를 할 때
+                    집중하지 못하고 자주 딴짓을 해서 함께 앉아 도와주며 완료함.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="title">학교</td>
+                  <td>
+                    교실에서 수업 중 자주 자리를 벗어나서 선생님께서 주의를 줌.
+                    친구들과 놀이 시간에 충돌이 있었으나 교사의 중재로 해결됨.
+                    특별 지원 교사와의 개별 학습 시간 동안 비교적 잘 집중했음.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="title">병원</td>
+                  <td>
+                    오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이
+                    필요하다고 판단됨. 의사 선생님이 추천해준 행동치료
+                    프로그램에 등록하기로 결정함. 치료 계획에 대해 상담하고
+                    가정에서 할 수 있는 행동 관리 방법에 대해 교육 받음.
+                  </td>
+                </tr>
+              </table>
+            <table>
+                <tr>
+                  <th class="date" colspan="3">
+                    2024/10/16
+                  </th>
+                </tr>
+                <tr>
+                  <td colspan="2" class="title">
+                    증상체크
+                  </td>
+                  <td>불순응, 반항, 떼쓰기, 꾀병</td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="title">
+                    사진
+                  </td>
+                  <td>
+                    <img src="" width="100" height="100" alt="이미지" />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="title">
+                    요약
+                  </td>
+                  <td>
+                    집에서는 숙제 시간을 조정해 집중력을 높이는 방법을
+                    시도했으나, 도중에 잠시 짜증을 냈다. 오늘 아이는 학교에서
+                    집중을 잘 못했지만, 선생님의 도움으로 과제를 마쳤다.
+                    병원에서는 치료사와의 상담 후 새로운 관리 전략을 논의했다.
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="3" class="title">
+                    증상체크
+                  </td>
+                  <td class="title">가정</td>
+                  <td>
+                    아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침
+                    준비가 늦어짐. 저녁 식사 중간에 계속 자리를 떠서 여러 번
+                    주의를 줌. 식사 후 설거지를 도와주었음. 숙제를 할 때
+                    집중하지 못하고 자주 딴짓을 해서 함께 앉아 도와주며 완료함.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="title">학교</td>
+                  <td>
+                    교실에서 수업 중 자주 자리를 벗어나서 선생님께서 주의를 줌.
+                    친구들과 놀이 시간에 충돌이 있었으나 교사의 중재로 해결됨.
+                    특별 지원 교사와의 개별 학습 시간 동안 비교적 잘 집중했음.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="title">병원</td>
+                  <td>
+                    오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이
+                    필요하다고 판단됨. 의사 선생님이 추천해준 행동치료
+                    프로그램에 등록하기로 결정함. 치료 계획에 대해 상담하고
+                    가정에서 할 수 있는 행동 관리 방법에 대해 교육 받음.
+                  </td>
+                </tr>
+              </table>
           </body>
         </html>
         `;
       const { uri } = await Print.printToFileAsync({
         html,
-        fileName: "Clobit.pdf",
       });
       console.log("File has been saved to:", uri);
 
+      // 파일 이름 변경(경로 변경)
+      const pdfName = `${uri.slice(0, uri.lastIndexOf("/") + 1)}Clobit.pdf`;
+
+      console.log("File has been saved to:", pdfName);
+
+      await FileSystem.moveAsync({
+        from: uri,
+        to: pdfName,
+      });
+
       try {
-        const result = await shareAsync(uri, {
+        const result = await shareAsync(pdfName, {
           UTI: ".pdf",
           mimeType: "application/pdf",
         });
-        console.log(result);
+        // console.log(result);
         setPage(3);
       } catch (error) {
         console.error("파일 공유 실패 :", error);
         setPage(1);
       }
-    }, 500);
+    }, 400);
   };
 
   return (
@@ -475,18 +655,21 @@ export default function ExportRecordScreen({ navigation, route }) {
         // ***0번째 페이지***
         <View style={{ ...styles.subContainer, alignItems: "center" }}>
           <View style={styles.imageContainer}>
-            <View style={styles.phone} />
+            <Image
+              source={require("../assets/export.png")}
+              resizeMode="contain"
+              style={styles.paper}
+            />
             <LinearGradient
               colors={["transparent", "#00000005", "#00000010"]}
               style={styles.shadowGradient}
             />
           </View>
           <Text style={{ ...styles.boldText, marginTop: 24, marginBottom: 4 }}>
-            기록한 내용을 PDF로 공유 받으세요
+            기록한 내용을 PDF로 내보내세요
           </Text>
-          <Text style={styles.subText}>
-            기록했던 내용을 정리해서 메일로 보내드려요
-          </Text>
+          <Text style={styles.subText}>실제 치료에 활용할 수 있도록</Text>
+          <Text style={styles.subText}>기록한 내용을 PDF로 정리해드려요</Text>
         </View>
       ) : page !== 3 ? (
         // ***1,2번째 페이지***
@@ -753,11 +936,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     overflow: "hidden", // 자식 뷰가 부모 뷰를 넘어가지 않도록 설정
   },
-  phone: {
-    marginTop: 29,
-    width: 194,
-    height: 410,
-    backgroundColor: "#BABABA",
+  paper: {
+    marginTop: 35,
+    width: 290,
+    height: 390,
   },
   shadowGradient: {
     position: "absolute",

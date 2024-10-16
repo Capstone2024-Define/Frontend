@@ -35,10 +35,10 @@ const Modal2 = ({
   visible,
   onClose,
   date,
-  checkList,
   setVisible,
   setRemoveModalVisible,
   user_code,
+  ipnumber,
 }) => {
   // 이동 위한 내비게이션 추가
   const navigation = useNavigation();
@@ -75,7 +75,7 @@ const Modal2 = ({
                 setVisible(false);
                 navigation.push("DetailModify", {
                   date: date,
-                  // checkList: checkList,
+                  ipnumber: ipnumber,
                   user_code: user_code,
                 });
               }}
@@ -116,9 +116,7 @@ const Modal2 = ({
 };
 
 export default function DetailHistoryScreen({ navigation, route }) {
-  const ipnumber = "192.168.123.198";
-  const user_code = route.params.user_code;
-  const date = route.params.date;
+  const { ipnumber, user_code, date } = route.params;
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
@@ -221,14 +219,18 @@ export default function DetailHistoryScreen({ navigation, route }) {
     useCallback(() => {
       async function load() {
         try {
-          const rawVoice = await AsyncStorage.getItem("voice");
-          const voices = JSON.parse(rawVoice);
-          if (voices) {
-            const filteredVoice = voices.filter((voice) => voice.date === date);
-            setVoiceList(filteredVoice);
-          }
+          // const rawVoice = await AsyncStorage.getItem("voice");
+          // const voices = JSON.parse(rawVoice);
+          // if (voices) {
+          //   const filteredVoice = voices.filter((voice) => voice.date === date);
+          //   setVoiceList(filteredVoice);
+          // }
+          const response = await axios.get(
+            `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+          );
+          setVoiceList(response.data);
         } catch (e) {
-          console.log("기록 로드 에러");
+          console.log("음성 GET 에러: ", error);
         }
       }
       load();
@@ -394,17 +396,17 @@ export default function DetailHistoryScreen({ navigation, route }) {
             )}
           </View>
           {voiceList.map((voice, index) =>
-            voice.place === "school" ? (
+            voice.location === "school" ? (
               <VoiceButton
                 key={`school-${index}`}
-                time={voice.time}
-                text={voice.text}
+                time={voice.timestamp}
+                text={voice.contents}
                 onPress={() =>
                   navigation.push("DetailVoice", {
                     detail: false,
-                    place: "school",
-                    date: date,
-                    time: voice.time,
+                    user_code: user_code,
+                    ipnumber: ipnumber,
+                    timestamp: voice.timestamp,
                   })
                 }
               />
@@ -424,17 +426,17 @@ export default function DetailHistoryScreen({ navigation, route }) {
             )}
           </View>
           {voiceList.map((voice, index) =>
-            voice.place === "hospital" ? (
+            voice.location === "hospital" ? (
               <VoiceButton
                 key={`hospital-${index}`}
-                time={voice.time}
-                text={voice.text}
+                time={voice.timestamp}
+                text={voice.contents}
                 onPress={() =>
                   navigation.push("DetailVoice", {
                     detail: false,
-                    place: "hospital",
-                    date: date,
-                    time: voice.time,
+                    user_code: user_code,
+                    ipnumber: ipnumber,
+                    timestamp: voice.timestamp,
                   })
                 }
               />
@@ -450,6 +452,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         date={date}
         checkList={checkList}
         user_code={user_code}
+        ipnumber={ipnumber}
         setVisible={setVisible}
         setRemoveModalVisible={setRemoveModalVisible}
       />

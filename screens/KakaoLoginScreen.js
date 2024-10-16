@@ -14,8 +14,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { WithLocalSvg } from "react-native-svg/css";
 import Kakao from "../assets/kakao.svg";
 import { LinearGradient } from "expo-linear-gradient";
-// import * as Linking from "expo-linking";
-// import * as AuthSession from "expo-auth-session";
+import Carousel from "react-native-reanimated-carousel";
 
 const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 
@@ -36,91 +35,94 @@ export default function KakaoLoginScreen({ navigation }) {
     "활용할 수 있도록 문서화해드려요!",
   ];
 
+  const images = [
+    require("../assets/LoginImage1.png"),
+    require("../assets/LoginImage2.png"),
+    require("../assets/LoginImage3.png"),
+    require("../assets/LoginImage4.png"),
+  ];
+
+  // 이미지 4배
+  const extendedImages = [...images, ...images, ...images, ...images];
+
   // 스크롤 시 페이지 감지
   const handleScroll = (e) => {
-    const pageNumber = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-    setActivePage(pageNumber);
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const currentIndex =
+      Math.round(offsetX / SCREEN_WIDTH) % extendedImages.length;
+    setActivePage(currentIndex); // 페이지 업데이트
   };
 
-  // 15초마다 페이지 변경하는 효과
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setActivePage((prevPage) => {
-        const nextPage = (prevPage + 1) % 4;
-        if (scrollViewRef.current) {
-          scrollViewRef.current.scrollTo({
-            x: SCREEN_WIDTH * nextPage,
-            animated: true,
-          });
-        }
-        return nextPage;
-      });
-    }, 5000);
+  // 5초마다 자동으로 스크롤
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     if (activePage + 1 >= extendedImages.length) {
+  //       scrollViewRef.current.scrollTo({ x: 0, animated: true });
+  //       setActivePage(0);
+  //     } else {
+  //       scrollViewRef.current.scrollTo({
+  //         x: SCREEN_WIDTH * (activePage + 1),
+  //         animated: true,
+  //       });
+  //     }
+  //   }, 5000);
 
-    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 해제
-  }, []);
+  //   return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 해제
+  // }, [activePage]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
         <View style={styles.imageContainer}>
-          <ScrollView
-            // ref={scrollViewRef}
-            // scrollEventThrottle={5}
+          {/* <ScrollView
+            ref={scrollViewRef}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onScroll={handleScroll}
           >
-            <View
-              style={{
-                ...styles.imageContainer,
-                backgroundColor: theme.yellow25,
-              }}
-            >
-              <Image
-                source={require("../assets/LoginImage1.png")}
-                style={styles.phone}
-                resizeMode="contain"
-              />
-            </View>
-            <View
-              style={{
-                ...styles.imageContainer,
-                backgroundColor: theme.yellow25,
-              }}
-            >
-              <Image
-                source={require("../assets/LoginImage2.png")}
-                style={{ ...styles.phone }}
-                resizeMode="contain"
-              />
-            </View>
-            <View
-              style={{
-                ...styles.imageContainer,
-                backgroundColor: theme.yellow25,
-              }}
-            >
-              <Image
-                source={require("../assets/LoginImage3.png")}
-                style={styles.phone}
-                resizeMode="contain"
-              />
-            </View>
-            <View
-              style={{
-                ...styles.imageContainer,
-                backgroundColor: theme.yellow25,
-              }}
-            >
-              <Image
-                source={require("../assets/LoginImage4.png")}
-                style={styles.phone}
-                resizeMode="contain"
-              />
-            </View>
-          </ScrollView>
+            {extendedImages.map((image, index) => (
+              <View
+                key={index}
+                style={{
+                  ...styles.imageContainer,
+                  backgroundColor: theme.yellow25,
+                }}
+              >
+                <Image
+                  source={image}
+                  style={styles.phone}
+                  resizeMode="contain"
+                />
+              </View>
+            ))}
+          </ScrollView> */}
+          <Carousel
+            loop
+            width={SCREEN_WIDTH}
+            height={396}
+            data={images}
+            autoPlay={true}
+            pagingEnabled={true}
+            scrollAnimationDuration={1000} // 애니메이션 속도
+            autoPlayInterval={4000} // 스크롤 속도
+            onSnapToItem={(index) => setActivePage(index)}
+            renderItem={({ index }) => (
+              <View
+                key={index}
+                style={{
+                  ...styles.imageContainer,
+                  backgroundColor: theme.yellow25,
+                }}
+              >
+                <Image
+                  source={images[index]}
+                  style={styles.phone}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
+          />
           {/* 그라데이션 그림자 효과 */}
           <LinearGradient
             colors={["transparent", "#00000005", "#00000010"]}

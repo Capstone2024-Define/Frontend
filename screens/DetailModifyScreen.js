@@ -26,16 +26,14 @@ import summary from "./SummaryAPI";
 import axios from "axios";
 import summarize from "./ChatgptAPI";
 
-export default function DetailHistoryScreen({ navigation, route }) {
+export default function DetailModifyScreen({ navigation, route }) {
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const [totalText, setTotalText] = useState("");
-  const date = route.params.date;
-  const user_code = route.params.user_code;
-  const ipnumber = "192.168.123.198";
+  const { date, user_code, ipnumber } = route.params;
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -61,6 +59,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         // setSymptomList(newRecord.symptomList);
         // setId(newRecord.image[newRecord.image.length - 1].id + 1); // id 안겹치게
 
+        console.log(ipnumber, user_code, date);
         // 이미지 저장 DB 로직 짜여지면 이미지 id 관리 윗줄처럼
         const response = await axios.get(
           `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
@@ -159,23 +158,28 @@ export default function DetailHistoryScreen({ navigation, route }) {
   };
 
   // 음성 기록
-  useFocusEffect(
-    useCallback(() => {
-      async function load() {
-        try {
-          const rawVoice = await AsyncStorage.getItem("voice");
-          const voices = JSON.parse(rawVoice);
-          if (voices) {
-            const filteredVoice = voices.filter((voice) => voice.date === date);
-            setVoiceList(filteredVoice);
-          }
-        } catch (e) {
-          console.log("기록 로드 에러");
-        }
+  // useFocusEffect(
+  //   useCallback(() => {
+  useEffect(() => {
+    async function load() {
+      try {
+        // const rawVoice = await AsyncStorage.getItem("voice");
+        // const voices = JSON.parse(rawVoice);
+        // if (voices) {
+        //   const filteredVoice = voices.filter((voice) => voice.date === date);
+        //   setVoiceList(filteredVoice);
+        // }
+        const response = await axios.get(
+          `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+        );
+        setVoiceList(response.data);
+      } catch (e) {
+        console.log("음성 GET 에러: ", error);
       }
-      load();
-    }, [])
-  );
+    }
+    load();
+  }, []);
+  // );
 
   // 저장
   // const save = async (toSave) => {
@@ -321,7 +325,21 @@ export default function DetailHistoryScreen({ navigation, route }) {
           </View>
           <TextInput
             placeholder="가정에서 있었던 일을 작성해주세요"
-            style={styles.input}
+            style={{
+              ...styles.input,
+              backgroundColor:
+                homeText.length > 800
+                  ? theme.grey100
+                  : homeText.length > 0
+                  ? theme.green50
+                  : theme.grey100,
+              borderColor:
+                homeText.length > 800
+                  ? theme.red
+                  : homeText.length > 0
+                  ? theme.green500
+                  : "white",
+            }}
             placeholderTextColor={theme.grey400}
             multiline
             numberOfLines={2}
@@ -348,7 +366,21 @@ export default function DetailHistoryScreen({ navigation, route }) {
           </View>
           <TextInput
             placeholder="학교에서 있었던 일을 작성해주세요"
-            style={styles.input}
+            style={{
+              ...styles.input,
+              backgroundColor:
+                schoolText.length > 600
+                  ? theme.grey100
+                  : schoolText.length > 0
+                  ? theme.green50
+                  : theme.grey100,
+              borderColor:
+                schoolText.length > 600
+                  ? theme.red
+                  : schoolText.length > 0
+                  ? theme.green500
+                  : "white",
+            }}
             multiline
             numberOfLines={2}
             onChangeText={setSchoolText}
@@ -390,7 +422,21 @@ export default function DetailHistoryScreen({ navigation, route }) {
           </View>
           <TextInput
             placeholder="병원에서 있었던 일을 작성해주세요"
-            style={styles.input}
+            style={{
+              ...styles.input,
+              backgroundColor:
+                hospitalText.length > 600
+                  ? theme.grey100
+                  : hospitalText.length > 0
+                  ? theme.green50
+                  : theme.grey100,
+              borderColor:
+                hospitalText.length > 600
+                  ? theme.red
+                  : hospitalText.length > 0
+                  ? theme.green500
+                  : "white",
+            }}
             multiline
             numberOfLines={2}
             returnKeyType="done"
@@ -484,6 +530,8 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     fontFamily: "Human-beomseok",
     lineHeight: 19.6,
+    borderWidth: 1,
+    borderColor: "white",
   },
   limit: {
     flex: 1,

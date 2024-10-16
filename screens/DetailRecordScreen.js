@@ -29,8 +29,9 @@ import summarize from "./ChatgptAPI";
 import { bottomBtn } from "../component/BottomButton";
 
 export default function DetailRecordScreen({ navigation, route }) {
-  const { ipnumber, date } = route.params;
+  const { ipnumber, date, user_code } = route.params;
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [name, setName] = useState("");
 
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
@@ -65,6 +66,21 @@ export default function DetailRecordScreen({ navigation, route }) {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
+  }, []);
+
+  // 아이 이름 로드
+  useEffect(() => {
+    async function load() {
+      try {
+        const response = await axios.get(
+          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+        );
+        setName(response.data.child_name);
+      } catch (error) {
+        console.log("유저 GET 에러: ", error);
+      }
+    }
+    load();
   }, []);
 
   useEffect(() => {
@@ -159,6 +175,18 @@ export default function DetailRecordScreen({ navigation, route }) {
     }
   };
 
+  // 이름 받침 여부 확인
+  const nameCheck = (name) => {
+    const lastChar = name.charAt(name.length - 1); // 마지막 글자 가져오기
+    const lastCharCode = lastChar.charCodeAt(0); // 마지막 글자의 유니코드 값 가져오기
+
+    // 한글 유니코드에서 '가'의 유니코드 값 0xAC00을 뺀 값에서 28로 나눈 나머지가 받침 유무를 결정
+    const baseCode = lastCharCode - 0xac00;
+    const jongseong = baseCode % 28; // 받침 여부를 결정하는 값 (종성)
+
+    return jongseong !== 0; // 나머지가 0이 아니면 받침이 있는 것
+  };
+
   // 저장
   // const save = async (toSave) => {
   //   try {
@@ -181,7 +209,7 @@ export default function DetailRecordScreen({ navigation, route }) {
       // const summarizeText = await summarize(totalText);
 
       console.log("전송 데이터:", {
-        user_code: route.params.user_code,
+        user_code: user_code,
         date: date,
         home: homeText,
         school: schoolText,
@@ -194,7 +222,7 @@ export default function DetailRecordScreen({ navigation, route }) {
 
       // 줄글 저장
       await axios.post(`http://${ipnumber}:8080/daily/post`, {
-        user_code: route.params.user_code,
+        user_code: user_code,
         date: date,
         home: homeText,
         school: schoolText,
@@ -262,7 +290,9 @@ export default function DetailRecordScreen({ navigation, route }) {
       </LinearGradient>
       <ScrollView style={styles.scroll}>
         <View style={styles.subContainer}>
-          <Text style={styles.guideText}>좀더 자세히{"\n"}기록해볼까요?</Text>
+          <Text style={styles.guideText}>{`오늘 ${name}${
+            nameCheck(name) ? "이" : ""
+          }의 하루를 ${"\n"}자세히 기록해주세요!`}</Text>
         </View>
         <ScrollView
           horizontal
@@ -514,7 +544,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Pretendard-Bold",
     lineHeight: 30,
-    marginTop: 28,
+    marginTop: 20,
     color: theme.grey800,
   },
   photoScroll: { marginLeft: 16, marginVertical: 20 },

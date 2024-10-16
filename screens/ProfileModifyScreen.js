@@ -13,8 +13,11 @@ import { WithLocalSvg } from "react-native-svg/css";
 import Edit from "../assets/edit_gray.svg";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 
-export default function ProfileModifyScreen({ navigation }) {
+export default function ProfileModifyScreen({ navigation, route }) {
+  const { ipnumber, user_code } = route.params;
+
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
   const [nickName, setNickName] = useState("");
   const [name, setName] = useState("");
@@ -37,6 +40,25 @@ export default function ProfileModifyScreen({ navigation }) {
     console.log("생일: ", birth);
     console.log("성별: ", gender);
   }, [nickName, name, birth, gender]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await axios.get(
+          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+        );
+        const newBirth = data.birth.replace(/-/g, " / ");
+
+        setNickName(data.user_name);
+        setName(data.child_name);
+        setBirth(newBirth);
+        setGender(data.sex);
+      } catch (error) {
+        console.log("유저 GET 에러: ", error);
+      }
+    }
+    load();
+  }, []);
 
   // 키보드 활성화 시 감지
   useLayoutEffect(() => {
@@ -133,6 +155,22 @@ export default function ProfileModifyScreen({ navigation }) {
       enteredDate.getDate() === day;
 
     return isValid;
+  };
+
+  const handlePut = async () => {
+    try {
+      const newBirth = birth.replace(/\s\/\s/g, "-");
+
+      await axios.put(`http://${ipnumber}:8080/userinfo/post`, {
+        user_code: user_code,
+        user_name: nickName,
+        child_name: name,
+        birth: newBirth,
+        sex: gender,
+      });
+    } catch (error) {
+      console.log("유저 PUT 에러 : ", error);
+    }
   };
 
   return (

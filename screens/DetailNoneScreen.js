@@ -9,35 +9,43 @@ import VoiceButton from "../component/VoiceButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 
 export default function DetailNoneScreen({ route, navigation }) {
-  console.log(route.params.date);
-  const date = new Date(route.params.date);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+  const { ipnumber, user_code, date } = route.params;
+  const month = new Date(date).getMonth() + 1;
+  const day = new Date(date).getDate();
   const [voiceList, setVoiceList] = useState([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      async function load() {
-        try {
-          const rawVoice = await AsyncStorage.getItem("voice");
-          const voices = JSON.parse(rawVoice);
-          if (voices) {
-            const filteredVoice = voices.filter(
-              (voice) => voice.date === route.params.date
-            );
-            setVoiceList(filteredVoice);
-          }
-        } catch (e) {
-          console.log("기록 로드 에러");
-        }
+  console.log(ipnumber, user_code, date);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  useEffect(() => {
+    async function load() {
+      try {
+        // const rawVoice = await AsyncStorage.getItem("voice");
+        // const voices = JSON.parse(rawVoice);
+        // if (voices) {
+        //   const filteredVoice = voices.filter(
+        //     (voice) => voice.date === route.params.date
+        //   );
+        //   setVoiceList(filteredVoice);
+        //}
+        const response = await axios.get(
+          `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+        );
+        console.log(response.data);
+        setVoiceList(response.data);
+      } catch (error) {
+        console.log("음성 GET 에러: ", error);
       }
-      load();
-    }, [])
-  );
+    }
+    load();
+  }, []);
+  // );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -59,7 +67,11 @@ export default function DetailNoneScreen({ route, navigation }) {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() =>
-              navigation.push("SymptomCheck", { date: route.params.date })
+              navigation.push("SymptomCheck", {
+                date: date,
+                user_code: user_code,
+                ipnumber: ipnumber,
+              })
             }
           >
             <LinearGradient
@@ -78,17 +90,17 @@ export default function DetailNoneScreen({ route, navigation }) {
           <Text style={styles.guideText}>학교에서 어땠나요?</Text>
         </View>
         {voiceList.map((voice, index) =>
-          voice.place === "school" ? (
+          voice.location === "school" ? (
             <VoiceButton
               key={`school-${index}`}
-              time={voice.time}
-              text={voice.text}
+              time={voice.timestamp}
+              text={voice.contents}
               onPress={() =>
-                navigation.navigate("DetailVoice", {
+                navigation.push("DetailVoice", {
                   detail: false,
-                  place: "school",
-                  date: route.params.date,
-                  time: voice.time,
+                  user_code: user_code,
+                  ipnumber: ipnumber,
+                  timestamp: voice.timestamp,
                 })
               }
             />
@@ -102,14 +114,14 @@ export default function DetailNoneScreen({ route, navigation }) {
           voice.place === "hospital" ? (
             <VoiceButton
               key={`hospital-${index}`}
-              time={voice.time}
-              text={voice.text}
+              time={voice.timestamp}
+              text={voice.contents}
               onPress={() =>
-                navigation.navigate("DetailVoice", {
+                navigation.push("DetailVoice", {
                   detail: false,
-                  place: "hospital",
-                  date: route.params.date,
-                  time: voice.time,
+                  user_code: user_code,
+                  ipnumber: ipnumber,
+                  timestamp: voice.timestamp,
                 })
               }
             />

@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 // import { BlurView } from "expo-blur";
 import { VictoryPie } from "victory-native";
-import { PieChart } from "react-native-svg-charts";
+// import { PieChart } from "react-native-svg-charts";
 
 export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
   const today = new Date().toLocaleDateString("sv-SE", {
@@ -683,23 +683,23 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
               style={{
                 width: 90,
                 height: 90,
-                borderRadius: 60,
-                // borderWidth: 1,
-                // borderColor: theme.grey500,
+                borderRadius: 100,
+                borderWidth: 1,
+                borderColor: theme.grey500,
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 9,
                 margin: 4,
               }}
             >
-              <PieChart
+              {/* <PieChart
                 style={{ height: 90, width: 90 }}
                 data={chartData}
                 innerRadius={0}
                 padAngle={0}
                 outerRadius={"99%"}
-              />
-              {/* <VictoryPie
+              /> */}
+              <VictoryPie
                 data={data()}
                 colorScale={[theme.green, theme.yellow, theme.pink]}
                 innerRadius={0}
@@ -708,16 +708,23 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
                 style={{
                   data: {
                     stroke: theme.grey500,
-                    strokeWidth: stateCount[0] == 0 ? 0 : 1,
+                    strokeWidth:
+                      stateCount.filter((value) => value === 0).length >= 2
+                        ? 0
+                        : 1,
                   },
                 }}
-                width={stateCount[0] == 0 ? 188 : 190} 
-                height={stateCount[0] == 0 ? 188 : 190}
+                width={
+                  stateCount.filter((value) => value === 0).length >= 2
+                    ? 188
+                    : 190
+                }
+                height={190}
                 animate={{
                   duration: 500,
                   easing: "exp",
                 }}
-              /> */}
+              />
             </View>
             <View style={{ flex: 1, marginLeft: 24 }}>
               <PieLabel

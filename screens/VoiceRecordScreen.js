@@ -32,8 +32,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
 
   // 기록 관련
   const today = route.params.date;
-  const user_code = route.params.user_code;
-  const ipnumber = route.params.ipnumber;
+  const { user_code, ipnumber } = route.params;
 
   useEffect(() => {
     return () => {

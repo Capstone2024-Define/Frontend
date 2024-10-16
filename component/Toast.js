@@ -9,7 +9,7 @@ export const showToast = (messsage) => {
   Toast.show({
     type: "success",
     text1: messsage,
-    visibilityTime: 1400,
+    visibilityTime: 1500,
   });
 };
 

@@ -66,7 +66,7 @@ export default function KakaoLoginWeb({ navigation }) {
       .then((response) => {
         // response.date ex. {"connected_at": "2024-09-22T10:07:10Z", "id": 3715761500}
         console.log("유저 고유 ID: ", response.data.id);
-        save(response.data.id);
+        // save(response.data.id);
         navigation.replace("StartInfo", { user_id: response.data.id }); // 다음페이지로 id 전달
       })
       .catch((error) => {
@@ -74,11 +74,15 @@ export default function KakaoLoginWeb({ navigation }) {
       });
   };
 
-  // 아싱크스토리지에 해당 유저 id 저장(키: user_id)
-  const save = async (toSave) => {
+  // 아싱크스토리지에 user_code 저장
+  const save = async (kakao_code) => {
     try {
       // await AsyncStorage.clear()
-      await AsyncStorage.setItem("user_code", toSave.toString());
+      // kakao_id 보내고 user_code 받아올 로직
+      const { data } = axios.post("http://:8080/", {
+        kakao_code: kakao_code,
+      });
+      await AsyncStorage.setItem("user_code", data.user_code);
     } catch (error) {
       console.log("유저 ID 저장 에러 ", error);
     }
