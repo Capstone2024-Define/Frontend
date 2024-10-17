@@ -409,7 +409,11 @@ export default function CalendarScreen({ navigation, route }) {
                     ))}
                   </View> */}
                   <Text
-                    style={{ ...styles.norecordText, color: theme.grey800 }}
+                    style={{
+                      ...styles.norecordText,
+                      color: theme.grey800,
+                      marginTop: 12,
+                    }}
                   >
                     {(record.summary || "").slice(0, 70).replace(/\n/g, " ")}
                     ...

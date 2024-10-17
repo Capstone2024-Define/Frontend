@@ -120,7 +120,13 @@ function InfoScreen() {
                 source={require("../assets/infoexe.png")}
                 resizeMode={"stretch"}
                 imageStyle={{ borderRadius: 8 }}
-                style={{ width: 144, height: 104 }}
+                style={{
+                  flexDirection: "row",
+                  width: 144,
+                  height: 104,
+                  justifyContent: "flex-end",
+                  paddingRight: 10,
+                }}
               >
                 <View
                   style={{
@@ -156,7 +162,13 @@ function InfoScreen() {
                 source={require("../assets/infoimage.png")}
                 resizeMode={"stretch"}
                 imageStyle={{ borderRadius: 8 }}
-                style={{ width: 144, height: 104 }}
+                style={{
+                  flexDirection: "row",
+                  width: 144,
+                  height: 104,
+                  justifyContent: "flex-end",
+                  paddingRight: 10,
+                }}
               >
                 <View
                   style={{
@@ -189,7 +201,13 @@ function InfoScreen() {
                 source={require("../assets/infoimage.png")}
                 resizeMode={"stretch"}
                 imageStyle={{ borderRadius: 8 }}
-                style={{ width: 144, height: 104 }}
+                style={{
+                  flexDirection: "row",
+                  width: 144,
+                  height: 104,
+                  justifyContent: "flex-end",
+                  paddingRight: 10,
+                }}
               >
                 <View
                   style={{
@@ -223,10 +241,10 @@ function InfoScreen() {
 
         <Text
           style={{
-            color: "#242424",
             fontSize: 20,
-            marginBottom: 16,
-            marginLeft: 21,
+            marginBottom: 12,
+            lineHeight: 30,
+            fontFamily: "Pretendard-Bold",
           }}
         >
           {"꼭 읽어야하는 정보"}
@@ -435,10 +453,10 @@ function InfoScreen() {
 
         <Text
           style={{
-            color: "#242424",
             fontSize: 20,
-            marginBottom: 16,
-            marginLeft: 21,
+            marginBottom: 12,
+            lineHeight: 30,
+            fontFamily: "Pretendard-Bold",
           }}
         >
           {"고민해결"}

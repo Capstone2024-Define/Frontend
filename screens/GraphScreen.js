@@ -246,6 +246,26 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
   };
   const monthSegments = useMemo(() => draw_monthSegments(), [dayState_month]);
 
+  const drawSmoothPath = (points) => {
+    if (points.length < 2) return "";
+
+    let path = `M ${points[0].x},${points[0].y}`; // Move to the first point
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i];
+      const p1 = points[i + 1];
+
+      const cp1x = p0.x + (p1.x - p0.x) / 10;
+      const cp1y = p0.y;
+      const cp2x = p1.x - (p1.x - p0.x) / 10;
+      const cp2y = p1.y;
+
+      path += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p1.x},${p1.y}`;
+    }
+
+    return path;
+  };
+
   // 원 그래프 데이터(최고, 보통, 아쉬움)
   const pieData = [
     { count: stateCount[0], color: theme.green },
@@ -551,13 +571,11 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
                 {/* 월간 그래프 */}
                 {!isWeek && monthSegments
                   ? monthSegments.map((segment, index) => {
-                      const points = segment
-                        .map((point) => `${point.x},${point.y}`)
-                        .join(" ");
+                      const path = drawSmoothPath(segment);
                       return (
                         <Polyline
                           key={index}
-                          points={points}
+                          d={path}
                           fill="none"
                           stroke={theme.green500}
                           strokeWidth="2"

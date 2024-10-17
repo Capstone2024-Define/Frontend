@@ -318,15 +318,27 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.waveformContainer}>
           {isRecording ? (
-            <Image
-              source={require("../assets/record_play.gif")}
-              style={styles.waveformImage}
-            />
+            <View style={{ flexDirection: "row" }}>
+              <Image
+                source={require("../assets/record_play.gif")}
+                style={styles.waveformImage}
+              />
+              <Image
+                source={require("../assets/record_play.gif")}
+                style={styles.waveformImage}
+              />
+            </View>
           ) : (
-            <Image
-              source={require("../assets/record_stop.png")}
-              style={styles.waveformImage}
-            />
+            <View style={{ flexDirection: "row" }}>
+              <Image
+                source={require("../assets/record_stop.png")}
+                style={styles.waveformImage}
+              />
+              <Image
+                source={require("../assets/record_stop.png")}
+                style={styles.waveformImage}
+              />
+            </View>
           )}
         </View>
         <View style={styles.buttonContainer}>
@@ -424,14 +436,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
-    marginHorizontal: 24,
+    marginBottom: 4,
+    marginHorizontal: 20,
   },
   descriptionText: {
-    color: "#242424",
-    fontSize: 17.5,
-    width: 127,
-    fontFamily: "Pretendard-Medium",
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: "Pretendard-Bold",
+    color: theme.grey800,
   },
   modeSwitcher: {
     width: 138,
@@ -468,18 +480,17 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Medium",
   },
   recordingHint: {
-    color: "#A5A5A5",
-    fontSize: 12,
-    marginBottom: 20,
-    marginHorizontal: 24,
-    width: 312,
-    fontFamily: "Pretendard-Medium",
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Regular",
+    color: theme.grey300,
+    marginLeft: 20,
   },
   timerContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 100,
+    marginTop: 80,
   },
   timer: {
     color: "#333333",
@@ -510,7 +521,7 @@ const styles = StyleSheet.create({
     marginBottom: 39,
   },
   waveformImage: {
-    width: "100%",
+    width: "50%",
     resizeMode: "contain",
     marginBottom: 100,
   },

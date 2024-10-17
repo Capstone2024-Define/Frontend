@@ -250,6 +250,7 @@ function InfoScreenDetail() {
             {"출처 : 강북삼성병원 - 행복 건강정보"}
           </Text>
         </View>
+        <View style={{ height: 30 }} />
       </ScrollView>
     </SafeAreaView>
   );
