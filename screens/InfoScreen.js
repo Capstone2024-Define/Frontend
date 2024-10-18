@@ -111,10 +111,15 @@ function InfoScreen() {
           style={{ marginBottom: 20 }}
         >
           <View style={{ flexDirection: "row" }}>
+            {/* @@@@여기에 적용해봤어 @@여기서부터 */}
             {infos.map((info, index) => (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleDetailNavigate(index)}
+                onPress={() => {
+                  // index를 키값으로 보냄
+                  // 다음 페이지(infoScreenDetail)에 key 넘겨줌
+                  handleDetailNavigate(index);
+                }}
                 style={{ marginRight: 10 }}
               >
                 {/* 이미지 */}
@@ -148,12 +153,19 @@ function InfoScreen() {
                   </View>
                 </ImageBackground>
                 {/* 타이틀 */}
-                <Text style={{ color: "#242424", fontSize: 14, marginTop: 8 }}>
-                  {info.title}
-                </Text>
-                <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-                  {info.tag.forEach((tag, index) => tag)}
-                </Text>
+                <View style={{ width: 142 }}>
+                  <Text
+                    style={{ color: "#242424", fontSize: 14, marginTop: 8 }}
+                  >
+                    {info.title}
+                  </Text>
+                  <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
+                    {info.tag.map((tag, index) => (
+                      <Text key={index}>#{tag} </Text>
+                    ))}
+                    {/* @@@@여기까지 */}
+                  </Text>
+                </View>
               </TouchableOpacity>
             ))}
           </View>
