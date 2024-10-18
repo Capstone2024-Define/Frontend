@@ -11,6 +11,7 @@ import { Calendar } from "react-native-calendars";
 import { FontAwesome } from "@expo/vector-icons";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import RightGray from "../assets/chevron_right_gray.svg";
 import Edit_white from "../assets/notes_white.svg";
 import { WithLocalSvg } from "react-native-svg/css";
 import { useEffect, useState, useCallback } from "react";
@@ -159,6 +160,11 @@ export default function CalendarScreen({ navigation, route }) {
                 const year = month.getFullYear(); // 연도
                 const monthNumber = month.getMonth() + 1;
                 const header = `${year}년 ${monthNumber}월`;
+                const current = new Date(today);
+
+                const isFuture =
+                  current.getFullYear() == year &&
+                  current.getMonth() + 1 == monthNumber;
 
                 return (
                   <View>
@@ -193,8 +199,13 @@ export default function CalendarScreen({ navigation, route }) {
                       <TouchableOpacity
                         activeOpacity={0.5}
                         onPress={() => props.addMonth(1)}
+                        disabled={isFuture}
                       >
-                        <WithLocalSvg asset={Right} />
+                        {isFuture ? (
+                          <WithLocalSvg asset={RightGray} />
+                        ) : (
+                          <WithLocalSvg asset={Right} />
+                        )}
                       </TouchableOpacity>
                     </View>
                     <View

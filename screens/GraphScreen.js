@@ -14,6 +14,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { WithLocalSvg } from "react-native-svg/css";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import RightGray from "../assets/chevron_right_gray.svg";
 import Y from "../assets/axisY.svg";
 import Svg, { Line, Polyline, Circle } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -202,10 +203,43 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     if (isWeek) {
       newDate.setDate(selectedDate.getDate() + where * 7); // 7일씩 이동
     } else {
-      newDate.setMonth(selectedDate.getMonth() + where * 1);
+      newDate.setMonth(selectedDate.getMonth() + where * 1); // 한 달 이동
     }
 
     setSelectedDate(newDate);
+  };
+
+  // 다음 주/달이 미래인지 확인
+  const nextIsFuture = () => {
+    const newDate = new Date(selectedDate);
+
+    // 이동하려는 날짜
+    if (isWeek) {
+      newDate.setDate(selectedDate.getDate() + 7); // 7일씩 이동
+    } else {
+      newDate.setMonth(selectedDate.getMonth() + 1); // 한 달 이동
+    }
+
+    // 미래로 이동하는지 확인
+    const futureDate = new Date(today);
+
+    if (isWeek) {
+      const futureWeek = getCurrentWeek(newDate).weekDates;
+      const todayWeek = getCurrentWeek(futureDate).weekDates;
+
+      if (new Date(futureWeek[0]) > new Date(todayWeek[0])) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      futureDate.setMonth(futureDate.getMonth() + 1);
+      futureDate.setDate(1);
+
+      if (newDate > futureDate) {
+        return true;
+      } else return false;
+    }
   };
 
   // 주간 꺾은선 그래프(null을 기준으로 데이터를 분할)
@@ -350,6 +384,8 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     setStateCount(newStateCount);
   };
 
+  const isNextFuture = nextIsFuture();
+
   return (
     <SafeAreaView style={styles.container}>
       {/* 헤더 */}
@@ -458,8 +494,16 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
                     selectedDate.getMonth() + 1
                   }월`}
             </Text>
-            <TouchableOpacity activeOpacity={0.5} onPress={() => moveWeek(1)}>
-              <WithLocalSvg asset={Right} />
+            <TouchableOpacity
+              activeOpacity={0.5}
+              disabled={isNextFuture}
+              onPress={() => moveWeek(1)}
+            >
+              {isNextFuture ? (
+                <WithLocalSvg asset={RightGray} />
+              ) : (
+                <WithLocalSvg asset={Right} />
+              )}
             </TouchableOpacity>
           </View>
           {/* 꺾은선 그래프 */}

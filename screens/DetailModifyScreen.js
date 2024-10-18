@@ -262,7 +262,7 @@ export default function DetailModifyScreen({ navigation, route }) {
         onRightPress={async () => {
           await handlePost();
           navigation.pop();
-          showToast("기록이 완료되었어요");
+          showToast("기록이 수정되었어요");
         }}
         line={true}
       />

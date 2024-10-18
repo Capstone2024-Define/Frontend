@@ -1,6 +1,6 @@
-export const info = [
+export const infos = [
   {
-    imageName: "~~~",
+    imageName: require("../assets/infoexe.png"),
     title: "ADHD 비약물 치료법",
     summary: "시각적 자극 활용 및...",
     content: [
@@ -14,8 +14,8 @@ export const info = [
     origin: "강북 삼성병원 - 행복 진단정보",
   },
   {
-    imageName: "~~~",
-    title: "초등학교 고학년 ADHD 대표 증상",
+    imageName: require("../assets/infoexe.png"),
+    title: `초등학교 고학년 ADHD${"\n"}대표 증상`,
     summary: "초등학교 고학년이 되면...",
     content: [
       [null, "초등학교 고학년이 되면 공부의 양이 많아..."],
@@ -26,8 +26,8 @@ export const info = [
     origin: "강북 삼성병원 - 행복 진단정보",
   },
   {
-    imageName: "~~~",
-    title: "초등학생 ADHD 검사 방법",
+    imageName: require("../assets/infoexe.png"),
+    title: `초등학생 ADHD${"\n"}검사 방법`,
     summary: "초등학교 아동의 ADHD를 확인하기 위해서는 다양...",
     content: [
       [null, "초등학교 아동의 ADHD를 확인하기 위해서는..."],
@@ -49,17 +49,16 @@ export const info = [
   },
 ];
 
-
-// 타이틀
-<Text style={styles.title}>{info[key].title}</Text>
-// 이미지
-<Image source={require(info[key].imageName)} />
-// 요약
-<Text style={styles.summary}>{info[key].summary}</Text>
-// 내용
-info[key].content.map((index, content)=>{
-  <View key={index} style={styles.contentContainer}>
-    content[0] && <Text style={styles.subtitle}>{content[0]}</Text>
-    content[1] && <Text style={styles.text}>{content[1]}</Text>
-  </View>
-})
+// // 타이틀
+// <Text style={styles.title}>{info[key].title}</Text>
+// // 이미지
+// <Image source={require(info[key].imageName)} />
+// // 요약
+// <Text style={styles.summary}>{info[key].summary}</Text>
+// // 내용
+// info[key].content.map((index, content)=>{
+//   <View key={index} style={styles.contentContainer}>
+//     content[0] && <Text style={styles.subtitle}>{content[0]}</Text>
+//     content[1] && <Text style={styles.text}>{content[1]}</Text>
+//   </View>
+// })
