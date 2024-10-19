@@ -191,8 +191,6 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     const weekOfMonth = Math.ceil((date.getDate() + startOfMonth.getDay()) / 7);
 
-    console.log(weekDates);
-
     return { weekDates, weekOfMonth };
   };
 
@@ -265,6 +263,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
 
     return segments;
   };
+  const weekSegments = useMemo(() => draw_weekSegments(), [dayState_week]);
 
   // 월간 꺾은선 그래프(null 무시)
   const draw_monthSegments = () => {
@@ -405,7 +404,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
         <View style={{ flex: 1 }}>
           <TouchableOpacity activeOpacity={0.5} style={styles.headerTab}>
             <Text style={{ ...styles.subTitle, color: theme.green500 }}>
-              통계
+              분석
             </Text>
           </TouchableOpacity>
           <LinearGradient colors={["#79BA7E", "#AFCA85"]}>
@@ -579,7 +578,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
                 />
                 {/* 주간 그래프 */}
                 {isWeek
-                  ? draw_weekSegments().map((segment, index) => {
+                  ? weekSegments.map((segment, index) => {
                       const points = segment
                         .map((point) => `${point.x},${point.y}`)
                         .join(" ");

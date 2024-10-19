@@ -93,6 +93,7 @@ export default function DetailNoneScreen({ route, navigation }) {
           voice.location === "school" ? (
             <VoiceButton
               key={`school-${index}`}
+              place={voice.location}
               time={voice.timestamp}
               text={voice.contents}
               onPress={() =>
@@ -114,6 +115,7 @@ export default function DetailNoneScreen({ route, navigation }) {
           voice.place === "hospital" ? (
             <VoiceButton
               key={`hospital-${index}`}
+              place={voice.location}
               time={voice.timestamp}
               text={voice.contents}
               onPress={() =>

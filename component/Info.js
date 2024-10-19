@@ -3,7 +3,7 @@
 
 export const infos = [
   {
-    imageName: require("../assets/infoexe.png"),
+    imageName: require("../assets/infoImage/infoImg1.png"),
     mainTitle: `ADHD 비약물 치료법`,
     title: "ADHD 비약물 치료법",
     summary: `ADHD 비약물 치료법에는 행동치료, 코그메드 훈련, 뉴로피드백이 있으며, 증상이 경미하거나 어린 아이들에게 효과적입니다.${"\n"}${"\n"}약물치료는 ADHD 치료에서 가장 중심이 되는 방법으로, 70~80%의 효과를 보이며 증상이 고착된 후에도 약물로 치료가 가능합니다.`,
@@ -33,7 +33,7 @@ export const infos = [
     origin: "강북 삼성병원 - 행복 건강정보",
   },
   {
-    imageName: require("../assets/infoImg2.png"),
+    imageName: require("../assets/infoImage/infoImg2.png"),
     mainTitle: `초등학교 고학년 ADHD${"\n"}대표 증상`,
     title: "초등학교 고학년 ADHD 대표 증상",
     summary: `초등학교 고학년 ADHD 아동은 학업 성취가 떨어지고, 사회성 문제로 인해 또래와의 관계에서 어려움을 겪을 수 있습니다.${"\n"}${"\n"}ADHD로 인해 좌절감, 우울감, 불안감을 경험하며, 스스로 해야 할 일들을 잘 수행하지 못해 학교나 학원에서 지적받는 경우가 많습니다.`,
@@ -55,7 +55,7 @@ export const infos = [
     origin: "중앙일보 헬스미디어",
   },
   {
-    imageName: require("../assets/infoImg3.png"),
+    imageName: require("../assets/infoImage/infoImg3.png"),
     mainTitle: `초등학생 ADHD${"\n"}검사 방법`,
     title: "초등학생 ADHD 검사 방법",
     summary: `ADHD 검사 방법은 부모와 교사 인터뷰, 아동 행동 관찰, ADHD 평가 척도, 지능 및 학업 성취도 평가로 구성됩니다.${"\n"}${"\n"}전문가가 평가 도구를 사용해 아동의 증상과 기능을 종합적으로 평가하며, ADHD 진단은 전문가의 면밀한 판단에 의해 이루어집니다.`,
@@ -87,7 +87,7 @@ export const infos = [
     origin: "김도환 원장 - 하이닥",
   },
   {
-    imageName: require("../assets/infoImg4.png"),
+    imageName: require("../assets/infoImage/infoImg4.png"),
     mainTitle: `집에서 ADHD 자녀에게${"\n"}적용할 수 있는 행동수정..`,
     title: "집에서 ADHD 자녀에게 적용할 수 있는 행동수정 기법 ",
     summary: `ADHD 자녀에게 적용 가능한 행동수정 기법에는 강화와 처벌이 있습니다. 정적·부적 강화를 통해 바람직한 행동을 늘리고, 처벌은 신중히 사용해야 합니다.${"\n"}${"\n"}특히 처벌은 부작용이 클 수 있어 체벌보다는 긍정적인 행동 강화를 통해 자녀를 교육하는 것이 바람직합니다.`,
@@ -117,7 +117,7 @@ export const infos = [
     origin: "정신의학신문 - 황현찬 전문의",
   },
   {
-    imageName: require("../assets/infoImg5.png"),
+    imageName: require("../assets/infoImage/infoImg5.png"),
     mainTitle: `ADHD의 3가지 대표${"\n"}증상과 진단`,
     title: "ADHD의 3가지 대표 증상과 진단",
     summary:
@@ -159,17 +159,3 @@ export const infos = [
     origin: "보건복지부 국립나주병원 - 주의력결핍과잉행동장애(ADHD)",
   },
 ];
-
-// // 타이틀
-// <Text style={styles.title}>{info[key].title}</Text>
-// // 이미지
-// <Image source={require(info[key].imageName)} />
-// // 요약
-// <Text style={styles.summary}>{info[key].summary}</Text>
-// // 내용
-// info[key].content.map((index, content)=>{
-//   <View key={index} style={styles.contentContainer}>
-//     content[0] && <Text style={styles.subtitle}>{content[0]}</Text>
-//     content[1] && <Text style={styles.text}>{content[1]}</Text>
-//   </View>
-// })

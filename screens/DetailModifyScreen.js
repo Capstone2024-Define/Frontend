@@ -160,25 +160,27 @@ export default function DetailModifyScreen({ navigation, route }) {
   // 음성 기록
   // useFocusEffect(
   //   useCallback(() => {
-  useEffect(() => {
-    async function load() {
-      try {
-        // const rawVoice = await AsyncStorage.getItem("voice");
-        // const voices = JSON.parse(rawVoice);
-        // if (voices) {
-        //   const filteredVoice = voices.filter((voice) => voice.date === date);
-        //   setVoiceList(filteredVoice);
-        // }
-        const response = await axios.get(
-          `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
-        );
-        setVoiceList(response.data);
-      } catch (e) {
-        console.log("음성 GET 에러: ", error);
+  useFocusEffect(
+    useCallback(() => {
+      async function load() {
+        try {
+          // const rawVoice = await AsyncStorage.getItem("voice");
+          // const voices = JSON.parse(rawVoice);
+          // if (voices) {
+          //   const filteredVoice = voices.filter((voice) => voice.date === date);
+          //   setVoiceList(filteredVoice);
+          // }
+          const response = await axios.get(
+            `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+          );
+          setVoiceList(response.data);
+        } catch (e) {
+          console.log("음성 GET 에러: ", error);
+        }
       }
-    }
-    load();
-  }, []);
+      load();
+    }, [])
+  );
   // );
 
   // 저장
@@ -389,17 +391,18 @@ export default function DetailModifyScreen({ navigation, route }) {
             {schoolText}
           </TextInput>
           {voiceList.map((voice, index) =>
-            voice.place === "school" ? (
+            voice.location === "school" ? (
               <VoiceButton
                 key={`school-${index}`}
-                time={voice.time}
-                text={voice.text}
+                place={voice.location}
+                time={voice.timestamp}
+                text={voice.contents}
                 onPress={() =>
-                  navigation.navigate("DetailVoice", {
+                  navigation.push("DetailVoice", {
                     detail: false,
-                    place: "school",
-                    date: date,
-                    time: voice.time,
+                    user_code: user_code,
+                    ipnumber: ipnumber,
+                    timestamp: voice.timestamp,
                   })
                 }
               />
@@ -445,17 +448,18 @@ export default function DetailModifyScreen({ navigation, route }) {
             {hospitalText}
           </TextInput>
           {voiceList.map((voice, index) =>
-            voice.place === "hospital" ? (
+            voice.location === "hospital" ? (
               <VoiceButton
                 key={`hospital-${index}`}
-                time={voice.time}
-                text={voice.text}
+                place={voice.location}
+                time={voice.timestamp}
+                text={voice.contents}
                 onPress={() =>
-                  navigation.navigate("DetailVoice", {
+                  navigation.push("DetailVoice", {
                     detail: false,
-                    place: "hospital",
-                    date: date,
-                    time: voice.time,
+                    user_code: user_code,
+                    ipnumber: ipnumber,
+                    timestamp: voice.timestamp,
                   })
                 }
               />

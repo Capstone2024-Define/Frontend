@@ -8,7 +8,7 @@ import {
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Notice from "../assets/notice.svg";
-import Docs from "../assets/forward_to_inbox.svg";
+import Export from "../assets/export.svg";
 import Bookmark from "../assets/bookmark.svg";
 
 export default function MyPageScreen({ navigation, route }) {
@@ -66,7 +66,7 @@ export default function MyPageScreen({ navigation, route }) {
             }
             style={{ justifyContent: "center", alignItems: "center" }}
           >
-            <WithLocalSvg asset={Docs} />
+            <WithLocalSvg asset={Export} />
             <Text style={styles.s_text}>기록 내보내기</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -100,6 +100,13 @@ export default function MyPageScreen({ navigation, route }) {
             style={{ ...styles.m_text, color: theme.grey800, marginBottom: 11 }}
           >
             앱 정보
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5}>
+          <Text
+            style={{ ...styles.m_text, color: theme.grey500, marginBottom: 11 }}
+          >
+            로그아웃
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
