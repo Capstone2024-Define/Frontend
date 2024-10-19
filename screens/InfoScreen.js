@@ -111,63 +111,66 @@ function InfoScreen() {
           style={{ marginBottom: 20 }}
         >
           <View style={{ flexDirection: "row" }}>
-            {/* @@@@여기에 적용해봤어 @@여기서부터 */}
-            {infos.map((info, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  // index를 키값으로 보냄
-                  // 다음 페이지(infoScreenDetail)에 key 넘겨줌
-                  handleDetailNavigate(index);
-                }}
-                style={{ marginRight: 10 }}
-              >
-                {/* 이미지 */}
-                <ImageBackground
-                  source={info.imageName}
-                  resizeMode={"stretch"}
-                  imageStyle={{ borderRadius: 8 }}
-                  style={{
-                    flexDirection: "row",
-                    width: 144,
-                    height: 104,
-                    justifyContent: "flex-end",
-                    paddingRight: 10,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 25,
-                      height: 25,
-                      backgroundColor: "#0000004D",
-                      borderRadius: 8,
-                      paddingHorizontal: 7,
-                      marginTop: 8,
+            {/* 추천 정보 4개 => index 0 ~ 3 */}
+            {infos.map(
+              (info, index) =>
+                index < 4 && (
+                  <TouchableOpacity
+                    key={index}
+                    activeOpacity={0.5}
+                    onPress={() => {
+                      // index를 키값으로 보냄
+                      // 다음 페이지(infoScreenDetail)에 key 넘겨줌
+                      handleDetailNavigate(index);
                     }}
+                    style={{ marginRight: 10 }}
                   >
-                    <Image
-                      source={require("../assets/bookmark.png")}
-                      resizeMode={"stretch"}
-                      style={{ height: 14, marginTop: 5 }}
-                    />
-                  </View>
-                </ImageBackground>
-                {/* 타이틀 */}
-                <View style={{ width: 142 }}>
-                  <Text
-                    style={{ color: "#242424", fontSize: 14, marginTop: 8 }}
-                  >
-                    {info.title}
-                  </Text>
-                  <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-                    {info.tag.map((tag, index) => (
-                      <Text key={index}>#{tag} </Text>
-                    ))}
-                    {/* @@@@여기까지 */}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                    {/* 이미지 */}
+                    <ImageBackground
+                      source={info.imageName}
+                      resizeMode={"cover"}
+                      imageStyle={{ borderRadius: 8 }}
+                      style={{
+                        flexDirection: "row",
+                        width: 144,
+                        height: 104,
+                        justifyContent: "flex-end",
+                        paddingRight: 10,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 25,
+                          height: 25,
+                          backgroundColor: "#0000004D",
+                          borderRadius: 8,
+                          paddingHorizontal: 7,
+                          marginTop: 8,
+                        }}
+                      >
+                        <Image
+                          source={require("../assets/bookmark.png")}
+                          resizeMode={"contain"}
+                          style={{ height: 14, marginTop: 5 }}
+                        />
+                      </View>
+                    </ImageBackground>
+                    {/* 타이틀 */}
+                    <View style={{ width: 142 }}>
+                      <Text
+                        style={{ color: "#242424", fontSize: 14, marginTop: 8 }}
+                      >
+                        {info.mainTitle}
+                      </Text>
+                      <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
+                        {info.tag.map((tag, index) => (
+                          <Text key={index}>#{tag} </Text>
+                        ))}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+            )}
           </View>
         </ScrollView>
         <View
