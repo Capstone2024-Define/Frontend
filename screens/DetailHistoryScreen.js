@@ -399,6 +399,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
             voice.location === "school" ? (
               <VoiceButton
                 key={`school-${index}`}
+                place={voice.location}
                 time={voice.timestamp}
                 text={voice.contents}
                 onPress={() =>
@@ -429,6 +430,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
             voice.location === "hospital" ? (
               <VoiceButton
                 key={`hospital-${index}`}
+                place={voice.location}
                 time={voice.timestamp}
                 text={voice.contents}
                 onPress={() =>

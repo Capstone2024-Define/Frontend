@@ -3,8 +3,10 @@ import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
 import Voice from "../assets/graphic_eq.svg";
 import PropTypes from "prop-types";
+import School from "../assets/school.svg";
+import Hospital from "../assets/stethoscope.svg";
 
-export default function VoiceButton({ time, text = "", onPress }) {
+export default function VoiceButton({ place, time, text = "", onPress }) {
   const getTime = (time) => {
     const newTime = new Date(time);
     const hours = newTime.getHours();
@@ -23,7 +25,14 @@ export default function VoiceButton({ time, text = "", onPress }) {
           <View style={styles.voiceContent}>
             <View style={styles.voiceContentHeader}>
               <View style={{ flexDirection: "row" }}>
-                <WithLocalSvg width={18} height={18} asset={Voice} />
+                {place == "school" ? (
+                  <WithLocalSvg width={20} height={20} asset={School} />
+                ) : (
+                  <WithLocalSvg width={20} height={20} asset={Hospital} />
+                )}
+                <Text style={{ ...styles.voiceTime, color: theme.grey700 }}>
+                  음성기록
+                </Text>
                 <Text style={styles.voiceTime}>{getTime(time)}</Text>
               </View>
               <Text style={styles.dubogi}>더보기</Text>
@@ -68,7 +77,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     fontFamily: "Pretendard-Medium",
-    color: theme.grey700,
+    color: theme.grey500,
   },
   dubogi: {
     fontSize: 12,

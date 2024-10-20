@@ -66,7 +66,7 @@ function InfoScreenDetail({ route }) {
         {/* @@@여기부터 적용했어 infos[key].~~ */}
         <Image
           source={infos[key].imageName}
-          resizeMode={"stretch"}
+          resizeMode={"cover"}
           style={{
             width: 360,
             height: 212,
@@ -141,35 +141,44 @@ function InfoScreenDetail({ route }) {
             backgroundColor: "#F7F7F7",
             borderColor: "#ECECEC",
             borderWidth: 1,
-            marginBottom: 35,
+            marginBottom: 32,
           }}
         />
-        {infos[key].content.map((content, index) => (
+        {infos[key].contents.map((content, index) => (
           <View key={index}>
+            {/* content[0] */}
             {content[0] && (
               <Text
                 style={{
                   color: "#242424",
                   fontSize: 16,
                   fontWeight: "bold",
-                  marginBottom: 18,
+                  marginBottom: 12,
                   marginLeft: 21,
                 }}
               >
                 {content[0]}
               </Text>
             )}
-            <Text
-              style={{
-                color: "#555555",
-                fontSize: 14,
-                marginBottom: 26,
-                marginHorizontal: 21,
-                width: 318,
-              }}
-            >
-              {content[1]}
-            </Text>
+            {/* content[1]~끝 */}
+            {/* 문단의 끝이면 marginBottom 30 */}
+            {content.map(
+              (item, index) =>
+                index >= 1 && (
+                  <Text
+                    key={index}
+                    style={{
+                      color: "#555555",
+                      fontSize: 14,
+                      marginBottom: content[index + 1] ? 12 : 30,
+                      marginHorizontal: 21,
+                      width: 318,
+                    }}
+                  >
+                    {item}
+                  </Text>
+                )
+            )}
           </View>
         ))}
         <View

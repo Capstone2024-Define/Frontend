@@ -16,7 +16,7 @@ export default function MainVoiceScreen({ route, navigation }) {
         tabBarIconStyle: { display: "none" }, // 아이콘을 숨기는 스타일
         tabBarActiveTintColor: theme.green500, // 활성화 텍스트 색상
         tabBarInactiveTintColor: theme.grey300, // 비활성화 텍스트 색상
-        tabBarStyle: { height: 47, paddingTop: 8, paddingBottom: 16 },
+        tabBarStyle: { height: 44, paddingTop: 8, paddingBottom: 15 },
         tabBarLabelStyle: { fontSize: 14, fontFamily: "Pretendard-Medium" },
       }}
     >

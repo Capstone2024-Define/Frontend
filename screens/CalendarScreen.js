@@ -135,7 +135,7 @@ export default function CalendarScreen({ navigation, route }) {
                 style={styles.headerTab}
               >
                 <Text style={{ ...styles.subTitle, color: theme.grey300 }}>
-                  통계
+                  분석
                 </Text>
               </TouchableOpacity>
               <View style={{ height: 4, backgroundColor: theme.grey150 }} />

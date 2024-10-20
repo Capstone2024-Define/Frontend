@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { WithLocalSvg } from "react-native-svg/css";
 import Pause from "../assets/pause.svg";
 import Mic from "../assets/mic_white.svg";
+import Check from "../assets/check.svg";
 
 const VoiceRecordScreen = ({ navigation, route }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -66,6 +67,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
   const startRecording = async () => {
     if (isRecording || recordingRef.current) {
       console.warn("A recording is already in progress.");
+      showToast("잠시만 기다려주세요.");
       return;
     }
 
@@ -183,6 +185,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       }
     } catch (err) {
       console.error("Failed to send to Google STT", err);
+      showToast("녹음이 되지 않았어요.");
       return "";
     }
   };
@@ -253,12 +256,6 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         onLeftPress={() => {
           navigation.popToTop();
         }}
-        onRightPress={() =>
-          navigation.push("SymptomResult", {
-            date: route.params.date,
-          })
-        }
-        line={true}
       />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.descriptionContainer}>
@@ -369,6 +366,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
                 }}
                 style={styles.completeButton}
               >
+                <WithLocalSvg asset={Check} width={18} />
                 <Text style={styles.completeButtonText}>완료</Text>
               </TouchableOpacity>
             </>
@@ -437,7 +435,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 4,
-    marginHorizontal: 20,
+    marginHorizontal: 24,
   },
   descriptionText: {
     fontSize: 20,
@@ -484,24 +482,26 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: "Pretendard-Regular",
     color: theme.grey300,
-    marginLeft: 20,
+    marginLeft: 24,
   },
   timerContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 80,
+    paddingTop: 90,
   },
   timer: {
     color: "#333333",
     fontSize: 36,
     fontFamily: "Pretendard-Medium",
+    marginRight: 32,
   },
   timerRecording: {
     color: "#000000",
   },
   timerInitial: {
     color: "#8B8B8B",
+    marginRight: 0,
   },
   timerIcon: {
     width: 15,
@@ -513,21 +513,19 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 15 / 2,
     backgroundColor: isRecording ? "#FF7070" : "#A5A5A5",
-    marginRight: 12,
+    marginRight: 17,
   }),
   waveformContainer: {
     height: 120,
     alignItems: "center",
-    marginBottom: 39,
   },
   waveformImage: {
-    width: "50%",
+    width: "60%",
     resizeMode: "contain",
-    marginBottom: 100,
   },
   buttonContainer: {
     alignItems: "center",
-    marginBottom: 93,
+    paddingTop: 36,
   },
   recordButtonStart: {
     flexDirection: "row",
@@ -535,8 +533,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 24,
     paddingVertical: 13,
-    width: 147,
-    height: 44,
+    width: 154,
+    height: 48,
   },
   recordButtonStop: {
     flexDirection: "row",
@@ -544,21 +542,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    width: 147,
-    height: 44,
+    width: 154,
+    height: 48,
   },
   recordButtonTextStart: {
     color: "#FFFFFF",
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Pretendard-Medium",
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Bold",
     marginTop: -1, // 이유는 모르겠는데 수평이 안맞아서 추가
   },
   recordButtonTextStop: {
     color: "#79BA7E",
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Pretendard-Medium",
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Bold",
     marginTop: -1, // 이유는 모르겠는데 수평이 안맞아서 추가
   },
   recordIcon: {
@@ -566,56 +564,59 @@ const styles = StyleSheet.create({
     height: 18,
     marginRight: 8,
   },
-  resumeButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#78BA7D",
-    borderRadius: 24,
-    paddingVertical: 13,
-    marginBottom: 16,
-    marginHorizontal: 106,
-    width: 147,
-    height: 44,
-  },
-  resumeButtonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-  },
   completeButton: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "#F5DF8F",
+    borderColor: theme.green500,
     borderRadius: 24,
     borderWidth: 1,
-    paddingVertical: 11,
-    paddingHorizontal: 36,
-    marginBottom: 33,
-    marginTop: 16,
+    marginBottom: 32,
+    marginTop: 12,
+    width: 147,
+    height: 48,
   },
   completeButtonText: {
-    color: "#F5DF8F",
-    fontSize: 14,
-  },
-  completeIndicator: {
-    width: 15,
-    height: 15,
-    borderRadius: 15 / 2,
-    backgroundColor: "#FF7070",
-    marginRight: 8,
-  },
-  resumeIndicator: {
-    width: 15,
-    height: 15,
-    borderRadius: 15 / 2,
-    backgroundColor: "#333333",
-    marginRight: 8,
+    color: theme.green500,
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Bold",
+    marginLeft: 8,
   },
   progress: {
     width: "50%",
     height: 4,
   },
+  // completeIndicator: {
+  //   width: 15,
+  //   height: 15,
+  //   borderRadius: 15 / 2,
+  //   backgroundColor: "#FF7070",
+  //   marginRight: 8,
+  // },
+  // resumeButton: {
+  //   flexDirection: "row",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: "#78BA7D",
+  //   borderRadius: 24,
+  //   paddingVertical: 13,
+  //   marginBottom: 16,
+  //   marginHorizontal: 106,
+  //   width: 147,
+  //   height: 44,
+  // },
+  // resumeButtonText: {
+  //   color: "#FFFFFF",
+  //   fontSize: 14,
+  // },
+  // resumeIndicator: {
+  //   width: 15,
+  //   height: 15,
+  //   borderRadius: 15 / 2,
+  //   backgroundColor: "#333333",
+  //   marginRight: 8,
+  // },
 });
 
 export default VoiceRecordScreen;
