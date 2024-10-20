@@ -34,8 +34,8 @@ const ChatbotScreen = ({ navigaion }) => {
               content: `${text}에 대해 다정한 말투로 "~해요"로 끝나게 존대말로 대답해줘`,
             },
           ],
-          max_tokens: 4096,  // 응답 길이 제한을 최대한 높이 설정
-          temperature: 0.8, // 응답의 창의성 조절
+          max_tokens: 4096,  // 응답길이 설정
+          temperature: 0.8, // 응답 창의성 조정
         },
         {
           headers: {
@@ -54,7 +54,7 @@ const ChatbotScreen = ({ navigaion }) => {
   // 사용자가 메시지를 보냈을 때 호출되는 함수
   const sendMessage = async () => {
     if (inputText.trim()) {
-      // 사용자의 메시지를 추가
+      // 사용자의 메시지를 추가하기
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "user", text: inputText },
@@ -69,7 +69,7 @@ const ChatbotScreen = ({ navigaion }) => {
         { sender: "bot", text: chatbotResponse },
       ]);
 
-      // 입력 필드 초기화
+      // 입력 필드 초기화하기
       setInputText("");
     }
   };
