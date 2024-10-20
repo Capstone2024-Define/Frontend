@@ -31,7 +31,7 @@ const ChatbotScreen = ({ navigaion }) => {
           messages: [
             {
               role: "user",
-              content: `${text}에 대해 다정한 말투로 대답해줘`,
+              content: `${text}에 대해 다정한 말투로 "~해요"로 끝나게 존대말로 대답해줘`,
             },
           ],
           max_tokens: 4096,  // 응답 길이 제한을 최대한 높이 설정
@@ -104,16 +104,10 @@ const ChatbotScreen = ({ navigaion }) => {
                     source={require("../assets/chatRabbit.png")}
                     style={{
                       width: 36,
-                      maxWidth:246,
                       height: 36,
                       borderRadius: 18,
                       marginRight: 8,
-                      padding:12,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap:10,
-
-                      
+            
                     
                     }}
                   />
@@ -123,7 +117,11 @@ const ChatbotScreen = ({ navigaion }) => {
                     backgroundColor:
                       message.sender === "user" ? "#78BA7D" : "#FFFFFF",
                     borderRadius: 10,
-                    padding: 10,
+                    padding:12,
+                    maxWidth:246,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  
                     borderTopLeftRadius: message.sender === "user" ? 10 : 0,
                     borderTopRightRadius: message.sender === "user" ? 0 : 10,
                   }}
