@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  SafeAreaView,
+  Image,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import HomeScreen from "./HomeScreen";
@@ -29,7 +36,7 @@ const SvgIcon = ({ asset }) => (
 
 export default function MainScreen() {
   let user_code = 7274;
-  const ipnumber = "192.168.123.159";
+  const ipnumber = "192.168.123.170";
 
   useState(() => {
     // user_code 가져오기
@@ -75,7 +82,8 @@ export default function MainScreen() {
             color === theme.green500 ? (
               <SvgIcon asset={HomeGreen} />
             ) : (
-              <SvgIcon asset={HomeGray} />
+              // <SvgIcon asset={HomeGray} />
+              <Image source={require("../assets/home_gray.png")} />
             ),
         }}
         initialParams={{

@@ -84,27 +84,27 @@ export default function TestPage({ route }) {
     console.log(response); // 응답 내용 출력
   };
 
-  const textToPdf = async (text) => {
-    const html = `
-      <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-        </head>
-        <body style="text-align: center;">
-          <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
-            ${text}
-          </h1>
-          <img
-            src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
-            style="width: 90vw;" />
-        </body>
-      </html>
-      `;
-    const { uri } = await Print.printToFileAsync({ html });
-    console.log("File has been saved to:", uri);
-    // 이 아래 코드를 이메일에 전송하는걸로 갈아채야댐
-    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
-  };
+  // const textToPdf = async (text) => {
+  //   const html = `
+  //     <html>
+  //       <head>
+  //         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+  //       </head>
+  //       <body style="text-align: center;">
+  //         <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
+  //           ${text}
+  //         </h1>
+  //         <img
+  //           src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
+  //           style="width: 90vw;" />
+  //       </body>
+  //     </html>
+  //     `;
+  //   const { uri } = await Print.printToFileAsync({ html });
+  //   console.log("File has been saved to:", uri);
+  //   // 이 아래 코드를 이메일에 전송하는걸로 갈아채야댐
+  //   await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -158,10 +158,10 @@ export default function TestPage({ route }) {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => textToPdf("pdf 테스트중")}
+            onPress={() => navigation.navigate("Splash")}
             style={styles.button}
           >
-            <Text style={styles.buttonText}>PDF 테스트</Text>
+            <Text style={styles.buttonText}>스플래시</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}

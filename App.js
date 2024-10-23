@@ -35,6 +35,7 @@ import InfoSearch from "./screens/InfoSearch";
 import InfoSearchResult from "./screens/InfoSearchResult";
 import InfoScreenDetail from "./screens/InfoScreenDetail";
 import ChatbotScreen from "./screens/ChatBotScreen";
+import SplashScreen from "./screens/SplashScreen";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -58,12 +59,17 @@ export default function App() {
       <GestureHandlerRootView>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="Main"
+            initialRouteName="Splash"
             screenOptions={{
               animation: "fade",
             }}
           >
             {/* 기존 내비게이터에 있는 화면들 */}
+            <Stack.Screen
+              name="Splash"
+              component={SplashScreen}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name="Main"
               component={MainScreen}
