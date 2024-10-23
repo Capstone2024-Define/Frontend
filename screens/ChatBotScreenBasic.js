@@ -12,64 +12,29 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
-import axios from "axios";  // axios 추가
-
-const API_KEY = "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";
-const MODEL = "gpt-3.5-turbo";
 
 const ChatbotScreen = ({ navigaion }) => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
 
-  // ChatGPT API 요청 함수
-  const getChatbotResponse = async (text) => {
-    try {
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: MODEL,
-          messages: [
-            {
-              role: "user",
-              content: `${text}에 대해 다정한 말투로 "~해요"로 끝나게 존대말로 대답해줘`,
-            },
-          ],
-          max_tokens: 4096,  // 응답길이 설정
-          temperature: 0.8, // 응답 창의성 조정
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-        }
-      );
-      return response.data.choices[0].message.content.trim();
-    } catch (error) {
-      console.error("Error fetching summary:", error);
-      return "죄송해요, 응답을 생성하는 데 문제가 생겼어요.";
-    }
-  };
-
   // 사용자가 메시지를 보냈을 때 호출되는 함수
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (inputText.trim()) {
-      // 사용자의 메시지를 추가하기
+      // 새 메시지를 로그에 추가
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "user", text: inputText },
       ]);
 
-      // ChatGPT에게 질문을 보내고 응답 받기
-      const chatbotResponse = await getChatbotResponse(inputText);
+      // 챗봇 응답을 추가한 부분 -> 나중에 ai 로 대체 가능
+      setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "bot", text: "제가 도와드릴 수 있어요!" },
+        ]);
+      }, 1000);
 
-      // 챗봇 응답 추가
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "bot", text: chatbotResponse },
-      ]);
-
-      // 입력 필드 초기화하기
+      // 입력 필드 초기화
       setInputText("");
     }
   };
@@ -107,8 +72,6 @@ const ChatbotScreen = ({ navigaion }) => {
                       height: 36,
                       borderRadius: 18,
                       marginRight: 8,
-            
-                    
                     }}
                   />
                 )}
@@ -117,11 +80,7 @@ const ChatbotScreen = ({ navigaion }) => {
                     backgroundColor:
                       message.sender === "user" ? "#78BA7D" : "#FFFFFF",
                     borderRadius: 10,
-                    padding:12,
-                    maxWidth:246,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  
+                    padding: 10,
                     borderTopLeftRadius: message.sender === "user" ? 10 : 0,
                     borderTopRightRadius: message.sender === "user" ? 0 : 10,
                   }}
@@ -190,3 +149,4 @@ const ChatbotScreen = ({ navigaion }) => {
 };
 
 export default ChatbotScreen;
+ 
