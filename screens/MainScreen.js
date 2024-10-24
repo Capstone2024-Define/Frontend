@@ -83,7 +83,10 @@ export default function MainScreen() {
               <SvgIcon asset={HomeGreen} />
             ) : (
               // <SvgIcon asset={HomeGray} />
-              <Image source={require("../assets/home_gray.png")} />
+              <Image
+                source={require("../assets/home_gray.png")}
+                style={{ width: 19, resizeMode: "contain" }}
+              />
             ),
         }}
         initialParams={{
