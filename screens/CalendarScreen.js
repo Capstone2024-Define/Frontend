@@ -86,7 +86,7 @@ export default function CalendarScreen({ navigation, route }) {
           ? `${currentYear + 1}-01`
           : `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
 
-      //console.log(`${beforeYearMonth} ${yearMonth} ${afterYearMonth}`);
+      console.log(`${beforeYearMonth} ${yearMonth} ${afterYearMonth}`);
 
       const responseDates = [];
 
@@ -106,6 +106,7 @@ export default function CalendarScreen({ navigation, route }) {
       responseDates.push(...afterResponse.data);
 
       //console.log("GET: ", responseDates);
+      console.log(responseDates);
       setDayStates(responseDates);
     } catch (error) {
       console.log("GET 에러: ", error);

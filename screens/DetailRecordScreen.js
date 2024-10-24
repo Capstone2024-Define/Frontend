@@ -233,14 +233,14 @@ export default function DetailRecordScreen({ navigation, route }) {
 
       // 증상 체크리스트 저장
       await axios.post(`http://${ipnumber}:8080/sx/post`, {
-        user_code: 7274,
+        user_code: user_code,
         date: date,
         checklist: route.params.symptomList,
       });
 
       // 부모 체크리스트 저장
       await axios.post(`http://${ipnumber}:8080/prnt/post`, {
-        user_code: 7274,
+        user_code: user_code,
         date: date,
         checklist: route.params.checkList,
       });

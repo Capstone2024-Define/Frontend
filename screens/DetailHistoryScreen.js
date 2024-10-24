@@ -195,7 +195,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         );
         setCheckList(response_parentCheck.data.checklist);
       } catch (error) {
-        console.log("체크리스트 로드 에러: ", error);
+        console.log("체크리스트 GET 에러: ", error);
       }
     }
     load();
