@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  SafeAreaView,
+  Image,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import HomeScreen from "./HomeScreen";
@@ -75,7 +82,8 @@ export default function MainScreen() {
             color === theme.green500 ? (
               <SvgIcon asset={HomeGreen} />
             ) : (
-              <SvgIcon asset={HomeGray} />
+              // <SvgIcon asset={HomeGray} />
+              <Image source={require("../assets/home_gray.png")} />
             ),
         }}
         initialParams={{

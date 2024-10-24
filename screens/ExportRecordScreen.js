@@ -432,7 +432,11 @@ export default function ExportRecordScreen({ navigation, route }) {
        <!DOCTYPE html>
         <html>
           <header>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+            />
+            <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
             <style>
               body {
                 display: flex;
@@ -440,6 +444,8 @@ export default function ExportRecordScreen({ navigation, route }) {
                 justify-content: center;
                 align-items: center;
                 padding: 40px;
+                line-height: 26px;
+                font-family: "Pretendard Variable", Pretendard;
               }
               table {
                 width: 100%;
@@ -456,17 +462,25 @@ export default function ExportRecordScreen({ navigation, route }) {
               caption {
                 margin-top: 30px;
                 margin-bottom: 30px;
-                font: 20px sans-serif;
               }
               th.info {
-                color: rgb(161, 161, 161);
-                background-color: rgb(239, 239, 239);
+                color: rgb(140, 140, 140);
+                background-color: rgb(243, 243, 243);
               }
               th.date {
-                background-color: rgb(239, 239, 239);
+                background-color: rgb(243, 243, 243);
               }
               td.title {
                 text-align: center;
+                padding: 0px 16px 0px 16px;
+                white-space: nowrap;
+                line-height: 30px;
+              }
+              td.place {
+                text-align: center;
+                padding: 0px 10px 0px 10px;
+                white-space: nowrap;
+                line-height: 30px;
               }
             </style>
           </header>
@@ -489,127 +503,56 @@ export default function ExportRecordScreen({ navigation, route }) {
               </tr>
             </table>
             <table>
-                <tr>
-                  <th class="date" colspan="3">
-                    2024/10/16
-                  </th>
-                </tr>
-                <tr>
-                  <td colspan="2" class="title">
-                    증상체크
-                  </td>
-                  <td>불순응, 반항, 떼쓰기, 꾀병</td>
-                </tr>
-                <tr>
-                  <td colspan="2" class="title">
-                    사진
-                  </td>
-                  <td>
-                    <img src="" width="100" height="100" alt="이미지" />
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" class="title">
-                    요약
-                  </td>
-                  <td>
-                    집에서는 숙제 시간을 조정해 집중력을 높이는 방법을
-                    시도했으나, 도중에 잠시 짜증을 냈다. 오늘 아이는 학교에서
-                    집중을 잘 못했지만, 선생님의 도움으로 과제를 마쳤다.
-                    병원에서는 치료사와의 상담 후 새로운 관리 전략을 논의했다.
-                  </td>
-                </tr>
-                <tr>
-                  <td rowspan="3" class="title">
-                    증상체크
-                  </td>
-                  <td class="title">가정</td>
-                  <td>
-                    아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침
-                    준비가 늦어짐. 저녁 식사 중간에 계속 자리를 떠서 여러 번
-                    주의를 줌. 식사 후 설거지를 도와주었음. 숙제를 할 때
-                    집중하지 못하고 자주 딴짓을 해서 함께 앉아 도와주며 완료함.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title">학교</td>
-                  <td>
-                    교실에서 수업 중 자주 자리를 벗어나서 선생님께서 주의를 줌.
-                    친구들과 놀이 시간에 충돌이 있었으나 교사의 중재로 해결됨.
-                    특별 지원 교사와의 개별 학습 시간 동안 비교적 잘 집중했음.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title">병원</td>
-                  <td>
-                    오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이
-                    필요하다고 판단됨. 의사 선생님이 추천해준 행동치료
-                    프로그램에 등록하기로 결정함. 치료 계획에 대해 상담하고
-                    가정에서 할 수 있는 행동 관리 방법에 대해 교육 받음.
-                  </td>
-                </tr>
-              </table>
-            <table>
-                <tr>
-                  <th class="date" colspan="3">
-                    2024/10/16
-                  </th>
-                </tr>
-                <tr>
-                  <td colspan="2" class="title">
-                    증상체크
-                  </td>
-                  <td>불순응, 반항, 떼쓰기, 꾀병</td>
-                </tr>
-                <tr>
-                  <td colspan="2" class="title">
-                    사진
-                  </td>
-                  <td>
-                    <img src="" width="100" height="100" alt="이미지" />
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" class="title">
-                    요약
-                  </td>
-                  <td>
-                    집에서는 숙제 시간을 조정해 집중력을 높이는 방법을
-                    시도했으나, 도중에 잠시 짜증을 냈다. 오늘 아이는 학교에서
-                    집중을 잘 못했지만, 선생님의 도움으로 과제를 마쳤다.
-                    병원에서는 치료사와의 상담 후 새로운 관리 전략을 논의했다.
-                  </td>
-                </tr>
-                <tr>
-                  <td rowspan="3" class="title">
-                    증상체크
-                  </td>
-                  <td class="title">가정</td>
-                  <td>
-                    아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침
-                    준비가 늦어짐. 저녁 식사 중간에 계속 자리를 떠서 여러 번
-                    주의를 줌. 식사 후 설거지를 도와주었음. 숙제를 할 때
-                    집중하지 못하고 자주 딴짓을 해서 함께 앉아 도와주며 완료함.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title">학교</td>
-                  <td>
-                    교실에서 수업 중 자주 자리를 벗어나서 선생님께서 주의를 줌.
-                    친구들과 놀이 시간에 충돌이 있었으나 교사의 중재로 해결됨.
-                    특별 지원 교사와의 개별 학습 시간 동안 비교적 잘 집중했음.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title">병원</td>
-                  <td>
-                    오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이
-                    필요하다고 판단됨. 의사 선생님이 추천해준 행동치료
-                    프로그램에 등록하기로 결정함. 치료 계획에 대해 상담하고
-                    가정에서 할 수 있는 행동 관리 방법에 대해 교육 받음.
-                  </td>
-                </tr>
-              </table>
+              <tr>
+                <th class="date" colspan="3">2024/10/16</th>
+              </tr>
+              <tr>
+                <td colspan="2" class="title">증상체크</td>
+                <td>불순응, 반항, 떼쓰기, 꾀병</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="title">사진</td>
+                <td>
+                  <img src="" width="100" height="100" alt="이미지" />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" class="title">요약</td>
+                <td>
+                  집에서는 숙제 시간을 조정해 집중력을 높이는 방법을 시도했으나, 도중에
+                  잠시 짜증을 냈다. 오늘 아이는 학교에서 집중을 잘 못했지만, 선생님의
+                  도움으로 과제를 마쳤다. 병원에서는 치료사와의 상담 후 새로운 관리
+                  전략을 논의했다.
+                </td>
+              </tr>
+              <tr>
+                <td rowspan="3" class="title">기록<br />내용</td>
+                <td class="place">가정</td>
+                <td>
+                  아침에 일어나기 어려워함. 기상 후에도 집중력이 부족해 아침 준비가
+                  늦어짐. 저녁 식사 중간에 계속 자리를 떠서 여러 번 주의를 줌. 식사 후
+                  설거지를 도와주었음. 숙제를 할 때 집중하지 못하고 자주 딴짓을 해서
+                  함께 앉아 도와주며 완료함.
+                </td>
+              </tr>
+              <tr>
+                <td class="place">학교</td>
+                <td>
+                  교실에서 수업 중 자주 자리를 벗어나서 선생님께서 주의를 줌. 친구들과
+                  놀이 시간에 충돌이 있었으나 교사의 중재로 해결됨. 특별 지원 교사와의
+                  개별 학습 시간 동안 비교적 잘 집중했음.
+                </td>
+              </tr>
+              <tr>
+                <td class="place">병원</td>
+                <td>
+                  오늘은 ADHD 정기 검진 날. 의사와 상담 후 약물 조정이 필요하다고
+                  판단됨. 의사 선생님이 추천해준 행동치료 프로그램에 등록하기로 결정함.
+                  치료 계획에 대해 상담하고 가정에서 할 수 있는 행동 관리 방법에 대해
+                  교육 받음.
+                </td>
+              </tr>
+            </table>
           </body>
         </html>
         `;

@@ -161,7 +161,7 @@ export default function ProfileModifyScreen({ navigation, route }) {
     try {
       const newBirth = birth.replace(/\s\/\s/g, "-");
 
-      await axios.put(`http://${ipnumber}:8080/userinfo/post`, {
+      await axios.put(`http://${ipnumber}:8080/userinfo/edit`, {
         user_code: user_code,
         user_name: nickName,
         child_name: name,
@@ -425,7 +425,8 @@ export default function ProfileModifyScreen({ navigation, route }) {
                 )
               }
               onPress={() => {
-                console.log("확인");
+                handlePut();
+                navigation.pop();
               }}
             >
               <LinearGradient

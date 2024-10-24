@@ -144,8 +144,8 @@ const SymptomCheckScreen = ({ route, navigation }) => {
           contentContainerStyle={{ paddingBottom: 80 }}
         >
           <Text style={styles.mainTitle}>
-            먼저 아이의{"\n"}
-            증상을 체크해주세요
+            오늘 우리 아이는{"\n"}
+            어땠나요?
           </Text>
           <Text style={styles.subTitle}>
             증상이 없었을 경우 선택하지 않고{"\n"}다음을 눌러주세요
