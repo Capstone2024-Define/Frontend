@@ -29,7 +29,7 @@ const SvgIcon = ({ asset }) => (
 
 export default function MainScreen() {
   let user_code = 7274;
-  const ipnumber = "192.168.123.159";
+  const ipnumber = "52.79.248.87";
 
   useState(() => {
     // user_code 가져오기
