@@ -28,11 +28,11 @@ export default function SymptomResultScreen({ route, navigation }) {
   let resultImage = null;
   let state = 0;
 
-  if (selectedCount <= 3) {
+  if (selectedCount <= 1) {
     resultText = "최고예요!";
     resultImage = resultImages["최고예요"];
     state = 2;
-  } else if (selectedCount <= 9) {
+  } else if (selectedCount <= 4) {
     resultText = "보통이에요!";
     resultImage = resultImages["보통이에요"];
     state = 1;
