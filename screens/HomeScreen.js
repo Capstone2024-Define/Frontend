@@ -23,7 +23,7 @@ import Note_white from "../assets/notes_white.svg";
 import Mic from "../assets/mic_green.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
-import Calender from "../assets/calendarNew.svg";
+import Calender from "../assets/home_calendar.svg";
 import NoRecord from "../assets/norecord.svg";
 import { Shadow } from "react-native-shadow-2"; // 그림자 라이브러리
 import { LinearGradient } from "expo-linear-gradient"; // 그라데이션 라이브러리

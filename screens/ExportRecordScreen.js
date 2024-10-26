@@ -19,7 +19,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { theme } from "../colors/color";
 import Feather from "@expo/vector-icons/Feather";
 import { WithLocalSvg } from "react-native-svg/css";
-import CalendarImg from "../assets/calender.svg";
+import CalendarImg from "../assets/export_calendar.svg";
 import { useLayoutEffect } from "react";
 import { Calendar } from "react-native-calendars";
 import Left from "../assets/chevron_left.svg";
