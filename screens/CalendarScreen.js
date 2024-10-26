@@ -39,6 +39,7 @@ export default function CalendarScreen({ navigation, route }) {
     new Date(today).getMonth() + 1
   );
   const [record, setRecord] = useState({});
+  const [images, setImages] = useState(null);
   const { ipnumber, user_code } = route.params;
 
   useFocusEffect(
@@ -106,7 +107,6 @@ export default function CalendarScreen({ navigation, route }) {
       responseDates.push(...afterResponse.data);
 
       //console.log("GET: ", responseDates);
-      console.log(responseDates);
       setDayStates(responseDates);
     } catch (error) {
       console.log("GET 에러: ", error);
@@ -426,9 +426,10 @@ export default function CalendarScreen({ navigation, route }) {
                       color: theme.grey800,
                       marginTop: 12,
                     }}
+                    numberOfLines={images ? 2 : 6}
+                    ellipsizeMode="tail"
                   >
-                    {(record.summary || "").slice(0, 70).replace(/\n/g, " ")}
-                    ...
+                    {(record.summary || "").replace(/\n/g, " ")}
                   </Text>
                 </>
               )}
