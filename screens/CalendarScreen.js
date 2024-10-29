@@ -39,6 +39,7 @@ export default function CalendarScreen({ navigation, route }) {
     new Date(today).getMonth() + 1
   );
   const [record, setRecord] = useState({});
+  const [images, setImages] = useState(null);
   const { ipnumber, user_code } = route.params;
 
   useFocusEffect(
@@ -86,7 +87,7 @@ export default function CalendarScreen({ navigation, route }) {
           ? `${currentYear + 1}-01`
           : `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
 
-      //console.log(`${beforeYearMonth} ${yearMonth} ${afterYearMonth}`);
+      console.log(`${beforeYearMonth} ${yearMonth} ${afterYearMonth}`);
 
       const responseDates = [];
 
@@ -425,9 +426,10 @@ export default function CalendarScreen({ navigation, route }) {
                       color: theme.grey800,
                       marginTop: 12,
                     }}
+                    numberOfLines={images ? 2 : 6}
+                    ellipsizeMode="tail"
                   >
-                    {(record.summary || "").slice(0, 70).replace(/\n/g, " ")}
-                    ...
+                    {(record.summary || "").replace(/\n/g, " ")}
                   </Text>
                 </>
               )}

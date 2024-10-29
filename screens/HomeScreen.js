@@ -124,7 +124,7 @@ export default function HomeScreen({ navigation, route }) {
             // console.log("GET: ", response.data);
             // setTotalText(response.data.summary);
             setSummaryText(response.data.summary);
-
+            console.log(response.data.summary);
             // 몇일째 기록하는중인지 가져옴
             const response_total = await axios.get(
               `http://${ipnumber}:8080/daily/records/${user_code}`
@@ -484,13 +484,18 @@ export default function HomeScreen({ navigation, route }) {
                         </View>
                       ))}
                     </View>
-                    <Text style={styles.recordText}>
+                    <Text
+                      style={styles.recordText}
+                      numberOfLines={3}
+                      ellipsizeMode="tail"
+                    >
                       {/* {summaryText && summaryText !== ""
                         ? summaryText.slice(0, 92).replace(/\n/g, " ")
                         : totalText.slice(0, 92).replace(/\n/g, " ")} */}
-                      {summaryText &&
+                      {/* {summaryText &&
                         summaryText.slice(0, 95).replace(/\n/g, " ")}
-                      ...
+                      ... */}
+                      {summaryText.replace(/\n/g, " ")}
                     </Text>
                   </TouchableOpacity>
                 </Shadow>

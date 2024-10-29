@@ -21,8 +21,8 @@ export default function VoiceDateButton({ place, date, time, text, onPress }) {
             </View>
             <Text style={styles.dubogi}>더보기</Text>
           </View>
-          <Text style={styles.voiceText}>
-            {text.slice(0, 29).replace(/\n/g, " ")}...
+          <Text style={styles.voiceText} numberOfLines={1} ellipsizeMode="tail">
+            {text}
           </Text>
         </View>
       </View>

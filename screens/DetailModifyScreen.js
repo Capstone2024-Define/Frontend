@@ -31,6 +31,7 @@ export default function DetailModifyScreen({ navigation, route }) {
   const [homeText, setHomeText] = useState("");
   const [schoolText, setSchoolText] = useState("");
   const [hospitalText, setHospitalText] = useState("");
+  const [state, setState] = useState("");
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const [totalText, setTotalText] = useState("");
   const { date, user_code, ipnumber } = route.params;
@@ -67,6 +68,7 @@ export default function DetailModifyScreen({ navigation, route }) {
         setHomeText(response.data.home);
         setSchoolText(response.data.school);
         setHospitalText(response.data.hospital);
+        setState(response.data.state);
       } catch (e) {
         console.log("기록 로드 에러");
       }
@@ -210,12 +212,12 @@ export default function DetailModifyScreen({ navigation, route }) {
         school: schoolText,
         hospital: hospitalText,
         summary: result.summary,
-        state: 2,
+        state: state,
       });
 
       // 수정
       const response = await axios.put(
-        `http://${ipnumber}:8080/daily/records/edit/${user_code}/${date}`,
+        `http://${ipnumber}:8080/daily/records/edit`,
         {
           user_code: user_code,
           date: date,
@@ -223,7 +225,7 @@ export default function DetailModifyScreen({ navigation, route }) {
           school: schoolText,
           hospital: hospitalText,
           summary: result.summary,
-          state: 2,
+          state: state,
         }
       );
 

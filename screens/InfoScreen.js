@@ -65,6 +65,7 @@ function InfoScreen() {
         </View>
         {/* 검색창 */}
         <TouchableOpacity
+          activeOpacity={0.8}
           style={{
             flexDirection: "row",
             alignItems: "center",

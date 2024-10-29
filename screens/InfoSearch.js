@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -8,13 +8,23 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../colors/color";
 
 function InfoSearch() {
   const [searchText, setSearchText] = useState("");
   const navigation = useNavigation(); // 네비게이션 훅 사용
+  const inputRef = useRef(null); // 키보드 바로 뜨게
+
+  useFocusEffect(
+    useCallback(() => {
+      // 컴포넌트가 렌더링될 때 TextInput에 포커스
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [])
+  );
 
   const handleSearch = () => {
     // 검색 버튼 클릭 시 InfoSearchResult로 이동하면서 검색어를 전달
@@ -54,6 +64,7 @@ function InfoSearch() {
           </TouchableOpacity>
           {/* 검색 입력창 */}
           <TextInput
+            ref={inputRef}
             style={{
               color: "#242424",
               fontSize: 14,

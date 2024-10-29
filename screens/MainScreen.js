@@ -35,8 +35,8 @@ const SvgIcon = ({ asset }) => (
 );
 
 export default function MainScreen() {
-  let user_code = 1000;
-  const ipnumber = "52.79.248.87";
+  let user_code = 7274;
+  const ipnumber = "192.168.123.170";
 
   useState(() => {
     // user_code 가져오기
@@ -83,7 +83,10 @@ export default function MainScreen() {
               <SvgIcon asset={HomeGreen} />
             ) : (
               // <SvgIcon asset={HomeGray} />
-              <Image source={require("../assets/home_gray.png")} />
+              <Image
+                source={require("../assets/home_gray.png")}
+                style={{ width: 19, resizeMode: "contain" }}
+              />
             ),
         }}
         initialParams={{
