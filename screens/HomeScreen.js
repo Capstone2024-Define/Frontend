@@ -10,6 +10,7 @@ import {
   Modal,
   ImageBackground,
   StatusBar,
+  Platform,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
@@ -23,7 +24,7 @@ import Note_white from "../assets/notes_white.svg";
 import Mic from "../assets/mic_green.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
-import Calender from "../assets/calendarNew.svg";
+import Calender from "../assets/home_calendar.svg";
 import NoRecord from "../assets/norecord.svg";
 import { Shadow } from "react-native-shadow-2"; // 그림자 라이브러리
 import { LinearGradient } from "expo-linear-gradient"; // 그라데이션 라이브러리
@@ -67,20 +68,23 @@ export default function HomeScreen({ navigation, route }) {
   const [totalDay, setTotalDay] = useState(0);
   const { ipnumber, user_code } = route.params;
 
-  // 홈 화면만 상태바 색 변경
-  // ios에는 적용안됨 수정함 하기
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     StatusBar.setBarStyle("light-content");
-  //     StatusBar.setBackgroundColor(theme.green500);
+  // 상태바 변경(안드로이드)
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === "android") {
+        StatusBar.setBarStyle("light-content");
+        StatusBar.setBackgroundColor("#7EBB7E");
+      }
 
-  //     return () => {
-  //       // 홈 화면을 벗어날 때 StatusBar 초기화
-  //       StatusBar.setBarStyle("dark-content");
-  //       StatusBar.setBackgroundColor("#fff");
-  //     };
-  //   }, [])
-  // );
+      // Android에서 다른 화면으로 나갈 때 상태바 기본값으로 복구
+      return () => {
+        if (Platform.OS === "android") {
+          StatusBar.setBarStyle("dark-content");
+          StatusBar.setBackgroundColor("#FFFFFF"); // Android 기본 배경색
+        }
+      };
+    }, [])
+  );
 
   // 시작 시 오늘 날짜를 선택날짜로 함
   useEffect(() => {
@@ -97,25 +101,6 @@ export default function HomeScreen({ navigation, route }) {
         // 기록 로드
         const load = async () => {
           try {
-            // const rawRecord = await AsyncStorage.getItem(selectedDate);
-            // const newRecord = JSON.parse(rawRecord);
-
-            // let newTotalText = "";
-            // if (newRecord.home) {
-            //   newTotalText += newRecord.home;
-            // }
-            // if (newRecord.school) {
-            //   newTotalText += ` ${newRecord.school}`;
-            // }
-            // if (newRecord.hospital) {
-            //   newTotalText += ` ${newRecord.hospital}`;
-            // }
-            // setTotalText(newTotalText);
-            // setImages(newRecord.image);
-            // setSummaryText(newRecord.summaryText);
-
-            //console.log(newRecord);
-
             // 요약, 상태 가져옴
             const response = await axios.get(
               `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
@@ -124,7 +109,7 @@ export default function HomeScreen({ navigation, route }) {
             // console.log("GET: ", response.data);
             // setTotalText(response.data.summary);
             setSummaryText(response.data.summary);
-            console.log(response.data.summary);
+            console.log("서머리: ", response.data.summary);
             // 몇일째 기록하는중인지 가져옴
             const response_total = await axios.get(
               `http://${ipnumber}:8080/daily/records/${user_code}`
@@ -226,21 +211,6 @@ export default function HomeScreen({ navigation, route }) {
     let emojiColor = theme.grey150;
 
     try {
-      //const rawRecord = await AsyncStorage.getItem(date);
-      // if (rawRecord !== null) {
-      //   const record = JSON.parse(rawRecord);
-      //   if (record.symptomList) {
-      //     const selectedCount = record.symptomList.length;
-      //     if (selectedCount <= 3) {
-      //       emojiColor = theme.green;
-      //     } else if (selectedCount <= 9) {
-      //       emojiColor = theme.yellow;
-      //     } else {
-      //       emojiColor = theme.pink;
-      //     }
-      //   }
-      // }
-
       const response = await axios.get(
         `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
       );
@@ -322,6 +292,7 @@ export default function HomeScreen({ navigation, route }) {
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => setModalVisible(true)}
+                style={{ marginLeft: 4 }}
               >
                 <WithLocalSvg asset={Calender} />
               </TouchableOpacity>
@@ -524,7 +495,6 @@ export default function HomeScreen({ navigation, route }) {
                       style={{
                         color: "#333333",
                         fontSize: 14,
-                        marginBottom: 4,
                         fontFamily: "Pretendard-Medium",
                         textAlign: "left", // 왼쪽 정렬
                         alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
@@ -538,7 +508,9 @@ export default function HomeScreen({ navigation, route }) {
                         ]
                       }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
                     </Text>
-
+                    <View
+                      style={{ ...styles.line, marginTop: 10, marginBottom: 0 }}
+                    />
                     <View
                       style={{
                         flex: 1,
@@ -800,9 +772,11 @@ const styles = StyleSheet.create({
     color: theme.grey400,
   },
   line: {
+    width: "100%",
     height: 1,
     marginBottom: 10,
     backgroundColor: theme.grey250,
+    borderRadius: 40,
   },
   recordText: {
     fontSize: 14,

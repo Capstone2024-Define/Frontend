@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, StyleSheet, View } from "react-native";
+import { Image, SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
@@ -40,8 +40,8 @@ export default function SplashScreen() {
 
   useEffect(() => {
     scale.value = withSequence(
-      withTiming(0.4, { duration: 400, easing: Easing.out(Easing.ease) }), // 커지게
-      withTiming(0.25, { duration: 200, easing: Easing.inOut(Easing.ease) }) // 다시 작아지게
+      withTiming(0.4, { duration: 350, easing: Easing.out(Easing.ease) }), // 커지게
+      withTiming(0.24, { duration: 200, easing: Easing.inOut(Easing.ease) }) // 다시 작아지게
     );
 
     translateX.value = withDelay(
@@ -51,7 +51,7 @@ export default function SplashScreen() {
 
     textTranslateX.value = withDelay(
       1300,
-      withTiming(0, { duration: 500, easing: Easing.out(Easing.ease) }) // 왼쪽으로 이동
+      withTiming(-150, { duration: 500, easing: Easing.out(Easing.ease) }) // 왼쪽으로 이동
     );
 
     // textWidth.value = withDelay(
@@ -75,13 +75,14 @@ export default function SplashScreen() {
       style={{ flex: 1, paddingBottom: 50 }}
     >
       <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#79BA7E" />
         <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
-          <Image source={require("../assets/splash/clobitLogo.png")} />
+          <Image source={require("../assets/splash/clobit_logo.png")} />
         </Animated.View>
         <View style={styles.textContainer}>
           <Animated.View style={[textAnimatedStyle]}>
             <Image
-              source={require("../assets/splash/clobit.png")}
+              source={require("../assets/splash/clobit_text.png")}
               style={styles.textImage}
             />
           </Animated.View>
@@ -103,16 +104,17 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: "center",
     alignItems: "center",
+    position: "absolute",
   },
   textContainer: {
     position: "absolute", // 화면 가운데 고정
     transform: [{ translateX: 15 }],
-    width: 130,
-    height: 32,
+    width: 140,
+    height: 36,
     overflow: "hidden",
   },
   textImage: {
-    transform: [{ translateX: -88 }],
+    transform: [{ translateX: 0 }],
     height: "100%",
     resizeMode: "contain",
   },

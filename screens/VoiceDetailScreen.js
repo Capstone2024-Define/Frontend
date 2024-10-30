@@ -214,13 +214,13 @@ export default function VoiceDetailScreen({ navigation, route }) {
       const handleSummary = async () => {
         try {
           // 서머리
-          const result = await summary(text);
+          // const result = await summary(text);
           // 챗지피티 (요금때문에 일단 주석)
-          // const summarizeText = await summarize(text);
-          setSummaryText(result.summary);
-          console.log(result.summary);
+          const summarizeText = await summarize(text);
+          setSummaryText(summarizeText);
+          console.log(summarizeText);
         } catch (error) {
-          console.log("서머리 에러", error.response.data.error.errorCode);
+          console.log("챗지피티 요약 에러", error);
         }
       };
 
