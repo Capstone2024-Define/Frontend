@@ -322,6 +322,7 @@ export default function HomeScreen({ navigation, route }) {
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => setModalVisible(true)}
+                style={{ marginLeft: 4 }}
               >
                 <WithLocalSvg asset={Calender} />
               </TouchableOpacity>
