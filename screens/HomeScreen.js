@@ -495,7 +495,6 @@ export default function HomeScreen({ navigation, route }) {
                       style={{
                         color: "#333333",
                         fontSize: 14,
-                        marginBottom: 4,
                         fontFamily: "Pretendard-Medium",
                         textAlign: "left", // 왼쪽 정렬
                         alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
@@ -509,7 +508,9 @@ export default function HomeScreen({ navigation, route }) {
                         ]
                       }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
                     </Text>
-
+                    <View
+                      style={{ ...styles.line, marginTop: 10, marginBottom: 0 }}
+                    />
                     <View
                       style={{
                         flex: 1,
@@ -771,9 +772,11 @@ const styles = StyleSheet.create({
     color: theme.grey400,
   },
   line: {
+    width: "100%",
     height: 1,
     marginBottom: 10,
     backgroundColor: theme.grey250,
+    borderRadius: 40,
   },
   recordText: {
     fontSize: 14,
