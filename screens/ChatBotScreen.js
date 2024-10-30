@@ -52,16 +52,16 @@ const ChatbotScreen = ({ navigaion }) => {
   };
 
   // 사용자가 메시지를 보냈을 때 호출되는 함수
-  const sendMessage = async () => {
-    if (inputText.trim()) {
+  const sendMessage = async (text = inputText) => {
+    if (text.trim()) {
       // 사용자의 메시지를 추가하기
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: "user", text: inputText },
+        { sender: "user", text },
       ]);
 
       // ChatGPT에게 질문을 보내고 응답 받기
-      const chatbotResponse = await getChatbotResponse(inputText);
+      const chatbotResponse = await getChatbotResponse(text);
 
       // 챗봇 응답 추가
       setMessages((prevMessages) => [
@@ -107,8 +107,6 @@ const ChatbotScreen = ({ navigaion }) => {
                       height: 36,
                       borderRadius: 18,
                       marginRight: 8,
-            
-                    
                     }}
                   />
                 )}
@@ -117,11 +115,10 @@ const ChatbotScreen = ({ navigaion }) => {
                     backgroundColor:
                       message.sender === "user" ? "#78BA7D" : "#FFFFFF",
                     borderRadius: 10,
-                    padding:12,
-                    maxWidth:246,
+                    padding: 12,
+                    maxWidth: 246,
                     justifyContent: "center",
                     alignItems: "center",
-                  
                     borderTopLeftRadius: message.sender === "user" ? 10 : 0,
                     borderTopRightRadius: message.sender === "user" ? 0 : 10,
                   }}
@@ -141,6 +138,98 @@ const ChatbotScreen = ({ navigaion }) => {
           </ScrollView>
         </ScrollView>
 
+        {/* 자주 찾는 질문 */}
+        <View
+          style={{
+            backgroundColor: "#EFEFEF",
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+          }}
+        >
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => sendMessage("현재 아이의 증상 상태가 궁금해")}
+                style={{
+                  width: 128,
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#78BA7D",
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  paddingVertical: 18,
+                  paddingHorizontal: 13,
+                  marginRight: 13,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#242424",
+                    fontSize: 14,
+                    width: 100,
+                  }}
+                >
+                  {"현재 아이의 \n증상 상태가 궁금해"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => sendMessage("아이와 대화하는 방법을 알려줘")}
+                style={{
+                  width: 116,
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#78BA7D",
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  paddingVertical: 18,
+                  paddingHorizontal: 13,
+                  marginRight: 13,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#242424",
+                    fontSize: 14,
+                    width: 88,
+                  }}
+                >
+                  {"아이와 대화하는 \n방법을 알려줘"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() =>
+                  sendMessage("ADHD 기록은 어떻게 하는게 좋을까?")
+                }
+                style={{
+                  width: 140,
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#78BA7D",
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  paddingVertical: 18,
+                  paddingHorizontal: 13,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#242424",
+                    fontSize: 14,
+                    width: 120,
+                  }}
+                >
+                  {"ADHD 기록은 \n어떻게 하는게 좋을까?"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
+
         {/* 입력 필드 */}
         <View
           style={{
@@ -155,7 +244,7 @@ const ChatbotScreen = ({ navigaion }) => {
               alignItems: "center",
               backgroundColor: "#FFFFFF",
               borderRadius: 24,
-              paddingVertical: 3,
+              paddingVertical: 0,
               paddingLeft: 17,
               paddingRight: 4,
               marginBottom: 4,
@@ -175,7 +264,7 @@ const ChatbotScreen = ({ navigaion }) => {
               onChangeText={setInputText}
               multiline={true}
             />
-            <TouchableOpacity onPress={sendMessage}>
+            <TouchableOpacity onPress={() => sendMessage()}>
               <Image
                 source={require("../assets/chatSend.png")}
                 resizeMode={"stretch"}

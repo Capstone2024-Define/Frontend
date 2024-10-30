@@ -4,7 +4,6 @@ import {
   ScrollView,
   View,
   Text,
-  Image,
   TextInput,
   TouchableOpacity,
 } from "react-native";
@@ -31,6 +30,12 @@ function InfoSearch() {
     navigation.navigate("InfoSearchResult", { searchText });
   };
 
+  const handleKeywordClick = (keyword) => {
+    // 추천 검색어 클릭 시 해당 키워드로 검색
+    setSearchText(keyword);
+    navigation.navigate("InfoSearchResult", { searchText: keyword });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <ScrollView
@@ -54,7 +59,6 @@ function InfoSearch() {
         >
           {/* 뒤로가기 버튼 */}
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            {/* <Image source={require("../assets/info_arrow_back.png")} resizeMode={"stretch"} style={{ width: 10, height: 19, marginRight: 11 }} /> */}
             <Ionicons
               name="chevron-back-outline"
               size={29}
@@ -99,7 +103,8 @@ function InfoSearch() {
             marginBottom: 10,
           }}
         >
-          <View
+          <TouchableOpacity
+            onPress={() => handleKeywordClick("불순응")}
             style={{
               width: 56,
               alignItems: "center",
@@ -118,8 +123,9 @@ function InfoSearch() {
             >
               {"불순응"}
             </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleKeywordClick("반항")}
             style={{
               width: 45,
               alignItems: "center",
@@ -138,8 +144,9 @@ function InfoSearch() {
             >
               {"반항"}
             </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleKeywordClick("ADHD 증상")}
             style={{
               width: 81,
               alignItems: "center",
@@ -158,8 +165,9 @@ function InfoSearch() {
             >
               {"ADHD 증상"}
             </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleKeywordClick("대처방법")}
             style={{
               width: 66,
               alignItems: "center",
@@ -177,9 +185,10 @@ function InfoSearch() {
             >
               {"대처방법"}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
-        <View
+        <TouchableOpacity
+          onPress={() => handleKeywordClick("갈등")}
           style={{
             width: 45,
             alignItems: "center",
@@ -197,7 +206,7 @@ function InfoSearch() {
           >
             {"갈등"}
           </Text>
-        </View>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

@@ -11,6 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../colors/color";
 import { infos } from "../component/Info";
+import TagChip from "../component/TagChip";
+import Note from "../assets/notes.svg";
+import { WithLocalSvg } from "react-native-svg/css";
 
 function InfoScreenDetail({ route }) {
   const navigation = useNavigation(); // useNavigation 훅 사용
@@ -63,37 +66,34 @@ function InfoScreenDetail({ route }) {
         />
       </View>
       <ScrollView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
-        {/* @@@여기부터 적용했어 infos[key].~~ */}
         <Image
           source={infos[key].imageName}
           resizeMode={"cover"}
           style={{
             width: 360,
             height: 212,
-            marginBottom: 22,
+            marginBottom: 19,
             alignItems: "center",
           }}
         />
-        <Text
+        <View
           style={{
-            color: "#8B8B8B",
-            fontSize: 14,
-            fontWeight: "bold",
-            marginBottom: 13,
-            marginLeft: 21,
+            flexDirection: "row",
+            marginBottom: 8,
+            marginLeft: 20,
           }}
         >
           {infos[key].tag.map((tag, index) => (
-            <Text key={index}>#{tag} </Text>
+            <TagChip key={index} text={tag} />
           ))}
-        </Text>
+        </View>
         <Text
           style={{
             color: "#242424",
             fontSize: 20,
-            fontWeight: "bold",
-            marginBottom: 16,
-            marginLeft: 21,
+            fontFamily: "Pretendard-Bold",
+            marginBottom: 12,
+            marginLeft: 20,
           }}
         >
           {infos[key].title}
@@ -102,8 +102,7 @@ function InfoScreenDetail({ route }) {
           style={{
             backgroundColor: "#F6F6F6",
             borderRadius: 8,
-            paddingVertical: 14,
-            paddingHorizontal: 12,
+            padding: 12,
             marginBottom: 32,
             marginHorizontal: 20,
           }}
@@ -112,26 +111,34 @@ function InfoScreenDetail({ route }) {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginBottom: 9,
+              marginBottom: 6,
             }}
           >
-            <Image
+            {/* <Image
               source={require("../assets/notes.png")}
               resizeMode={"stretch"}
               style={{ width: 20, height: 20, marginRight: 10 }}
-            />
+            /> */}
+            <WithLocalSvg width={20} height={20} asset={Note} />
             <Text
               style={{
                 color: "#242424",
                 fontSize: 14,
-                fontWeight: "bold",
+                fontFamily: "Pretendard-Medium",
                 flex: 1,
+                marginLeft: 8,
               }}
             >
               {"내용을 요약했어요"}
             </Text>
           </View>
-          <Text style={{ color: "#333333", fontSize: 14, width: 296 }}>
+          <Text
+            style={{
+              color: "#333333",
+              fontSize: 14,
+              fontFamily: "Pretendard-Regular",
+            }}
+          >
             {infos[key].summary}
           </Text>
         </View>
@@ -140,7 +147,7 @@ function InfoScreenDetail({ route }) {
             height: 8,
             backgroundColor: "#F7F7F7",
             borderColor: "#ECECEC",
-            borderWidth: 1,
+            borderTopWidth: 1,
             marginBottom: 32,
           }}
         />
@@ -152,9 +159,10 @@ function InfoScreenDetail({ route }) {
                 style={{
                   color: "#242424",
                   fontSize: 16,
-                  fontWeight: "bold",
+                  lineHeight: 24,
+                  fontFamily: "Pretendard-Medium",
                   marginBottom: 12,
-                  marginLeft: 21,
+                  marginLeft: 20,
                 }}
               >
                 {content[0]}
@@ -170,9 +178,10 @@ function InfoScreenDetail({ route }) {
                     style={{
                       color: "#555555",
                       fontSize: 14,
+                      lineHeight: 20,
+                      fontFamily: "Pretendard-Regular",
                       marginBottom: content[index + 1] ? 12 : 30,
-                      marginHorizontal: 21,
-                      width: 318,
+                      marginHorizontal: 20,
                     }}
                   >
                     {item}
@@ -185,12 +194,18 @@ function InfoScreenDetail({ route }) {
           style={{
             backgroundColor: "#F6F6F6",
             borderRadius: 8,
-            paddingVertical: 14,
-            paddingHorizontal: 11,
+            padding: 10,
             marginHorizontal: 20,
           }}
         >
-          <Text style={{ color: "#555555", fontSize: 12 }}>
+          <Text
+            style={{
+              color: "#555555",
+              fontSize: 12,
+              lineHeight: 20,
+              fontFamily: "Pretendard-Regular",
+            }}
+          >
             출처: {infos[key].origin}
           </Text>
         </View>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -11,8 +11,13 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { infos } from "../component/Info";
+import axios from "axios";
+import { theme } from "../colors/color";
+import TagChip from "../component/TagChip";
 
-function InfoScreen() {
+function InfoScreen({ route }) {
+  const [nickName, setNickName] = useState("");
+  const { ipnumber, user_code } = route.params;
   const navigation = useNavigation();
 
   const handleSearchNavigate = () => {
@@ -27,6 +32,21 @@ function InfoScreen() {
   const handleChatbotOpen = () => {
     navigation.navigate("Chatbot");
   };
+
+  // 닉네임(유저 이름) 가져오기
+  useEffect(() => {
+    async function load() {
+      try {
+        const response = await axios.get(
+          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+        );
+        setNickName(response.data.user_name);
+      } catch (error) {
+        console.log("유저 GET 에러: ", error);
+      }
+    }
+    load();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -103,15 +123,12 @@ function InfoScreen() {
             fontFamily: "Pretendard-Bold",
           }}
         >
-          {"디파인님을 위한\n추천 정보"}
+          <Text style={{ color: theme.green500 }}>{nickName}</Text>
+          <Text>{"님을 위한\n추천 정보"}</Text>
         </Text>
 
         {/* 추천 정보에 대해 가로 슬라이드 구현 */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ marginBottom: 20 }}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={{ flexDirection: "row" }}>
             {/* 추천 정보 4개 => index 0 ~ 3 */}
             {infos.map(
@@ -125,50 +142,50 @@ function InfoScreen() {
                       // 다음 페이지(infoScreenDetail)에 key 넘겨줌
                       handleDetailNavigate(index);
                     }}
-                    style={{ marginRight: 12 }}
+                    style={{
+                      height: 172,
+                      justifyContent: "space-between",
+                      marginRight: 12,
+                    }}
                   >
-                    {/* 이미지 */}
-                    <ImageBackground
-                      source={info.imageName}
-                      resizeMode={"cover"}
-                      imageStyle={{ borderRadius: 8 }}
-                      style={{
-                        flexDirection: "row",
-                        width: 144,
-                        height: 104,
-                        justifyContent: "flex-end",
-                        paddingRight: 10,
-                      }}
-                    >
-                      <View
+                    <View>
+                      {/* 이미지 */}
+                      <ImageBackground
+                        source={info.imageName}
+                        resizeMode={"cover"}
+                        imageStyle={{ borderRadius: 8 }}
                         style={{
-                          width: 25,
-                          height: 25,
-                          backgroundColor: "#0000004D",
-                          borderRadius: 8,
-                          paddingHorizontal: 7,
-                          marginTop: 8,
+                          flexDirection: "row",
+                          width: 144,
+                          height: 104,
+                          justifyContent: "flex-end",
+                          paddingRight: 10,
                         }}
                       >
-                        <Image
-                          source={require("../assets/bookmark.png")}
-                          resizeMode={"contain"}
-                          style={{ height: 14, marginTop: 5 }}
-                        />
-                      </View>
-                    </ImageBackground>
-                    {/* 타이틀 */}
-                    <View>
-                      <Text
-                        style={{ color: "#242424", fontSize: 14, marginTop: 8 }}
-                      >
-                        {info.mainTitle}
-                      </Text>
-                      <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-                        {info.tag.map((tag, index) => (
-                          <Text key={index}>#{tag} </Text>
-                        ))}
-                      </Text>
+                        <View
+                          style={{
+                            width: 25,
+                            height: 25,
+                            backgroundColor: "#0000004D",
+                            borderRadius: 8,
+                            paddingHorizontal: 7,
+                            marginTop: 8,
+                          }}
+                        >
+                          <Image
+                            source={require("../assets/bookmark.png")}
+                            resizeMode={"contain"}
+                            style={{ height: 14, marginTop: 5 }}
+                          />
+                        </View>
+                      </ImageBackground>
+                      {/* 타이틀 */}
+                      <Text style={styles.title}>{info.mainTitle}</Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}>
+                      {info.tag.map((tag, index) => (
+                        <TagChip key={index} text={tag} />
+                      ))}
                     </View>
                   </TouchableOpacity>
                 )
@@ -176,7 +193,7 @@ function InfoScreen() {
           </View>
         </ScrollView>
         <View
-          style={{ height: 1, backgroundColor: "#EBEBEB", marginBottom: 17 }}
+          style={{ height: 1, backgroundColor: "#EBEBEB", marginVertical: 16 }}
         />
 
         <Text
@@ -209,55 +226,51 @@ function InfoScreen() {
                     // 다음 페이지(infoScreenDetail)에 key 넘겨줌
                     handleDetailNavigate(index);
                   }}
-                  style={{ height: 220, marginRight: 12 }}
+                  style={{
+                    height: 220,
+                    justifyContent: "space-between",
+                    marginRight: 12,
+                  }}
                 >
-                  {/* 이미지 */}
-                  <ImageBackground
-                    source={info.imageName}
-                    resizeMode={"cover"}
-                    imageStyle={{ borderRadius: 8 }}
-                    style={{
-                      flexDirection: "row",
-                      width: 154,
-                      height: 152,
-                      justifyContent: "flex-end",
-                      paddingRight: 10,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 25,
-                        height: 25,
-                        backgroundColor: "#0000004D",
-                        borderRadius: 8,
-                        paddingHorizontal: 7,
-                        marginTop: 8,
-                      }}
-                    >
-                      <Image
-                        source={require("../assets/bookmark.png")}
-                        resizeMode={"contain"}
-                        style={{ height: 14, marginTop: 5 }}
-                      />
-                    </View>
-                  </ImageBackground>
-                  {/* 타이틀 */}
                   <View>
-                    <Text
+                    {/* 이미지 */}
+                    <ImageBackground
+                      source={info.imageName}
+                      resizeMode={"cover"}
+                      imageStyle={{ borderRadius: 8 }}
                       style={{
-                        color: "#242424",
-                        fontSize: 14,
-                        marginTop: 4,
-                        fontFamily: "Pretendard-Bold",
+                        flexDirection: "row",
+                        width: 154,
+                        height: 152,
+                        justifyContent: "flex-end",
+                        paddingRight: 10,
                       }}
                     >
-                      {info.mainTitle}
-                    </Text>
-                    <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-                      {info.tag.map((tag, index) => (
-                        <Text key={index}>#{tag} </Text>
-                      ))}
-                    </Text>
+                      <View
+                        style={{
+                          width: 25,
+                          height: 25,
+                          backgroundColor: "#0000004D",
+                          borderRadius: 8,
+                          paddingHorizontal: 7,
+                          marginTop: 8,
+                        }}
+                      >
+                        <Image
+                          source={require("../assets/bookmark.png")}
+                          resizeMode={"contain"}
+                          style={{ height: 14, marginTop: 5 }}
+                        />
+                      </View>
+                    </ImageBackground>
+                    {/* 타이틀 */}
+
+                    <Text style={styles.title}>{info.mainTitle}</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    {info.tag.map((tag, index) => (
+                      <TagChip key={index} text={tag} />
+                    ))}
                   </View>
                 </TouchableOpacity>
               )
@@ -283,55 +296,50 @@ function InfoScreen() {
                     // 다음 페이지(infoScreenDetail)에 key 넘겨줌
                     handleDetailNavigate(index);
                   }}
-                  style={{ height: 220, marginRight: 12 }}
+                  style={{
+                    height: 220,
+                    justifyContent: "space-between",
+                    marginRight: 12,
+                  }}
                 >
-                  {/* 이미지 */}
-                  <ImageBackground
-                    source={info.imageName}
-                    resizeMode={"cover"}
-                    imageStyle={{ borderRadius: 8 }}
-                    style={{
-                      flexDirection: "row",
-                      width: 154,
-                      height: 152,
-                      justifyContent: "flex-end",
-                      paddingRight: 10,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 25,
-                        height: 25,
-                        backgroundColor: "#0000004D",
-                        borderRadius: 8,
-                        paddingHorizontal: 7,
-                        marginTop: 8,
-                      }}
-                    >
-                      <Image
-                        source={require("../assets/bookmark.png")}
-                        resizeMode={"contain"}
-                        style={{ height: 14, marginTop: 5 }}
-                      />
-                    </View>
-                  </ImageBackground>
-                  {/* 타이틀 */}
                   <View>
-                    <Text
+                    {/* 이미지 */}
+                    <ImageBackground
+                      source={info.imageName}
+                      resizeMode={"cover"}
+                      imageStyle={{ borderRadius: 8 }}
                       style={{
-                        color: "#242424",
-                        fontSize: 14,
-                        marginTop: 4,
-                        fontFamily: "Pretendard-Bold",
+                        flexDirection: "row",
+                        width: 154,
+                        height: 152,
+                        justifyContent: "flex-end",
+                        paddingRight: 10,
                       }}
                     >
-                      {info.mainTitle}
-                    </Text>
-                    <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-                      {info.tag.map((tag, index) => (
-                        <Text key={index}>#{tag} </Text>
-                      ))}
-                    </Text>
+                      <View
+                        style={{
+                          width: 25,
+                          height: 25,
+                          backgroundColor: "#0000004D",
+                          borderRadius: 8,
+                          paddingHorizontal: 7,
+                          marginTop: 8,
+                        }}
+                      >
+                        <Image
+                          source={require("../assets/bookmark.png")}
+                          resizeMode={"contain"}
+                          style={{ height: 14, marginTop: 5 }}
+                        />
+                      </View>
+                    </ImageBackground>
+                    {/* 타이틀 */}
+                    <Text style={styles.title}>{info.mainTitle}</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    {info.tag.map((tag, index) => (
+                      <TagChip key={index} text={tag} />
+                    ))}
                   </View>
                 </TouchableOpacity>
               )
@@ -406,11 +414,11 @@ function InfoScreen() {
                   >
                     {info.mainTitle}
                   </Text>
-                  <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
+                  <View style={{ flexDirection: "row", marginTop: 4 }}>
                     {info.tag.map((tag, index) => (
-                      <Text key={index}>#{tag} </Text>
+                      <TagChip key={index} text={tag} />
                     ))}
-                  </Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             )
@@ -446,6 +454,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+  },
+  title: {
+    color: "#242424",
+    fontSize: 14,
+    marginTop: 6,
+    fontFamily: "Pretendard-Bold",
   },
 });
 

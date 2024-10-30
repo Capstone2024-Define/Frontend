@@ -159,7 +159,7 @@ export const infos = [
     origin: "보건복지부 국립나주병원 - 주의력결핍과잉행동장애(ADHD)",
   },
   {
-    imageName: require("../assets/infoImage/infoImg5.png"),
+    imageName: require("../assets/infoImage/infoImg6.png"),
     mainTitle: `ADHD 아동 부모 양육 지침`,
     title: "부모교육과 ADHD 자녀 양육 지침",
     summary: `부모교육은 ADHD 자녀의 행동 수정과 가족 갈등 해결을 돕습니다. 아동의 강점에 집중하고, 집 안 환경을 단순화하며, 하루 일과를 구조화하는 것이 핵심입니다.${"\n"}${"\n"}또한, 대화를 할 때 아동의 주의를 환기시키고 부모 자신도 정서적 관리를 해야 합니다.`,
@@ -185,9 +185,9 @@ export const infos = [
     origin: "정신의학신문-황보람",
   },
   {
-    imageName: require("../assets/infoImage/infoImg5.png"),
-    mainTitle: `ADHD 의심 시${"\n"}상담과 치료`,
-    title: "ADHD 의심 시 상담과 치료",
+    imageName: require("../assets/infoImage/infoImg7.png"),
+    mainTitle: `ADHD 자녀를 둔 부모를${"\n"}위한 실용적인 전략`,
+    title: "ADHD 자녀를 둔 부모를 위한 실용적인 전략",
     summary: `ADHD가 의심되지만 진단을 받지 않았다면, 가정의나 정신과 의사와 상담하는 것이 중요합니다. 약물 치료와 함께 심리학자가 제공하는 인지행동치료가 성인 ADHD 치료에 효과적입니다.${"\n"}`,
     contents: [
       [
@@ -211,7 +211,7 @@ export const infos = [
     origin: "캘거리 대학 셰리 매디건 교수 ",
   },
   {
-    imageName: require("../assets/infoImage/infoImg5.png"),
+    imageName: require("../assets/infoImage/infoImg8.png"),
     mainTitle: `자녀 ADHD 자가진단`,
     title: "자녀 ADHD 자가진단",
     summary: `한국어판 ADHD 평정 척도(K-ARS)는 부모나 교사가 만 6세~13세 아동의 ADHD 증상을 평가할 수 있는 척도입니다. 지난 1주일 동안 아동이 보인 행동을 평가합니다.${"\n"}보호자 작성 시 19점 이상, 교사 작성 시 17점 이상일 때 ADHD를 의심할 수 있습니다.`,
@@ -251,11 +251,11 @@ export const infos = [
         "평가 점수가 보호자가 작성했을 경우 19점 이상, 교사가 작성했을 경우 17점 이상이면 ADHD를 의심할 수 있습니다.",
       ],
     ],
-    tag: ["평가 척도", "ADHD", "자가진단"],
+    tag: ["자가진단", "증상"],
     origin: "K-ARS 한국어판 ADHD 평정 척도",
   },
   {
-    imageName: require("../assets/infoImage/infoImg5.png"),
+    imageName: require("../assets/infoImage/infoImg9.png"),
     mainTitle: `ADHD 어떻게 치료하나요?`,
     title: "ADHD 어떻게 치료하나요?",
     summary: `ADHD 약물 치료는 환자의 80%가 긍정적인 호전을 보입니다. 집중력과 학습 능력이 향상되고, 주의 산만함과 충동성이 감소합니다. 그러나 약물 치료만으로는 충분하지 않으며, 부모 교육, 인지행동 치료 등 다양한 치료가 병행되어야 합니다.`,
@@ -290,7 +290,7 @@ export const infos = [
   },
 
   {
-    imageName: require("../assets/infoImage/infoImg5.png"),
+    imageName: require("../assets/infoImage/infoImg10.png"),
     mainTitle: `ADHD의 약물치료,${"\n"}안전한가요?`,
     title: "ADHD의 약물치료, 안전한가요?",
     summary: `ADHD 약물치료는 최소 1년 반에서 2년 동안 이루어져야 하며, 증상 조절뿐 아니라 뇌 발달에도 긍정적인 영향을 줍니다. 부작용으로는 식욕 감소와 수면 장애가 있지만, 장기 투약에도 안전한 것으로 알려져 있습니다.`,
@@ -313,7 +313,7 @@ export const infos = [
   },
 
   {
-    imageName: require("../assets/infoImage/infoImg5.png"),
+    imageName: require("../assets/infoImage/infoImg11.png"),
     mainTitle: `부모나 교사는 어떻게 할까요?`,
     title: "부모나 교사는 어떻게 할까요?",
     summary: `ADHD 아동들은 부정적인 평가를 자주 받기 때문에, 칭찬할 거리를 찾아 자존감을 회복시키는 것이 필요합니다. 문제행동을 지적할 때는 감정을 자제하고, 주의를 분산시키는 자극을 최소화하는 환경을 조성하는 것이 좋습니다.`,
