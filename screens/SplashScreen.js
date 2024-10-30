@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, StyleSheet, View } from "react-native";
+import { Image, SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
@@ -75,6 +75,7 @@ export default function SplashScreen() {
       style={{ flex: 1, paddingBottom: 50 }}
     >
       <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#79BA7E" />
         <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
           <Image source={require("../assets/splash/clobitLogo.png")} />
         </Animated.View>
