@@ -199,11 +199,11 @@ export default function DetailModifyScreen({ navigation, route }) {
     try {
       // 전체 텍스트 요약
       // 서머리
-      const result = await summary(totalText);
-      console.log(result.summary);
+      // const result = await summary(totalText);
+      // console.log(result.summary);
 
       // 챗지피티 - 요금때문에 일단 주석처리하고 서머리로 진행(작동확인 완)
-      // const summarizeText = await summarize(totalText);
+      const summarizeText = await summarize(totalText);
 
       console.log("전송 데이터:", {
         user_code: user_code,
@@ -211,7 +211,7 @@ export default function DetailModifyScreen({ navigation, route }) {
         home: homeText,
         school: schoolText,
         hospital: hospitalText,
-        summary: result.summary,
+        summary: summarizeText,
         state: state,
       });
 
@@ -224,7 +224,7 @@ export default function DetailModifyScreen({ navigation, route }) {
           home: homeText,
           school: schoolText,
           hospital: hospitalText,
-          summary: result.summary,
+          summary: summarizeText,
           state: state,
         }
       );
