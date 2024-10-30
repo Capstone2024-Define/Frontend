@@ -18,10 +18,12 @@ import Info from "../assets/appInfo_green.svg";
 import Logout from "../assets/logout_green.svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 
 export default function MyPageScreen({ navigation, route }) {
   const { ipnumber, user_code } = route.params;
+  const [nickName, setNickName] = useState("");
 
   // 상태바 변경(안드로이드)
   useFocusEffect(
@@ -41,6 +43,21 @@ export default function MyPageScreen({ navigation, route }) {
     }, [])
   );
 
+  // 닉네임(유저 이름) 가져오기
+  useEffect(() => {
+    async function load() {
+      try {
+        const response = await axios.get(
+          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+        );
+        setNickName(response.data.user_name);
+      } catch (error) {
+        console.log("유저 GET 에러: ", error);
+      }
+    }
+    load();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -59,7 +76,7 @@ export default function MyPageScreen({ navigation, route }) {
               marginBottom: 33,
             }}
           >
-            <Text style={{ ...styles.L_text, marginTop: 4 }}>디파인님</Text>
+            <Text style={{ ...styles.L_text, marginTop: 4 }}>{nickName}님</Text>
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() =>
