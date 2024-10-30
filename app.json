@@ -5,11 +5,9 @@
     "version": "1.0.0",
     "scheme": "clobit",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/splash/clobit_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {

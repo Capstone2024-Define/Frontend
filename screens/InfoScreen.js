@@ -37,6 +37,7 @@ function InfoScreen() {
           paddingTop: 20,
           paddingHorizontal: 20,
         }}
+        contentContainerStyle={{ paddingBottom: 24 }}
       >
         {/* 기존 콘텐츠 */}
         <View
@@ -124,7 +125,7 @@ function InfoScreen() {
                       // 다음 페이지(infoScreenDetail)에 key 넘겨줌
                       handleDetailNavigate(index);
                     }}
-                    style={{ marginRight: 10 }}
+                    style={{ marginRight: 12 }}
                   >
                     {/* 이미지 */}
                     <ImageBackground
@@ -157,7 +158,7 @@ function InfoScreen() {
                       </View>
                     </ImageBackground>
                     {/* 타이틀 */}
-                    <View style={{ width: 142 }}>
+                    <View>
                       <Text
                         style={{ color: "#242424", fontSize: 14, marginTop: 8 }}
                       >
@@ -193,197 +194,148 @@ function InfoScreen() {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 11,
+            marginBottom: 12,
           }}
         >
-          <ImageBackground
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            imageStyle={{ borderRadius: 8 }}
-            style={{
-              width: 154,
-              height: 152,
-              paddingLeft: 119,
-              paddingRight: 8,
-            }}
-          >
-            <View
-              style={{
-                width: 27,
-                height: 27,
-                backgroundColor: "#00000080",
-                borderRadius: 8,
-                paddingHorizontal: 8,
-                marginTop: 8,
-              }}
-            >
-              <Image
-                source={require("../assets/bookmark.png")}
-                resizeMode={"stretch"}
-                style={{ height: 14, marginTop: 6 }}
-              />
-            </View>
-          </ImageBackground>
-
-          <ImageBackground
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            imageStyle={{ borderRadius: 8 }}
-            style={{
-              width: 154,
-              height: 152,
-              paddingLeft: 119,
-              paddingRight: 8,
-            }}
-          >
-            <View
-              style={{
-                width: 27,
-                height: 27,
-                backgroundColor: "#00000080",
-                borderRadius: 8,
-                paddingHorizontal: 8,
-                marginTop: 8,
-              }}
-            >
-              <Image
-                source={require("../assets/bookmark.png")}
-                resizeMode={"stretch"}
-                style={{ height: 14, marginTop: 6 }}
-              />
-            </View>
-          </ImageBackground>
+          {infos.map(
+            (info, index) =>
+              index > 3 &&
+              index < 6 && (
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.5}
+                  onPress={() => {
+                    // index를 키값으로 보냄
+                    // 다음 페이지(infoScreenDetail)에 key 넘겨줌
+                    handleDetailNavigate(index);
+                  }}
+                  style={{ height: 220, marginRight: 12 }}
+                >
+                  {/* 이미지 */}
+                  <ImageBackground
+                    source={info.imageName}
+                    resizeMode={"cover"}
+                    imageStyle={{ borderRadius: 8 }}
+                    style={{
+                      flexDirection: "row",
+                      width: 154,
+                      height: 152,
+                      justifyContent: "flex-end",
+                      paddingRight: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 25,
+                        height: 25,
+                        backgroundColor: "#0000004D",
+                        borderRadius: 8,
+                        paddingHorizontal: 7,
+                        marginTop: 8,
+                      }}
+                    >
+                      <Image
+                        source={require("../assets/bookmark.png")}
+                        resizeMode={"contain"}
+                        style={{ height: 14, marginTop: 5 }}
+                      />
+                    </View>
+                  </ImageBackground>
+                  {/* 타이틀 */}
+                  <View>
+                    <Text
+                      style={{
+                        color: "#242424",
+                        fontSize: 14,
+                        marginTop: 4,
+                        fontFamily: "Pretendard-Bold",
+                      }}
+                    >
+                      {info.mainTitle}
+                    </Text>
+                    <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
+                      {info.tag.map((tag, index) => (
+                        <Text key={index}>#{tag} </Text>
+                      ))}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )
+          )}
         </View>
-
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 15,
+            marginBottom: 12,
           }}
         >
-          <Text style={{ color: "#242424", fontSize: 14, width: 146 }}>
-            {"부모의 스트레스 관리: 건강한 양육을 위해"}
-          </Text>
-          <Text style={{ color: "#242424", fontSize: 14, width: 148 }}>
-            {"ADHD 아동을 위한 일상 관리 팁"}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <Text style={{ color: "#8B8B8B", fontSize: 12, marginRight: 35 }}>
-            {"#스트레스관리 #부모의건강"}
-          </Text>
-          <Text style={{ color: "#8B8B8B", fontSize: 12, flex: 1 }}>
-            {"#일상관리 #자녀육아"}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 11,
-          }}
-        >
-          <ImageBackground
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            imageStyle={{ borderRadius: 8 }}
-            style={{
-              width: 154,
-              height: 152,
-              paddingLeft: 119,
-              paddingRight: 8,
-            }}
-          >
-            <View
-              style={{
-                width: 27,
-                height: 27,
-                backgroundColor: "#00000080",
-                borderRadius: 8,
-                paddingHorizontal: 8,
-                marginTop: 8,
-              }}
-            >
-              <Image
-                source={require("../assets/bookmark.png")}
-                resizeMode={"stretch"}
-                style={{ height: 14, marginTop: 6 }}
-              />
-            </View>
-          </ImageBackground>
-
-          <ImageBackground
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            imageStyle={{ borderRadius: 8 }}
-            style={{
-              width: 154,
-              height: 152,
-              paddingLeft: 119,
-              paddingRight: 8,
-            }}
-          >
-            <View
-              style={{
-                width: 27,
-                height: 27,
-                backgroundColor: "#00000080",
-                borderRadius: 8,
-                paddingHorizontal: 8,
-                marginTop: 8,
-              }}
-            >
-              <Image
-                source={require("../assets/bookmark.png")}
-                resizeMode={"stretch"}
-                style={{ height: 14, marginTop: 6 }}
-              />
-            </View>
-          </ImageBackground>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 15,
-          }}
-        >
-          <Text style={{ color: "#242424", fontSize: 14, width: 144 }}>
-            {"자녀의 학습 능력 향상을 위한 전략"}
-          </Text>
-          <Text style={{ color: "#242424", fontSize: 14, width: 145 }}>
-            {"ADHD 아동의 사회적 기술 향상하기"}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <Text
-            style={{ color: "#8B8B8B", fontSize: 12, marginRight: 4, flex: 1 }}
-          >
-            {"#학습전략 #자녀교육"}
-          </Text>
-          <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-            {"#스트레스관리 #부모의건강"}
-          </Text>
+          {infos.map(
+            (info, index) =>
+              index > 5 &&
+              index < 8 && (
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.5}
+                  onPress={() => {
+                    // index를 키값으로 보냄
+                    // 다음 페이지(infoScreenDetail)에 key 넘겨줌
+                    handleDetailNavigate(index);
+                  }}
+                  style={{ height: 220, marginRight: 12 }}
+                >
+                  {/* 이미지 */}
+                  <ImageBackground
+                    source={info.imageName}
+                    resizeMode={"cover"}
+                    imageStyle={{ borderRadius: 8 }}
+                    style={{
+                      flexDirection: "row",
+                      width: 154,
+                      height: 152,
+                      justifyContent: "flex-end",
+                      paddingRight: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 25,
+                        height: 25,
+                        backgroundColor: "#0000004D",
+                        borderRadius: 8,
+                        paddingHorizontal: 7,
+                        marginTop: 8,
+                      }}
+                    >
+                      <Image
+                        source={require("../assets/bookmark.png")}
+                        resizeMode={"contain"}
+                        style={{ height: 14, marginTop: 5 }}
+                      />
+                    </View>
+                  </ImageBackground>
+                  {/* 타이틀 */}
+                  <View>
+                    <Text
+                      style={{
+                        color: "#242424",
+                        fontSize: 14,
+                        marginTop: 4,
+                        fontFamily: "Pretendard-Bold",
+                      }}
+                    >
+                      {info.mainTitle}
+                    </Text>
+                    <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
+                      {info.tag.map((tag, index) => (
+                        <Text key={index}>#{tag} </Text>
+                      ))}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )
+          )}
         </View>
 
         <View
@@ -401,94 +353,68 @@ function InfoScreen() {
           {"고민해결"}
         </Text>
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 16,
-          }}
-        >
-          <Image
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            style={{ borderRadius: 8, width: 133, height: 90 }}
-          />
-          <View style={{ width: 156, alignSelf: "flex-start", marginTop: 7 }}>
-            <Text
-              style={{
-                color: "#242424",
-                fontSize: 14,
-                marginBottom: 15,
-                width: 156,
-              }}
-            >
-              {"ADHD 약물 치료에 부작용이 있나요?"}
-            </Text>
-            <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-              {"#약물치료 #부작용"}
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 16,
-          }}
-        >
-          <Image
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            style={{ borderRadius: 8, width: 133, height: 90 }}
-          />
-          <View style={{ width: 169, alignSelf: "flex-start", marginTop: 7 }}>
-            <Text
-              style={{
-                color: "#242424",
-                fontSize: 14,
-                marginBottom: 15,
-                width: 169,
-              }}
-            >
-              {
-                "자녀가 친구를 사귀는 데 어려움을 겪을 때, 어떻게 도와줄 수 있을까요?"
-              }
-            </Text>
-            <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-              {"#친구 #사회성"}
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 37,
-          }}
-        >
-          <Image
-            source={require("../assets/infoimage.png")}
-            resizeMode={"stretch"}
-            style={{ borderRadius: 8, width: 133, height: 90 }}
-          />
-          <View style={{ width: 169, alignSelf: "flex-start", marginTop: 7 }}>
-            <Text
-              style={{
-                color: "#242424",
-                fontSize: 14,
-                marginBottom: 15,
-                width: 169,
-              }}
-            >
-              {"자녀와의 소통을 개선하기 위해 어떤 방법을 사용할 수 있을까요?"}
-            </Text>
-            <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
-              {"#소통 #대화"}
-            </Text>
-          </View>
-        </View>
+        {infos.map(
+          (info, index) =>
+            index > 7 && (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.5}
+                onPress={() => {
+                  handleDetailNavigate(index);
+                }}
+                style={{ flexDirection: "row", marginBottom: 12 }}
+              >
+                {/* 이미지 */}
+                <ImageBackground
+                  source={info.imageName}
+                  resizeMode={"cover"}
+                  imageStyle={{ borderRadius: 8 }}
+                  style={{
+                    flexDirection: "row",
+                    width: 133,
+                    height: 90,
+                    justifyContent: "flex-end",
+                    paddingRight: 10,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 25,
+                      height: 25,
+                      backgroundColor: "#0000004D",
+                      borderRadius: 8,
+                      paddingHorizontal: 7,
+                      marginTop: 8,
+                    }}
+                  >
+                    <Image
+                      source={require("../assets/bookmark.png")}
+                      resizeMode={"contain"}
+                      style={{ height: 14, marginTop: 5 }}
+                    />
+                  </View>
+                </ImageBackground>
+                {/* 타이틀 */}
+                <View style={{ marginLeft: 16 }}>
+                  <Text
+                    style={{
+                      color: "#242424",
+                      fontSize: 14,
+                      marginTop: 4,
+                      fontFamily: "Pretendard-Bold",
+                    }}
+                  >
+                    {info.mainTitle}
+                  </Text>
+                  <Text style={{ color: "#8B8B8B", fontSize: 12 }}>
+                    {info.tag.map((tag, index) => (
+                      <Text key={index}>#{tag} </Text>
+                    ))}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )
+        )}
       </ScrollView>
       {/* 플로팅 버튼 */}
       <TouchableOpacity
