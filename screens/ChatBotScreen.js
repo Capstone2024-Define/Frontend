@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
-import axios from "axios";  // axios 추가
+import axios from "axios"; 
 
 const API_KEY = "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";
 const MODEL = "gpt-3.5-turbo";
@@ -20,6 +20,7 @@ const MODEL = "gpt-3.5-turbo";
 const ChatbotScreen = ({ navigaion }) => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);  // 챗봇 입력 중 상태
 
   // ChatGPT API 요청 함수
   const getChatbotResponse = async (text) => {
@@ -34,8 +35,8 @@ const ChatbotScreen = ({ navigaion }) => {
               content: `${text}에 대해 다정한 말투로 "~해요"로 끝나게 존대말로 대답해줘`,
             },
           ],
-          max_tokens: 4096,  // 응답길이 설정
-          temperature: 0.8, // 응답 창의성 조정
+          max_tokens: 4096,
+          temperature: 0.8,
         },
         {
           headers: {
@@ -54,23 +55,23 @@ const ChatbotScreen = ({ navigaion }) => {
   // 사용자가 메시지를 보냈을 때 호출되는 함수
   const sendMessage = async (text = inputText) => {
     if (text.trim()) {
-      // 사용자의 메시지를 추가하기
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "user", text },
       ]);
-
-      // ChatGPT에게 질문을 보내고 응답 받기
+      setInputText("");
+      
+      // 로딩 상태 추가
+      setLoading(true);
+      
       const chatbotResponse = await getChatbotResponse(text);
 
-      // 챗봇 응답 추가
+      // 챗봇 응답 추가 후 로딩 상태 제거
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "bot", text: chatbotResponse },
       ]);
-
-      // 입력 필드 초기화하기
-      setInputText("");
+      setLoading(false);
     }
   };
 
@@ -135,100 +136,68 @@ const ChatbotScreen = ({ navigaion }) => {
                 </View>
               </View>
             ))}
+
+            {/* 로딩 중일 때 표시되는 애니메이션 */}
+            {loading && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 5,
+                }}
+              >
+                <Image
+                  source={require("../assets/chatRabbit.png")}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    marginRight: 8,
+                  }}
+                />
+                <View 
+                  style={{
+                    width: 75,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    backgroundColor: "#FFFFFF",
+                    borderTopRightRadius: 8,
+                    borderBottomRightRadius: 8,
+                    borderBottomLeftRadius: 8,
+                    paddingVertical: 16,
+                    paddingHorizontal: 19,
+                  }}
+                >
+               <Image
+                  source={require("../assets/chat1.png")}
+                    resizeMode={"stretch"}
+                    style={{
+                      width: 8,
+                      height: 8,
+                    }}
+                  />
+                  <Image
+                  source={require("../assets/chat2.png")}
+                    resizeMode={"stretch"}
+                    style={{
+                      width: 8,
+                      height: 8,
+                    }}
+                  />
+                  <Image
+                  source={require("../assets/chat3.png")}
+                    resizeMode={"stretch"}
+                    style={{
+                      width: 8,
+                      height: 8,
+                    }}
+                  />
+                </View>
+              </View>
+            )}
           </ScrollView>
         </ScrollView>
-
-        {/* 자주 찾는 질문 */}
-        <View
-          style={{
-            backgroundColor: "#EFEFEF",
-            paddingVertical: 16,
-            paddingHorizontal: 20,
-          }}
-        >
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => sendMessage("현재 아이의 증상 상태가 궁금해")}
-                style={{
-                  width: 128,
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#78BA7D",
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  paddingVertical: 18,
-                  paddingHorizontal: 13,
-                  marginRight: 13,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#242424",
-                    fontSize: 14,
-                    width: 100,
-                  }}
-                >
-                  {"현재 아이의 \n증상 상태가 궁금해"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => sendMessage("아이와 대화하는 방법을 알려줘")}
-                style={{
-                  width: 116,
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#78BA7D",
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  paddingVertical: 18,
-                  paddingHorizontal: 13,
-                  marginRight: 13,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#242424",
-                    fontSize: 14,
-                    width: 88,
-                  }}
-                >
-                  {"아이와 대화하는 \n방법을 알려줘"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() =>
-                  sendMessage("ADHD 기록은 어떻게 하는게 좋을까?")
-                }
-                style={{
-                  width: 140,
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#78BA7D",
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  paddingVertical: 18,
-                  paddingHorizontal: 13,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#242424",
-                    fontSize: 14,
-                    width: 120,
-                  }}
-                >
-                  {"ADHD 기록은 \n어떻게 하는게 좋을까?"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
 
         {/* 입력 필드 */}
         <View

@@ -188,12 +188,13 @@ export default function DetailHistoryScreen({ navigation, route }) {
           `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
         );
         setSymptomList(response_symptomCheck.data.checklist);
-
+        console.log("ddd",response_symptomCheck.data)
         // 부모 체크리스트 로드
         const response_parentCheck = await axios.get(
           `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
         );
         setCheckList(response_parentCheck.data.checklist);
+        console.log(response_parentCheck.data)
       } catch (error) {
         console.log("체크리스트 GET 에러: ", error);
       }
@@ -320,9 +321,11 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.tagContainer}
         >
-          {symptomList.map((symptom, index) => (
-            <SmallTag key={index} text={symptom} />
-          ))}
+
+         {symptomList.map((symptom, index) => (
+  <SmallTag key={index} text={symptom} />
+))}
+         
           <View style={{ width: 35 }} />
         </ScrollView>
         <View style={styles.line} />
