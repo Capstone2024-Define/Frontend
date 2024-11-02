@@ -17,7 +17,6 @@ import Right from "../assets/chevron_right.svg";
 import RightGray from "../assets/chevron_right_gray.svg";
 import Y from "../assets/axisY.svg";
 import Svg, { Line, Polyline, Circle } from "react-native-svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 // import { BlurView } from "expo-blur";
 import { VictoryPie } from "victory-native";
@@ -271,7 +270,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
 
     dayState_month.forEach((value, index) => {
       if (value !== null) {
-        segments.push({ x: index * 8 + 16, y: 132 - value * 64 });
+        segments.push({ x: index * 8 + 6, y: 132 - value * 64 });
       }
     });
 
@@ -422,8 +421,19 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
             증상체크 결과 추이를 그래프로 확인해보세요.
           </Text>
           <Text style={styles.m_text}>
-            {new Date(week[0]).getMonth() + 1}.{new Date(week[0]).getDate()}~
-            {new Date(week[6]).getMonth() + 1}.{new Date(week[6]).getDate()}
+            {isWeek
+              ? `${new Date(week[0]).getMonth() + 1}.${new Date(
+                  week[0]
+                ).getDate()}~${new Date(week[6]).getMonth() + 1}.${new Date(
+                  week[6]
+                ).getDate()}`
+              : `${selectedDate.getMonth() + 1}.1~${
+                  selectedDate.getMonth() + 1
+                }.${new Date(
+                  selectedDate.getFullYear(),
+                  selectedDate.getMonth() + 1,
+                  0
+                ).getDate()}`}
           </Text>
         </View>
         <View style={styles.subContainer}>
@@ -516,14 +526,14 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
             {/* 블러 처리 */}
             {((!isWeek && !monthSegments) || (isWeek && weekStateNull)) && (
               <ImageBackground
-                source={require("../assets/NoData11.png")}
+                source={require("../assets/graphImage/NoData1.png")}
                 style={styles.absolute}
                 resizeMode="cover"
               >
-                {/* <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+                <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
                 <Text style={styles.noDataText}>
                   하루기록으로 증상을 체크해주세요!
-                </Text> */}
+                </Text>
               </ImageBackground>
               // <BlurView intensity={100} style={styles.overlay}>
               //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
@@ -632,7 +642,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
                         return (
                           <Circle
                             key={index}
-                            cx={index * 8 + 16}
+                            cx={index * 8 + 6}
                             cy={132 - value * 64}
                             r="1"
                             fill={theme.green500}
@@ -723,21 +733,15 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           {/* 블러 처리 */}
           {!monthSegments && (
             <ImageBackground
-              source={require("../assets/NoData22.png")}
+              source={require("../assets/graphImage/NoData2.png")}
               style={styles.absolute}
               resizeMode="contain"
             >
-              {/* <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
               <Text style={styles.noDataText}>
                 하루기록으로 증상을 체크해주세요!
-              </Text> */}
+              </Text>
             </ImageBackground>
-            // <BlurView intensity={100} style={styles.absolute}>
-            //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
-            //   <Text style={styles.noDataText}>
-            //     하루기록으로 증상을 체크해주세요!
-            //   </Text>
-            // </BlurView>
           )}
           <View style={styles.rowContainer}>
             <View
@@ -848,21 +852,15 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
         <View style={styles.subContainer}>
           {!monthSegments && (
             <ImageBackground
-              source={require("../assets/NoData33.png")}
+              source={require("../assets/graphImage/NoData3.png")}
               style={styles.absolute}
               resizeMode="contain"
             >
-              {/* <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
+              <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
               <Text style={styles.noDataText}>
                 하루기록으로 증상을 체크해주세요!
-              </Text> */}
+              </Text>
             </ImageBackground>
-            // <BlurView intensity={100} style={styles.absolute}>
-            //   <Text style={styles.noDataText}>기록된 내용이 없어요</Text>
-            //   <Text style={styles.noDataText}>
-            //     하루기록으로 증상을 체크해주세요!
-            //   </Text>
-            // </BlurView>
           )}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* 바 그래프 */}

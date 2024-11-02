@@ -188,7 +188,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
         );
         setSymptomList(response_symptomCheck.data.checklist);
-
+        console.log(response_symptomCheck.data.checklist);
         // 부모 체크리스트 로드
         const response_parentCheck = await axios.get(
           `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
@@ -196,6 +196,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         setCheckList(response_parentCheck.data.checklist);
       } catch (error) {
         console.log("체크리스트 GET 에러: ", error);
+        console.log(response_parentCheck.data.checklist);
       }
     }
     load();
@@ -395,7 +396,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
               <Text style={styles.recordText}>{schoolText}</Text>
             )}
           </View>
-          {voiceList.map((voice, index) =>
+          {/* {voiceList.map((voice, index) =>
             voice.location === "school" ? (
               <VoiceButton
                 key={`school-${index}`}
@@ -412,7 +413,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 }
               />
             ) : null
-          )}
+          )} */}
           <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -426,7 +427,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
               <Text style={styles.recordText}>{hospitalText}</Text>
             )}
           </View>
-          {voiceList.map((voice, index) =>
+          {/* {voiceList.map((voice, index) =>
             voice.location === "hospital" ? (
               <VoiceButton
                 key={`hospital-${index}`}
@@ -443,9 +444,33 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 }
               />
             ) : null
-          )}
+          )} */}
+          {voiceList.length !== 0 && (
+            <>
+              <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
+                <WithLocalSvg width={20} height={20} asset={Hospital} />
+                <Text style={styles.inputGuideText}>상담녹음</Text>
+              </View>
 
-          <View style={{ marginBottom: 70 }} />
+              {voiceList.map((voice, index) => (
+                <VoiceButton
+                  key={`hospital-${index}`}
+                  place={voice.location}
+                  time={voice.timestamp}
+                  text={voice.contents}
+                  onPress={() =>
+                    navigation.push("DetailVoice", {
+                      detail: false,
+                      user_code: user_code,
+                      ipnumber: ipnumber,
+                      timestamp: voice.timestamp,
+                    })
+                  }
+                />
+              ))}
+            </>
+          )}
+          <View style={{ marginBottom: 50 }} />
         </View>
       </ScrollView>
       <Modal2

@@ -8,13 +8,15 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
-import axios from "axios";  // axios 추가
+import axios from "axios"; // axios 추가
 
-const API_KEY = "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";
+const API_KEY =
+  "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";
 const MODEL = "gpt-3.5-turbo";
 
 const ChatbotScreen = ({ navigaion }) => {
@@ -34,7 +36,7 @@ const ChatbotScreen = ({ navigaion }) => {
               content: `${text}에 대해 다정한 말투로 "~해요"로 끝나게 존대말로 대답해줘`,
             },
           ],
-          max_tokens: 4096,  // 응답길이 설정
+          max_tokens: 4096, // 응답길이 설정
           temperature: 0.8, // 응답 창의성 조정
         },
         {
@@ -80,13 +82,47 @@ const ChatbotScreen = ({ navigaion }) => {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <Header left={"leftArrow"} title={"AI 로빗"} onLeftPress={() => {}} />
-        <ScrollView
-          style={{ flex: 1, backgroundColor: "#F6F6F6", paddingTop: 20 }}
-        >
+        <Header
+          left={"leftArrow"}
+          title={"AI 로빗"}
+          onLeftPress={() => {
+            navigation.pop();
+          }}
+        />
+        <ScrollView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
+          <View
+            style={{
+              width: "100%",
+              height: 134,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: theme.grey150,
+              paddingHorizontal: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                lineHeight: 20,
+                fontFamily: "Pretendard-Regular",
+                color: theme.grey300,
+              }}
+            >
+              * 이 서비스는 인공지능(chatGPT)에 의해 제공되는 내용으로, 클로빗의
+              공식 의견과 다를 수 있음을 알려드립니다. 따라서 제공되는 정보의
+              정확성이나 신뢰성에 대해 클로빗이 보장할 수 없으며, 자료의 정확성,
+              저작권 준수여부, 적법성에 대해 책임을 지지 않습니다. 또한 정보
+              보호를 위해 개인정보는 입력하지 않도록 주의해주세요.
+            </Text>
+          </View>
           {/* 메시지 출력 영역 */}
           <ScrollView
-            style={{ flex: 1, paddingHorizontal: 20, paddingBottom: 40 }}
+            style={{
+              flex: 1,
+              paddingHorizontal: 20,
+              paddingTop: 12,
+              paddingBottom: 40,
+            }}
           >
             {messages.map((message, index) => (
               <View
@@ -143,35 +179,29 @@ const ChatbotScreen = ({ navigaion }) => {
           style={{
             backgroundColor: "#EFEFEF",
             paddingVertical: 16,
-            paddingHorizontal: 20,
           }}
         >
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingLeft: 20, paddingRight: 7 }}
+          >
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginBottom: 16,
               }}
             >
               <TouchableOpacity
                 onPress={() => sendMessage("현재 아이의 증상 상태가 궁금해")}
-                style={{
-                  width: 128,
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#78BA7D",
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  paddingVertical: 18,
-                  paddingHorizontal: 13,
-                  marginRight: 13,
-                }}
+                style={styles.recommandTextContainer}
               >
                 <Text
                   style={{
                     color: "#242424",
                     fontSize: 14,
-                    width: 100,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Regular",
                   }}
                 >
                   {"현재 아이의 \n증상 상태가 궁금해"}
@@ -180,22 +210,14 @@ const ChatbotScreen = ({ navigaion }) => {
 
               <TouchableOpacity
                 onPress={() => sendMessage("아이와 대화하는 방법을 알려줘")}
-                style={{
-                  width: 116,
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#78BA7D",
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  paddingVertical: 18,
-                  paddingHorizontal: 13,
-                  marginRight: 13,
-                }}
+                style={styles.recommandTextContainer}
               >
                 <Text
                   style={{
                     color: "#242424",
                     fontSize: 14,
-                    width: 88,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Regular",
                   }}
                 >
                   {"아이와 대화하는 \n방법을 알려줘"}
@@ -203,24 +225,15 @@ const ChatbotScreen = ({ navigaion }) => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() =>
-                  sendMessage("ADHD 기록은 어떻게 하는게 좋을까?")
-                }
-                style={{
-                  width: 140,
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#78BA7D",
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  paddingVertical: 18,
-                  paddingHorizontal: 13,
-                }}
+                onPress={() => sendMessage("ADHD 기록은 어떻게 하는게 좋을까?")}
+                style={styles.recommandTextContainer}
               >
                 <Text
                   style={{
                     color: "#242424",
                     fontSize: 14,
-                    width: 120,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Regular",
                   }}
                 >
                   {"ADHD 기록은 \n어떻게 하는게 좋을까?"}
@@ -235,7 +248,7 @@ const ChatbotScreen = ({ navigaion }) => {
           style={{
             backgroundColor: "#EFEFEF",
             paddingHorizontal: 20,
-            paddingVertical: 10,
+            paddingBottom: 12,
           }}
         >
           <View
@@ -256,6 +269,7 @@ const ChatbotScreen = ({ navigaion }) => {
                 fontSize: 14,
                 flex: 1,
                 marginRight: 12,
+                paddingVertical: 3,
                 fontFamily: "Pretendard-Regular",
               }}
               placeholder="무엇이든 물어보세요!"
@@ -277,5 +291,20 @@ const ChatbotScreen = ({ navigaion }) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  recommandTextContainer: {
+    height: 70,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderColor: "#78BA7D",
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 13,
+  },
+});
 
 export default ChatbotScreen;

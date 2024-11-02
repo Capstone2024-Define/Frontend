@@ -18,7 +18,6 @@ import { useEffect, useState, useCallback } from "react";
 import GraphScreen from "./GraphScreen";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CalendarScreen({ navigation, route }) {
   const daysOfWeek = [
@@ -38,7 +37,7 @@ export default function CalendarScreen({ navigation, route }) {
   const [currentMonth, setCurrentMonth] = useState(
     new Date(today).getMonth() + 1
   );
-  const [record, setRecord] = useState({});
+  const [record, setRecord] = useState(null);
   const [images, setImages] = useState(null);
   const { ipnumber, user_code } = route.params;
 

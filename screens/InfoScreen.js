@@ -159,25 +159,16 @@ function InfoScreen({ route }) {
                           width: 144,
                           height: 104,
                           justifyContent: "flex-end",
-                          paddingRight: 10,
+                          paddingRight: 8,
                         }}
                       >
-                        <View
-                          style={{
-                            width: 25,
-                            height: 25,
-                            backgroundColor: "#0000004D",
-                            borderRadius: 8,
-                            paddingHorizontal: 7,
-                            marginTop: 8,
-                          }}
-                        >
+                        <TouchableOpacity style={styles.bookmarkContainer}>
                           <Image
                             source={require("../assets/bookmark.png")}
                             resizeMode={"contain"}
-                            style={{ height: 14, marginTop: 5 }}
+                            style={{ height: 14 }}
                           />
-                        </View>
+                        </TouchableOpacity>
                       </ImageBackground>
                       {/* 타이틀 */}
                       <Text style={styles.title}>{info.mainTitle}</Text>
@@ -243,25 +234,21 @@ function InfoScreen({ route }) {
                         width: 154,
                         height: 152,
                         justifyContent: "flex-end",
-                        paddingRight: 10,
+                        paddingRight: 8,
                       }}
                     >
-                      <View
-                        style={{
-                          width: 25,
-                          height: 25,
-                          backgroundColor: "#0000004D",
-                          borderRadius: 8,
-                          paddingHorizontal: 7,
-                          marginTop: 8,
-                        }}
+                      <TouchableOpacity
+                        style={[
+                          styles.bookmarkContainer,
+                          { width: 27, height: 27 },
+                        ]}
                       >
                         <Image
                           source={require("../assets/bookmark.png")}
                           resizeMode={"contain"}
-                          style={{ height: 14, marginTop: 5 }}
+                          style={{ height: 14 }}
                         />
-                      </View>
+                      </TouchableOpacity>
                     </ImageBackground>
                     {/* 타이틀 */}
 
@@ -313,25 +300,21 @@ function InfoScreen({ route }) {
                         width: 154,
                         height: 152,
                         justifyContent: "flex-end",
-                        paddingRight: 10,
+                        paddingRight: 8,
                       }}
                     >
-                      <View
-                        style={{
-                          width: 25,
-                          height: 25,
-                          backgroundColor: "#0000004D",
-                          borderRadius: 8,
-                          paddingHorizontal: 7,
-                          marginTop: 8,
-                        }}
+                      <TouchableOpacity
+                        style={[
+                          styles.bookmarkContainer,
+                          { width: 27, height: 27 },
+                        ]}
                       >
                         <Image
                           source={require("../assets/bookmark.png")}
                           resizeMode={"contain"}
-                          style={{ height: 14, marginTop: 5 }}
+                          style={{ height: 14 }}
                         />
-                      </View>
+                      </TouchableOpacity>
                     </ImageBackground>
                     {/* 타이틀 */}
                     <Text style={styles.title}>{info.mainTitle}</Text>
@@ -382,25 +365,16 @@ function InfoScreen({ route }) {
                     width: 133,
                     height: 90,
                     justifyContent: "flex-end",
-                    paddingRight: 10,
+                    paddingRight: 8,
                   }}
                 >
-                  <View
-                    style={{
-                      width: 25,
-                      height: 25,
-                      backgroundColor: "#0000004D",
-                      borderRadius: 8,
-                      paddingHorizontal: 7,
-                      marginTop: 8,
-                    }}
-                  >
+                  <TouchableOpacity style={styles.bookmarkContainer}>
                     <Image
                       source={require("../assets/bookmark.png")}
                       resizeMode={"contain"}
-                      style={{ height: 14, marginTop: 5 }}
+                      style={{ height: 14 }}
                     />
-                  </View>
+                  </TouchableOpacity>
                 </ImageBackground>
                 {/* 타이틀 */}
                 <View style={{ marginLeft: 16 }}>
@@ -460,6 +434,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 6,
     fontFamily: "Pretendard-Bold",
+  },
+  bookmarkContainer: {
+    width: 25,
+    height: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#00000060",
+    borderRadius: 8,
+    marginTop: 8,
   },
 });
 

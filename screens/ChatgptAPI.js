@@ -29,8 +29,12 @@ const summarize = async (text) => {
       "https://api.openai.com/v1/chat/completions",
       {
         model: MODEL,
+
         messages: [
-          { role: "user", content: `${text}를 100자 이내로 요약해줘` },
+          {
+            role: "user",
+            content: `${text}를 100자 이내로 요약해줘.`,
+          },
         ],
         max_tokens: 200, // 요약 결과의 길이를 제한
         temperature: 0.8, // 출력의 창의성 정도를 조절

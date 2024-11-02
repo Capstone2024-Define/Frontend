@@ -170,7 +170,7 @@ function InfoSearchResult() {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: 16,
+            marginBottom: 14,
           }}
         >
           <Text
@@ -204,6 +204,7 @@ function InfoSearchResult() {
             {"개 검색결과"}
           </Text>
         </View>
+        <View style={styles.line} />
 
         {/* 검색결과가 있을 경우 */}
         {searchResults && searchResults.length > 0 ? (
@@ -212,11 +213,10 @@ function InfoSearchResult() {
               const [start, middle, end] = getTotalText(result, searchText);
               return (
                 <View key={index}>
-                  <View style={styles.line} />
                   <View
                     style={{
                       width: "100%",
-                      paddingVertical: 16,
+                      paddingVertical: 14,
                     }}
                   >
                     <Text
@@ -242,13 +242,13 @@ function InfoSearchResult() {
                       </Text>
                     </View>
                   </View>
+                  <View style={styles.line} />
                 </View>
               );
             })}
           </>
         ) : (
           <>
-            <View style={styles.line} />
             <View>
               <Text style={{ marginTop: 12, color: "#242424", fontSize: 14 }}>
                 검색 결과가 없습니다.

@@ -216,7 +216,13 @@ export default function VoiceDetailScreen({ navigation, route }) {
           // 서머리
           // const result = await summary(text);
           // 챗지피티 (요금때문에 일단 주석)
-          const summarizeText = await summarize(text);
+          let summarizeText = "";
+
+          if (text.length > 50) {
+            summarizeText = await summarize(text);
+          } else {
+            summarizeText = text;
+          }
           setSummaryText(summarizeText);
           console.log(summarizeText);
         } catch (error) {

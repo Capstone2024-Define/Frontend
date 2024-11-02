@@ -12,6 +12,7 @@ export default function Header({
   onLeftPress,
   onRightPress,
   iconColor,
+  rightDisable,
   line,
 }) {
   return (
@@ -48,7 +49,11 @@ export default function Header({
             />
           ) : null}
         </View>
-        <TouchableOpacity activeOpacity={0.5} onPress={onRightPress}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          disabled={rightDisable}
+          onPress={onRightPress}
+        >
           <View
             style={{
               ...styles.space,
@@ -77,7 +82,11 @@ export default function Header({
                 />
               </View>
             ) : (
-              <Text style={styles.right}>{right}</Text>
+              <Text
+                style={[styles.right, rightDisable && { color: theme.grey300 }]}
+              >
+                {right}
+              </Text>
             )}
           </View>
         </TouchableOpacity>
