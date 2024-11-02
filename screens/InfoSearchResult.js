@@ -13,6 +13,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../colors/color";
 import { infos } from "../component/Info";
+import InfoScreenDetail from "./InfoScreenDetail";
 
 function InfoSearchResult() {
   const [searchResults, setSearchResults] = useState(null);
@@ -212,7 +213,13 @@ function InfoSearchResult() {
             {searchResults.map((result, index) => {
               const [start, middle, end] = getTotalText(result, searchText);
               return (
-                <View key={index}>
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.5}
+                  onPress={() =>
+                    navigation.navigate("InfoScreenDetail", { key: result })
+                  }
+                >
                   <View
                     style={{
                       width: "100%",
@@ -243,7 +250,7 @@ function InfoSearchResult() {
                     </View>
                   </View>
                   <View style={styles.line} />
-                </View>
+                </TouchableOpacity>
               );
             })}
           </>

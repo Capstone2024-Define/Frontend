@@ -16,8 +16,9 @@ import { theme } from "../colors/color";
 import TagChip from "../component/TagChip";
 
 function InfoScreen({ route }) {
-  const [nickName, setNickName] = useState("");
   const { ipnumber, user_code } = route.params;
+  const [nickName, setNickName] = useState("");
+  const [selectedInfos, setSelectedInfos] = useState([]); // 북마크
   const navigation = useNavigation();
 
   const handleSearchNavigate = () => {
@@ -47,6 +48,19 @@ function InfoScreen({ route }) {
     }
     load();
   }, []);
+
+  // 테스트
+  useEffect(() => {
+    console.log(selectedInfos);
+  }, [selectedInfos]);
+
+  const toggleBookmark = (index) => {
+    setSelectedInfos((preSelected) => {
+      return preSelected.includes(index)
+        ? preSelected.filter((s) => s !== index)
+        : [...preSelected, index];
+    });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -162,9 +176,17 @@ function InfoScreen({ route }) {
                           paddingRight: 8,
                         }}
                       >
-                        <TouchableOpacity style={styles.bookmarkContainer}>
+                        <TouchableOpacity
+                          activeOpacity={0.5}
+                          onPress={() => toggleBookmark(index)}
+                          style={styles.bookmarkContainer}
+                        >
                           <Image
-                            source={require("../assets/bookmark.png")}
+                            source={
+                              selectedInfos.includes(index)
+                                ? require("../assets/bookmark_green.png")
+                                : require("../assets/bookmark.png")
+                            }
                             resizeMode={"contain"}
                             style={{ height: 14 }}
                           />
@@ -197,140 +219,102 @@ function InfoScreen({ route }) {
         >
           {"꼭 읽어야하는 정보"}
         </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
-          }}
-        >
-          {infos.map(
-            (info, index) =>
-              index > 3 &&
-              index < 6 && (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.5}
-                  onPress={() => {
-                    // index를 키값으로 보냄
-                    // 다음 페이지(infoScreenDetail)에 key 넘겨줌
-                    handleDetailNavigate(index);
-                  }}
-                  style={{
-                    height: 220,
-                    justifyContent: "space-between",
-                    marginRight: 12,
-                  }}
-                >
-                  <View>
-                    {/* 이미지 */}
-                    <ImageBackground
-                      source={info.imageName}
-                      resizeMode={"cover"}
-                      imageStyle={{ borderRadius: 8 }}
+        {[0, 1].map((row, i) => {
+          let minIndex = 0;
+          let maxIndex = 0;
+
+          if (row == 0) {
+            minIndex = 3;
+            maxIndex = 6;
+          } else {
+            minIndex = 5;
+            maxIndex = 8;
+          }
+
+          return (
+            <View
+              key={i}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 12,
+              }}
+            >
+              {infos.map(
+                (info, index) =>
+                  index > minIndex &&
+                  index < maxIndex && (
+                    <TouchableOpacity
+                      key={index}
+                      activeOpacity={0.5}
+                      onPress={() => {
+                        // index를 키값으로 보냄
+                        // 다음 페이지(infoScreenDetail)에 key 넘겨줌
+                        handleDetailNavigate(index);
+                      }}
                       style={{
-                        flexDirection: "row",
-                        width: 154,
-                        height: 152,
-                        justifyContent: "flex-end",
-                        paddingRight: 8,
+                        height: 220,
+                        justifyContent: "space-between",
+                        marginRight: 12,
                       }}
                     >
-                      <TouchableOpacity
-                        style={[
-                          styles.bookmarkContainer,
-                          { width: 27, height: 27 },
-                        ]}
-                      >
-                        <Image
-                          source={require("../assets/bookmark.png")}
-                          resizeMode={"contain"}
-                          style={{ height: 14 }}
-                        />
-                      </TouchableOpacity>
-                    </ImageBackground>
-                    {/* 타이틀 */}
+                      <View>
+                        {/* 이미지 */}
+                        <ImageBackground
+                          source={info.imageName}
+                          resizeMode={"cover"}
+                          imageStyle={{ borderRadius: 8 }}
+                          style={{
+                            flexDirection: "row",
+                            width: 154,
+                            height: 152,
+                            justifyContent: "flex-end",
+                            paddingRight: 8,
+                          }}
+                        >
+                          <TouchableOpacity
+                            activeOpacity={0.5}
+                            onPress={() => toggleBookmark(index)}
+                            style={[
+                              styles.bookmarkContainer,
+                              { width: 27, height: 27 },
+                            ]}
+                          >
+                            <Image
+                              source={
+                                selectedInfos.includes(index)
+                                  ? require("../assets/bookmark_green.png")
+                                  : require("../assets/bookmark.png")
+                              }
+                              resizeMode={"contain"}
+                              style={{ height: 14 }}
+                            />
+                          </TouchableOpacity>
+                        </ImageBackground>
+                        {/* 타이틀 */}
 
-                    <Text style={styles.title}>{info.mainTitle}</Text>
-                  </View>
-                  <View style={{ flexDirection: "row" }}>
-                    {info.tag.map((tag, index) => (
-                      <TagChip key={index} text={tag} />
-                    ))}
-                  </View>
-                </TouchableOpacity>
-              )
-          )}
-        </View>
+                        <Text style={styles.title}>{info.mainTitle}</Text>
+                      </View>
+                      <View style={{ flexDirection: "row" }}>
+                        {info.tag.map((tag, index) => (
+                          <TagChip key={index} text={tag} />
+                        ))}
+                      </View>
+                    </TouchableOpacity>
+                  )
+              )}
+            </View>
+          );
+        })}
+
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
+            height: 1,
+            backgroundColor: "#EBEBEB",
+            marginVertical: 4,
+            marginBottom: 17,
           }}
-        >
-          {infos.map(
-            (info, index) =>
-              index > 5 &&
-              index < 8 && (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.5}
-                  onPress={() => {
-                    // index를 키값으로 보냄
-                    // 다음 페이지(infoScreenDetail)에 key 넘겨줌
-                    handleDetailNavigate(index);
-                  }}
-                  style={{
-                    height: 220,
-                    justifyContent: "space-between",
-                    marginRight: 12,
-                  }}
-                >
-                  <View>
-                    {/* 이미지 */}
-                    <ImageBackground
-                      source={info.imageName}
-                      resizeMode={"cover"}
-                      imageStyle={{ borderRadius: 8 }}
-                      style={{
-                        flexDirection: "row",
-                        width: 154,
-                        height: 152,
-                        justifyContent: "flex-end",
-                        paddingRight: 8,
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={[
-                          styles.bookmarkContainer,
-                          { width: 27, height: 27 },
-                        ]}
-                      >
-                        <Image
-                          source={require("../assets/bookmark.png")}
-                          resizeMode={"contain"}
-                          style={{ height: 14 }}
-                        />
-                      </TouchableOpacity>
-                    </ImageBackground>
-                    {/* 타이틀 */}
-                    <Text style={styles.title}>{info.mainTitle}</Text>
-                  </View>
-                  <View style={{ flexDirection: "row" }}>
-                    {info.tag.map((tag, index) => (
-                      <TagChip key={index} text={tag} />
-                    ))}
-                  </View>
-                </TouchableOpacity>
-              )
-          )}
-        </View>
-
-        <View
-          style={{ height: 1, backgroundColor: "#EBEBEB", marginBottom: 17 }}
         />
 
         <Text
@@ -368,9 +352,17 @@ function InfoScreen({ route }) {
                     paddingRight: 8,
                   }}
                 >
-                  <TouchableOpacity style={styles.bookmarkContainer}>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => toggleBookmark(index)}
+                    style={styles.bookmarkContainer}
+                  >
                     <Image
-                      source={require("../assets/bookmark.png")}
+                      source={
+                        selectedInfos.includes(index)
+                          ? require("../assets/bookmark_green.png")
+                          : require("../assets/bookmark.png")
+                      }
                       resizeMode={"contain"}
                       style={{ height: 14 }}
                     />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -16,8 +16,24 @@ import Note from "../assets/notes.svg";
 import { WithLocalSvg } from "react-native-svg/css";
 
 function InfoScreenDetail({ route }) {
-  const navigation = useNavigation(); // useNavigation 훅 사용
+  const navigation = useNavigation();
   const { key } = route.params;
+  const [selectedInfos, setSelectedInfos] = useState([]); // 북마크
+
+  // 테스트
+  useEffect(() => {
+    console.log(selectedInfos);
+  }, [selectedInfos]);
+
+  const toggleBookmark = (index) => {
+    setSelectedInfos((preSelected) => {
+      return preSelected.includes(index)
+        ? preSelected.filter((s) => s !== index)
+        : [...preSelected, index];
+    });
+  };
+
+  // 나중에 DB 완성되면 거기에 조회수 배열[정보 인덱스] 하나 증가시키기
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -59,11 +75,20 @@ function InfoScreenDetail({ route }) {
         >
           {"정보 상세"}
         </Text>
-        <Image
-          source={require("../assets/info_bookmark_gray.png")}
-          resizeMode={"stretch"}
-          style={{ width: 19, height: 23 }}
-        />
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => toggleBookmark(key)}
+        >
+          <Image
+            source={
+              selectedInfos.includes(key)
+                ? require("../assets/bookmark_green.png")
+                : require("../assets/info_bookmark_gray.png")
+            }
+            resizeMode={"contain"}
+            style={{ width: 19, height: 23 }}
+          />
+        </TouchableOpacity>
       </View>
       <ScrollView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
         <Image

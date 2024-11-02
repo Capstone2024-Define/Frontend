@@ -21,7 +21,6 @@ import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import { FontAwesome } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SmallTag from "../component/SmallTag";
 import { Entypo } from "@expo/vector-icons";
@@ -196,7 +195,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
         setCheckList(response_parentCheck.data.checklist);
       } catch (error) {
         console.log("체크리스트 GET 에러: ", error);
-        console.log(response_parentCheck.data.checklist);
       }
     }
     load();
@@ -324,6 +322,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           {symptomList.map((symptom, index) => (
             <SmallTag key={index} text={symptom} />
           ))}
+
           <View style={{ width: 35 }} />
         </ScrollView>
         <View style={styles.line} />

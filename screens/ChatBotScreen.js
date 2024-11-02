@@ -22,6 +22,7 @@ const MODEL = "gpt-3.5-turbo";
 const ChatbotScreen = ({ navigaion }) => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // ChatGPT API 요청 함수
   const getChatbotResponse = async (text) => {
@@ -36,8 +37,8 @@ const ChatbotScreen = ({ navigaion }) => {
               content: `${text}에 대해 다정한 말투로 "~해요"로 끝나게 존대말로 대답해줘`,
             },
           ],
-          max_tokens: 4096, // 응답길이 설정
-          temperature: 0.8, // 응답 창의성 조정
+          max_tokens: 4096,
+          temperature: 0.8,
         },
         {
           headers: {
@@ -62,17 +63,22 @@ const ChatbotScreen = ({ navigaion }) => {
         { sender: "user", text },
       ]);
 
+      // 입력 필드 초기화하기
+      setInputText("");
+
+      // 로딩 상태 추가
+      setLoading(true);
+
       // ChatGPT에게 질문을 보내고 응답 받기
       const chatbotResponse = await getChatbotResponse(text);
 
-      // 챗봇 응답 추가
+      // 챗봇 응답 추가 후 로딩 상태 제거
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "bot", text: chatbotResponse },
       ]);
 
-      // 입력 필드 초기화하기
-      setInputText("");
+      setLoading(false);
     }
   };
 
@@ -171,6 +177,65 @@ const ChatbotScreen = ({ navigaion }) => {
                 </View>
               </View>
             ))}
+            {/* 로딩 중일 때 표시되는 애니메이션 */}
+            {loading && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 5,
+                }}
+              >
+                <Image
+                  source={require("../assets/chatRabbit.png")}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    marginRight: 8,
+                  }}
+                />
+                <View
+                  style={{
+                    width: 75,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    backgroundColor: "#FFFFFF",
+                    borderTopRightRadius: 8,
+                    borderBottomRightRadius: 8,
+                    borderBottomLeftRadius: 8,
+                    paddingVertical: 16,
+                    paddingHorizontal: 19,
+                  }}
+                >
+                  <Image
+                    source={require("../assets/chat1.png")}
+                    resizeMode={"stretch"}
+                    style={{
+                      width: 8,
+                      height: 8,
+                    }}
+                  />
+                  <Image
+                    source={require("../assets/chat2.png")}
+                    resizeMode={"stretch"}
+                    style={{
+                      width: 8,
+                      height: 8,
+                    }}
+                  />
+                  <Image
+                    source={require("../assets/chat3.png")}
+                    resizeMode={"stretch"}
+                    style={{
+                      width: 8,
+                      height: 8,
+                    }}
+                  />
+                </View>
+              </View>
+            )}
           </ScrollView>
         </ScrollView>
 
