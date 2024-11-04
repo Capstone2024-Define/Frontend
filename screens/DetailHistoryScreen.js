@@ -20,8 +20,8 @@ import Check from "../assets/check.svg";
 import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
+import Mic from "../assets/mic_green.svg";
 import { FontAwesome } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SmallTag from "../component/SmallTag";
 import { Entypo } from "@expo/vector-icons";
@@ -188,13 +188,12 @@ export default function DetailHistoryScreen({ navigation, route }) {
           `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
         );
         setSymptomList(response_symptomCheck.data.checklist);
-        console.log("ddd",response_symptomCheck.data)
+        console.log(response_symptomCheck.data.checklist);
         // 부모 체크리스트 로드
         const response_parentCheck = await axios.get(
           `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
         );
         setCheckList(response_parentCheck.data.checklist);
-        console.log(response_parentCheck.data)
       } catch (error) {
         console.log("체크리스트 GET 에러: ", error);
       }
@@ -321,11 +320,10 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.tagContainer}
         >
+          {symptomList.map((symptom, index) => (
+            <SmallTag key={index} text={symptom} />
+          ))}
 
-         {symptomList.map((symptom, index) => (
-  <SmallTag key={index} text={symptom} />
-))}
-         
           <View style={{ width: 35 }} />
         </ScrollView>
         <View style={styles.line} />
@@ -398,7 +396,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
               <Text style={styles.recordText}>{schoolText}</Text>
             )}
           </View>
-          {voiceList.map((voice, index) =>
+          {/* {voiceList.map((voice, index) =>
             voice.location === "school" ? (
               <VoiceButton
                 key={`school-${index}`}
@@ -415,7 +413,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 }
               />
             ) : null
-          )}
+          )} */}
           <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -429,7 +427,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
               <Text style={styles.recordText}>{hospitalText}</Text>
             )}
           </View>
-          {voiceList.map((voice, index) =>
+          {/* {voiceList.map((voice, index) =>
             voice.location === "hospital" ? (
               <VoiceButton
                 key={`hospital-${index}`}
@@ -446,9 +444,32 @@ export default function DetailHistoryScreen({ navigation, route }) {
                 }
               />
             ) : null
+          )} */}
+          {voiceList.length !== 0 && (
+            <>
+              <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
+                <WithLocalSvg width={20} height={20} asset={Mic} />
+                <Text style={styles.inputGuideText}>상담녹음</Text>
+              </View>
+              {voiceList.map((voice, index) => (
+                <VoiceButton
+                  key={`${index}`}
+                  place={voice.location}
+                  time={voice.timestamp}
+                  text={voice.contents}
+                  onPress={() =>
+                    navigation.push("DetailVoice", {
+                      detail: false,
+                      user_code: user_code,
+                      ipnumber: ipnumber,
+                      timestamp: voice.timestamp,
+                    })
+                  }
+                />
+              ))}
+            </>
           )}
-
-          <View style={{ marginBottom: 70 }} />
+          <View style={{ marginBottom: 50 }} />
         </View>
       </ScrollView>
       <Modal2

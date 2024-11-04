@@ -9,16 +9,34 @@ import { theme } from "../colors/color";
 const Tab = createBottomTabNavigator();
 
 export default function MainVoiceScreen({ route, navigation }) {
+  const { user_code, ipnumber, date } = route.params;
+
   return (
     <Tab.Navigator
       initialRouteName="VoiceRecord"
-      screenOptions={{
-        tabBarIconStyle: { display: "none" }, // 아이콘을 숨기는 스타일
-        tabBarActiveTintColor: theme.green500, // 활성화 텍스트 색상
-        tabBarInactiveTintColor: theme.grey300, // 비활성화 텍스트 색상
-        tabBarStyle: { height: 44, paddingTop: 8, paddingBottom: 15 },
+      screenOptions={({ route }) => ({
+        tabBarIconStyle: { display: "none" },
+        tabBarActiveTintColor: theme.green500,
+        tabBarInactiveTintColor: theme.grey300,
+        tabBarStyle: { height: 47, paddingBottom: 15 },
         tabBarLabelStyle: { fontSize: 14, fontFamily: "Pretendard-Medium" },
-      }}
+        tabBarLabel: ({ focused }) => (
+          <View style={styles.tabLabelContainer}>
+            {focused && <View style={styles.seletedline} />}
+            <Text
+              style={[
+                styles.tabLabel,
+                focused && {
+                  fontFamily: "Pretendard-Bold",
+                  color: theme.green500,
+                },
+              ]}
+            >
+              {route.name === "VoiceRecord" ? "새녹음" : "목록"}
+            </Text>
+          </View>
+        ),
+      })}
     >
       <Tab.Screen
         name="VoiceRecord"
@@ -28,9 +46,9 @@ export default function MainVoiceScreen({ route, navigation }) {
           headerShown: false,
         })}
         initialParams={{
-          date: route.params.date,
-          user_code: route.params.user_code,
-          ipnumber: route.params.ipnumber,
+          date: date,
+          user_code: user_code,
+          ipnumber: ipnumber,
         }}
       />
       <Tab.Screen
@@ -41,12 +59,29 @@ export default function MainVoiceScreen({ route, navigation }) {
           headerShown: false,
         })}
         initialParams={{
-          user_code: route.params.user_code,
-          ipnumber: route.params.ipnumber,
+          user_code: user_code,
+          ipnumber: ipnumber,
         }}
       />
     </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  tabLabelContainer: {
+    alignItems: "center",
+  },
+  seletedline: {
+    width: 58,
+    height: 4,
+    backgroundColor: theme.green500,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  tabLabel: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "Pretendard-Medium",
+    color: theme.grey300,
+  },
+});

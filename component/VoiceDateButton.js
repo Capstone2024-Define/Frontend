@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Pretendard-Medium",
     color: theme.grey700,
-    marginLeft: 12,
+    marginLeft: 8,
     marginRight: 8,
   },
   time: { fontSize: 14, fontFamily: "Pretendard-Medium", color: theme.grey500 },

@@ -623,7 +623,7 @@ export default function ExportRecordScreen({ navigation, route }) {
             <View
               style={[
                 styles.circle,
-                page == 2 && { backgroundColor: theme.grey200 },
+                page == 2 && { backgroundColor: theme.green300 },
                 { marginRight: 16 },
               ]}
             >
@@ -768,7 +768,10 @@ export default function ExportRecordScreen({ navigation, route }) {
             justifyContent: "center",
           }}
         >
-          <Image source={require("../assets/hi_rabbit.png")} />
+          <Image
+            source={require("../assets/hi_rabbit.png")}
+            style={{ marginLeft: 18 }}
+          />
           <Text style={{ ...styles.boldText, marginTop: 22, marginBottom: 4 }}>
             기록을 보내드렸어요!
           </Text>

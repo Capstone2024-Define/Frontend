@@ -18,6 +18,7 @@ import Camera from "../assets/photo_camera.svg";
 import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
+import Mic from "../assets/mic_green.svg";
 import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -60,7 +61,6 @@ export default function DetailModifyScreen({ navigation, route }) {
         // setSymptomList(newRecord.symptomList);
         // setId(newRecord.image[newRecord.image.length - 1].id + 1); // id 안겹치게
 
-        console.log(ipnumber, user_code, date);
         // 이미지 저장 DB 로직 짜여지면 이미지 id 관리 윗줄처럼
         const response = await axios.get(
           `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
@@ -203,7 +203,13 @@ export default function DetailModifyScreen({ navigation, route }) {
       // console.log(result.summary);
 
       // 챗지피티 - 요금때문에 일단 주석처리하고 서머리로 진행(작동확인 완)
-      const summarizeText = await summarize(totalText);
+      let summarizeText = "";
+
+      if (totalText.length > 50) {
+        summarizeText = await summarize(totalText);
+      } else {
+        summarizeText = totalText;
+      }
 
       console.log("전송 데이터:", {
         user_code: user_code,
@@ -264,11 +270,14 @@ export default function DetailModifyScreen({ navigation, route }) {
           navigation.pop();
         }}
         onRightPress={async () => {
-          await handlePost();
-          navigation.pop();
-          showToast("기록이 수정되었어요");
+          if (homeText.length > 0) {
+            await handlePost();
+            navigation.pop();
+            showToast("기록이 수정되었어요");
+          }
         }}
         line={true}
+        rightDisable={homeText.length > 0 ? false : true}
       />
       <ScrollView style={styles.scroll}>
         <ScrollView
@@ -356,6 +365,14 @@ export default function DetailModifyScreen({ navigation, route }) {
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={School} />
             <Text style={styles.inputGuideText}>학교에서 어땠나요?</Text>
+            <Text
+              style={[
+                styles.inputGuideText,
+                { marginLeft: 4, color: theme.grey300 },
+              ]}
+            >
+              (선택)
+            </Text>
             <View style={styles.limit}>
               <Text
                 style={{
@@ -392,7 +409,7 @@ export default function DetailModifyScreen({ navigation, route }) {
           >
             {schoolText}
           </TextInput>
-          {voiceList.map((voice, index) =>
+          {/* {voiceList.map((voice, index) =>
             voice.location === "school" ? (
               <VoiceButton
                 key={`school-${index}`}
@@ -409,10 +426,18 @@ export default function DetailModifyScreen({ navigation, route }) {
                 }
               />
             ) : null
-          )}
+          )} */}
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
+            <Text
+              style={[
+                styles.inputGuideText,
+                { marginLeft: 4, color: theme.grey300 },
+              ]}
+            >
+              (선택)
+            </Text>
             <View style={styles.limit}>
               <Text
                 style={{
@@ -449,7 +474,7 @@ export default function DetailModifyScreen({ navigation, route }) {
           >
             {hospitalText}
           </TextInput>
-          {voiceList.map((voice, index) =>
+          {/* {voiceList.map((voice, index) =>
             voice.location === "hospital" ? (
               <VoiceButton
                 key={`hospital-${index}`}
@@ -466,9 +491,35 @@ export default function DetailModifyScreen({ navigation, route }) {
                 }
               />
             ) : null
+          )} */}
+          {voiceList.length !== 0 && (
+            <>
+              <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
+                <WithLocalSvg width={20} height={20} asset={Mic} />
+                <Text style={styles.inputGuideText}>상담녹음</Text>
+              </View>
+
+              {voiceList.map((voice, index) => (
+                <VoiceButton
+                  key={`${index}`}
+                  place={voice.location}
+                  time={voice.timestamp}
+                  text={voice.contents}
+                  onPress={() =>
+                    navigation.push("DetailVoice", {
+                      detail: false,
+                      user_code: user_code,
+                      ipnumber: ipnumber,
+                      timestamp: voice.timestamp,
+                    })
+                  }
+                />
+              ))}
+            </>
           )}
         </View>
-        <View style={{ marginBottom: 70 }}></View>
+
+        <View style={{ marginBottom: 50 }}></View>
       </ScrollView>
     </View>
   );

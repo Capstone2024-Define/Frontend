@@ -133,7 +133,7 @@ export default function StartInfoScreen({ navigation, route }) {
     try {
       const newBirth = birth.replace(/\s\/\s/g, "-");
 
-      await axios.post("http://192.168.123.198:8080/userinfo/post", {
+      await axios.post(`http://3.34.193.230:8080/userinfo/post`, {
         //user_code: route.params.user_id,
         user_code: 7274,
         user_name: nickName,
@@ -162,7 +162,7 @@ export default function StartInfoScreen({ navigation, route }) {
               <View
                 style={[
                   styles.circle,
-                  page == 2 && { backgroundColor: theme.grey200 },
+                  page == 2 && { backgroundColor: theme.green300 },
                   { marginRight: 16 },
                 ]}
               >

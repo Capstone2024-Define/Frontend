@@ -206,7 +206,13 @@ export default function DetailRecordScreen({ navigation, route }) {
       // console.log(result.summary);
 
       // 챗지피티 - 요금때문에 일단 주석처리하고 서머리로 진행(작동확인 완)
-      const summarizeText = await summarize(totalText);
+      let summarizeText = "";
+
+      if (totalText.length > 50) {
+        summarizeText = await summarize(totalText);
+      } else {
+        summarizeText = totalText;
+      }
 
       console.log("전송 데이터:", {
         user_code: user_code,
@@ -491,7 +497,8 @@ export default function DetailRecordScreen({ navigation, route }) {
               !totalText ||
               homeText.length > 800 ||
               schoolText.length > 600 ||
-              hospitalText.length > 600
+              hospitalText.length > 600 ||
+              homeText.length <= 0
             }
             onPress={async () => {
               await handlePost();
@@ -510,7 +517,8 @@ export default function DetailRecordScreen({ navigation, route }) {
                   totalText &&
                     homeText.length <= 800 &&
                     schoolText.length <= 600 &&
-                    hospitalText.length <= 600 && {
+                    hospitalText.length <= 600 &&
+                    homeText.length > 0 && {
                       backgroundColor: "transparent",
                     },
                 ]}

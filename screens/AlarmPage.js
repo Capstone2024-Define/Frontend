@@ -19,6 +19,7 @@ import { theme } from "../colors/color";
 
 // Expo Notifications 임포트 한 것
 import * as Notifications from "expo-notifications";
+import { bottomBtn } from "../component/BottomButton";
 
 export default function AlarmPage({ navigation }) {
   const [alarms, setAlarms] = useState([]);
@@ -163,8 +164,14 @@ export default function AlarmPage({ navigation }) {
           {!state ? (
             <WithLocalSvg asset={Back} width={27} />
           ) : (
-            <TouchableOpacity activeOpacity={0.5} onPress={handleSelectAll}>
-              <Text style={styles.delText}>전체선택</Text>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                setState(!state);
+                setSelectedAlarms([]);
+              }}
+            >
+              <Text style={styles.delText}>취소{"        "}</Text>
             </TouchableOpacity>
           )}
         </TouchableOpacity>
@@ -177,14 +184,8 @@ export default function AlarmPage({ navigation }) {
             <WithLocalSvg asset={Delete} />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              setState(!state);
-              setSelectedAlarms([]);
-            }}
-          >
-            <Text style={styles.delText}>{"      "}취소</Text>
+          <TouchableOpacity activeOpacity={0.5} onPress={handleSelectAll}>
+            <Text style={styles.delText}>전체선택</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -193,78 +194,82 @@ export default function AlarmPage({ navigation }) {
           width: "100%",
           height: 1,
           backgroundColor: "#EBEBEB",
-          marginBottom: 23,
         }}
       />
       {/* 설명 텍스트 부분 */}
-      <View style={styles.body}>
-        <Text style={styles.infoText}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.body}
+      >
+        <Text style={{ ...styles.infoText, marginBottom: 20 }}>
           잊지 않고 기록할 수 있도록 {"\n"}예약한 요일 및 시간에 푸시 알림을
           보내드려요
         </Text>
-        <ScrollView style={{ marginTop: 19 }}>
-          {alarms.map((alarm, index) => (
-            <View key={index} style={styles.alarmContainer}>
-              <View>
-                <View style={{ flexDirection: "row" }}>
-                  <Text style={styles.time}>
-                    {alarm.hour}:
-                    {alarm.minute.length == 1
-                      ? "0" + alarm.minute
-                      : alarm.minute}
-                  </Text>
-                  <Text style={{ ...styles.time, marginLeft: 8 }}>
-                    {alarm.ampm}
-                  </Text>
-                </View>
-                <Text style={styles.infoText}>
-                  {alarm.days
-                    .map((day, index) => (day ? days[index] + ", " : ""))
-                    .join("")
-                    .slice(0, -2)}
+        {alarms.map((alarm, index) => (
+          <View key={index} style={styles.alarmContainer}>
+            <View>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={styles.time}>
+                  {alarm.hour}:
+                  {alarm.minute.length == 1 ? "0" + alarm.minute : alarm.minute}
+                </Text>
+                <Text style={{ ...styles.time, marginLeft: 8 }}>
+                  {alarm.ampm}
                 </Text>
               </View>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={() => handlePress(index)}
-                style={{
-                  ...styles.circle,
-                  backgroundColor: !state
-                    ? "white"
-                    : selectedAlarms.includes(index)
-                    ? theme.red
-                    : theme.grey150,
-                }}
-              >
-                {selectedAlarms.includes(index) && (
-                  <WithLocalSvg asset={Check} />
-                )}
-              </TouchableOpacity>
+              <Text style={styles.infoText}>
+                {alarm.days
+                  .map((day, index) => (day ? days[index] + ", " : ""))
+                  .join("")
+                  .slice(0, -2)}
+              </Text>
             </View>
-          ))}
-        </ScrollView>
-      </View>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => handlePress(index)}
+              style={{
+                ...styles.circle,
+                backgroundColor: !state
+                  ? "white"
+                  : selectedAlarms.includes(index)
+                  ? theme.red
+                  : theme.grey150,
+              }}
+            >
+              {selectedAlarms.includes(index) && <WithLocalSvg asset={Check} />}
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
 
       {/* 추가하기 버튼 */}
-      <View style={styles.footer}>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+        }}
+      >
         {!state ? (
           <TouchableOpacity activeOpacity={0.5} onPress={handleAddAlarm}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               colors={["#79BA7E", "#AFCA85"]}
-              style={styles.addButton}
+              style={bottomBtn.button}
             >
-              <Text style={styles.addButtonText}>추가하기</Text>
+              <Text style={bottomBtn.buttonText}>추가하기</Text>
             </LinearGradient>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={handleDelete}
-            style={{ ...styles.addButton, backgroundColor: theme.red }}
+            style={{ ...bottomBtn.button, backgroundColor: theme.red }}
           >
-            <Text style={styles.addButtonText}>삭제하기</Text>
+            <Text style={bottomBtn.buttonText}>삭제하기</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -293,8 +298,9 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Medium",
   },
   body: {
-    flex: 1, // 내용이 버튼 위로 스크롤되도록 설정
+    paddingTop: 20,
     paddingHorizontal: 24,
+    paddingBottom: 80,
   },
   infoText: {
     textAlign: "left",
@@ -303,27 +309,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Pretendard-Regular",
   },
-  footer: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-    backgroundColor: "#FFFFFF",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  addButton: {
-    height: 56,
-    alignItems: "center",
-    borderRadius: 16,
-    paddingVertical: 16,
-    width: "100%",
-  },
-  addButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontFamily: "Pretendard-Bold",
-  },
+  // footer: {
+  //   paddingHorizontal: 24,
+  //   paddingVertical: 20,
+  //   backgroundColor: "#FFFFFF",
+  //   position: "absolute",
+  //   bottom: 0,
+  //   left: 0,
+  //   right: 0,
+  // },
+  // addButton: {
+  //   height: 56,
+  //   alignItems: "center",
+  //   borderRadius: 16,
+  //   paddingVertical: 16,
+  //   width: "100%",
+  // },
+  // addButtonText: {
+  //   color: "#FFFFFF",
+  //   fontSize: 16,
+  //   fontFamily: "Pretendard-Bold",
+  // },
   alarmContainer: {
     flexDirection: "row",
     alignItems: "center",

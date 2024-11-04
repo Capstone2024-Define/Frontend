@@ -64,7 +64,7 @@ export default function TestPage({ route }) {
         method: "POST",
         url: "https://kapi.kakao.com/v1/user/unlink",
         headers: {
-          Authorization: `Bearer ELC5V3f78_lTQ0sUpFxwf5npWasjcLR8AAAAAQoqJQ0AAAGSS_-gHaew61y3DOUZ`, // 본인 토큰
+          Authorization: `Bearer JJL_SAwnGRt-IS2RsDz_FRURR14Ve0OEAAAAAQo9dGgAAAGS4SAv1aew61y3DOUZ`, // 본인 토큰
         },
       });
       console.log("로그아웃 성공: ", response.data);

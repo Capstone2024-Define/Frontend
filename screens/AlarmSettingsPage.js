@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import { theme } from "../colors/color";
 import * as Notifications from "expo-notifications";
+import { bottomBtn } from "../component/BottomButton";
 
 export default function AlarmSettingsPage({ navigation }) {
   const hours = Array.from({ length: 12 }, (_, i) => `${i + 1}`);
@@ -118,7 +119,9 @@ export default function AlarmSettingsPage({ navigation }) {
 
         triggerTime.setDate(now.getDate() + alarmDay);
         triggerTime.setHours(
-          ampm === "pm" ? parseInt(hour) + 12 : parseInt(hour)
+          (ampm === "pm" && hour !== "12") || (ampm === "am" && hour === "12")
+            ? parseInt(hour) + 12
+            : parseInt(hour)
         );
         triggerTime.setMinutes(parseInt(minute));
         triggerTime.setSeconds(0);
@@ -300,6 +303,11 @@ export default function AlarmSettingsPage({ navigation }) {
         activeOpacity={0.5}
         onPress={handleComplete}
         disabled={selectedDays.every((day) => !day)} // 요일이 선택되지 않으면 버튼 비활성화
+        style={{
+          width: "100%",
+          alignItems: "center",
+          marginBottom: 20,
+        }}
       >
         <LinearGradient
           start={{ x: 0, y: 0 }}
@@ -309,9 +317,9 @@ export default function AlarmSettingsPage({ navigation }) {
               ? ["#C1C1C1", "#C1C1C1"]
               : ["#79BA7E", "#AFCA85"]
           }
-          style={[styles.confirmButton]}
+          style={[bottomBtn.button]}
         >
-          <Text style={styles.confirmButtonText}>확인</Text>
+          <Text style={bottomBtn.buttonText}>확인</Text>
         </LinearGradient>
       </TouchableOpacity>
     </SafeAreaView>

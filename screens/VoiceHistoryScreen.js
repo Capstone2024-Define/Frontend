@@ -70,7 +70,7 @@ export default function VoiceHistoryScreen({ navigation, route }) {
     const day = newDate.getDate();
     const dayName = dayOfWeek[newDate.getDay()];
 
-    return `${month}.${day} ${dayName}`;
+    return `${month}월 ${day}일 ${dayName}요일`;
   };
 
   const getTime = (time) => {
@@ -161,14 +161,6 @@ export default function VoiceHistoryScreen({ navigation, route }) {
           <View style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ ...styles.progress, backgroundColor: theme.grey150 }} />
-        <LinearGradient colors={["#79BA7E", "#AFCA85"]} style={styles.progress}>
-          <View
-            style={{ ...styles.progress, backgroundColor: "transparent" }}
-          />
-        </LinearGradient>
-      </View>
     </SafeAreaView>
   );
 }
@@ -197,13 +189,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
   },
   search: { marginRight: 10 },
-
   filterView: {
     flexDirection: "row",
     marginVertical: 16,
-  },
-  progress: {
-    width: "50%",
-    height: 4,
   },
 });

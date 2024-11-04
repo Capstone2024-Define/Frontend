@@ -76,7 +76,7 @@ export default function VoiceModifyScreen({
             <TouchableOpacity activeOpacity={0.5} onPress={onClose}>
               <Ionicons name="close" size={24} color="black" />
             </TouchableOpacity>
-            <Text style={styles.headerText}>음성기록수정</Text>
+            <Text style={styles.headerText}>상담녹음 수정</Text>
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={async () => {

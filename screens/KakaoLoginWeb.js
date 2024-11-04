@@ -6,7 +6,7 @@ import * as AuthSession from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const REST_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
-const REDIRECT_URI = "http://172.19.21.16:8081/Login";
+const REDIRECT_URI = "http://3.34.193.230:8080/Login";
 // const REDIRECT_URI = AuthSession.makeRedirectUri({
 //   useProxy: true, // Expo Proxy 사용
 //   scheme: "clobit",

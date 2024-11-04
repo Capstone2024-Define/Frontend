@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,79 +14,118 @@ import { theme } from "../colors/color";
 import { infos } from "../component/Info";
 import TagChip from "../component/TagChip";
 import Note from "../assets/notes.svg";
+import ViewCount from "../assets/viewcount.svg";
 import { WithLocalSvg } from "react-native-svg/css";
+import { LinearGradient } from "expo-linear-gradient";
 
 function InfoScreenDetail({ route }) {
-  const navigation = useNavigation(); // useNavigation 훅 사용
+  const navigation = useNavigation();
   const { key } = route.params;
+  const [selectedInfos, setSelectedInfos] = useState([]); // 북마크
+  const [viewCount, setViewCount] = useState(0);
+
+  // 테스트
+  useEffect(() => {
+    console.log(selectedInfos);
+  }, [selectedInfos]);
+
+  const toggleBookmark = (index) => {
+    setSelectedInfos((preSelected) => {
+      return preSelected.includes(index)
+        ? preSelected.filter((s) => s !== index)
+        : [...preSelected, index];
+    });
+  };
+
+  // 나중에 DB 완성되면 거기에 조회수 배열[정보 인덱스] 하나 증가시키기
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "#FFFFFF",
-          borderColor: "#EBEBEB",
-          borderBottomWidth: 1,
-          //   paddingVertical: 13,
-          height: 60,
-          paddingHorizontal: 20,
-          justifyContent: "space-between",
-        }}
-      >
-        {/* TouchableOpacity로 감싸서 뒤로가기 기능 추가 */}
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          {/* <Image
-                            source={require("../assets/arrow_back_ios.png")}
-                            resizeMode={"stretch"}
-                            style={{ width: 10, height: 19 }}
-                        /> */}
-          <Ionicons
-            name="chevron-back-outline"
-            size={27}
-            color={theme.grey700}
-            style={{ marginLeft: -6 }}
-          />
-        </TouchableOpacity>
-        {/* <View style={{ flex: 1, alignSelf: "stretch" }} /> */}
-        <Text
-          style={{
-            color: "#242424",
-            fontSize: 16,
-            //fontWeight: "bold",
-            fontFamily: "Pretendard-Medium",
-          }}
-        >
-          {"정보 상세"}
-        </Text>
-        <Image
-          source={require("../assets/info_bookmark_gray.png")}
-          resizeMode={"stretch"}
-          style={{ width: 19, height: 23 }}
-        />
-      </View>
       <ScrollView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
-        <Image
+        <ImageBackground
           source={infos[key].imageName}
           resizeMode={"cover"}
           style={{
-            width: 360,
-            height: 212,
+            width: "100%",
+            height: 272,
             marginBottom: 19,
             alignItems: "center",
           }}
-        />
+        >
+          <LinearGradient
+            colors={["#00000040", "transparent"]}
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              height: 60,
+            }}
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              height: 60,
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: "transparent",
+              paddingLeft: 20,
+              paddingRight: 27,
+            }}
+          >
+            {/* TouchableOpacity로 감싸서 뒤로가기 기능 추가 */}
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons
+                name="chevron-back-outline"
+                size={27}
+                color="white"
+                style={{ marginLeft: -6 }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => toggleBookmark(key)}
+            >
+              <Image
+                source={
+                  selectedInfos.includes(key)
+                    ? require("../assets/bookmark_green.png")
+                    : require("../assets/bookmark.png")
+                }
+                resizeMode={"contain"}
+                style={{ width: 15, height: 18 }}
+              />
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
         <View
           style={{
             flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
             marginBottom: 8,
-            marginLeft: 20,
+            marginHorizontal: 20,
           }}
         >
-          {infos[key].tag.map((tag, index) => (
-            <TagChip key={index} text={tag} />
-          ))}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {infos[key].tag.map((tag, index) => (
+              <TagChip key={index} text={tag} />
+            ))}
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <WithLocalSvg asset={ViewCount} />
+            <Text
+              style={{
+                fontSize: 12,
+                lineHeight: 20,
+                fontFamily: "Pretendard-Medium",
+                color: theme.grey300,
+                marginLeft: 4,
+              }}
+            >
+              {viewCount}
+            </Text>
+          </View>
         </View>
         <Text
           style={{
@@ -129,7 +169,7 @@ function InfoScreenDetail({ route }) {
                 marginLeft: 8,
               }}
             >
-              {"내용을 요약했어요"}
+              핵심 포인트만 정리했어요
             </Text>
           </View>
           <Text
