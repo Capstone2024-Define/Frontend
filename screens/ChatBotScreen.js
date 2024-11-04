@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,17 +12,27 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
-import axios from "axios"; 
+import axios from "axios";
 
 const API_KEY = "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";
 const MODEL = "gpt-3.5-turbo";
 
-const ChatbotScreen = ({ navigaion }) => {
+const ChatbotScreen = ({ navigation }) => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);  // 챗봇 입력 중 상태
+  const [loading, setLoading] = useState(false);
 
-  // ChatGPT API 요청 함수
+  useEffect(() => {
+    const initialMessages = [
+      { sender: "bot", text: "안녕하세요 디파님!" },
+      {
+        sender: "bot",
+        text: "저는 AI 로빗입니다! ADHD 아이를 키우는데 필요한 정보와 지식으로 도와드릴게요!",
+      },
+    ];
+    setMessages(initialMessages);
+  }, []);
+
   const getChatbotResponse = async (text) => {
     try {
       const response = await axios.post(
@@ -52,7 +62,6 @@ const ChatbotScreen = ({ navigaion }) => {
     }
   };
 
-  // 사용자가 메시지를 보냈을 때 호출되는 함수
   const sendMessage = async (text = inputText) => {
     if (text.trim()) {
       setMessages((prevMessages) => [
@@ -60,13 +69,11 @@ const ChatbotScreen = ({ navigaion }) => {
         { sender: "user", text },
       ]);
       setInputText("");
-      
-      // 로딩 상태 추가
+
       setLoading(true);
-      
+
       const chatbotResponse = await getChatbotResponse(text);
 
-      // 챗봇 응답 추가 후 로딩 상태 제거
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "bot", text: chatbotResponse },
@@ -85,7 +92,6 @@ const ChatbotScreen = ({ navigaion }) => {
         <ScrollView
           style={{ flex: 1, backgroundColor: "#F6F6F6", paddingTop: 20 }}
         >
-          {/* 메시지 출력 영역 */}
           <ScrollView
             style={{ flex: 1, paddingHorizontal: 20, paddingBottom: 40 }}
           >
@@ -137,7 +143,6 @@ const ChatbotScreen = ({ navigaion }) => {
               </View>
             ))}
 
-            {/* 로딩 중일 때 표시되는 애니메이션 */}
             {loading && (
               <View
                 style={{
@@ -169,8 +174,8 @@ const ChatbotScreen = ({ navigaion }) => {
                     paddingHorizontal: 19,
                   }}
                 >
-               <Image
-                  source={require("../assets/chat1.png")}
+                  <Image
+                    source={require("../assets/chat1.png")}
                     resizeMode={"stretch"}
                     style={{
                       width: 8,
@@ -178,7 +183,7 @@ const ChatbotScreen = ({ navigaion }) => {
                     }}
                   />
                   <Image
-                  source={require("../assets/chat2.png")}
+                    source={require("../assets/chat2.png")}
                     resizeMode={"stretch"}
                     style={{
                       width: 8,
@@ -186,7 +191,7 @@ const ChatbotScreen = ({ navigaion }) => {
                     }}
                   />
                   <Image
-                  source={require("../assets/chat3.png")}
+                    source={require("../assets/chat3.png")}
                     resizeMode={"stretch"}
                     style={{
                       width: 8,
@@ -199,7 +204,6 @@ const ChatbotScreen = ({ navigaion }) => {
           </ScrollView>
         </ScrollView>
 
-        {/* 입력 필드 */}
         <View
           style={{
             backgroundColor: "#EFEFEF",
@@ -235,7 +239,11 @@ const ChatbotScreen = ({ navigaion }) => {
             />
             <TouchableOpacity onPress={() => sendMessage()}>
               <Image
-                source={require("../assets/chatSend.png")}
+                source={
+                  inputText.trim()
+                    ? require("../assets/chatSendGreen.png")
+                    : require("../assets/chatSend.png")
+                }
                 resizeMode={"stretch"}
                 style={{ width: 26, height: 26 }}
               />
