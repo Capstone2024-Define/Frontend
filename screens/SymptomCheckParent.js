@@ -88,7 +88,7 @@ export default function SymptomCheckParent({ route, navigation }) {
           {`오늘 ${nickName}님은${"\n"}어떻게 하셨나요?`}
         </Text>
         <Text style={styles.subtitleText}>
-          오늘 하루 아이와 어떻게 지냈는지 되돌아봐요.
+          하단 표현을 하시지 않았을 경우 선택하지 않고{"\n"}다음을 눌러주세요
         </Text>
         <View style={styles.checklist}>
           {checklistItems.map((item, index) => (

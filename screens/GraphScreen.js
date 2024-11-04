@@ -79,7 +79,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     previousWeek.current = weekDates;
     setBeforeSelectedWeek(selectedDate);
 
-    console.log("선택날짜: ", selectedDate);
+    console.log("분석 선택날짜: ", selectedDate);
   }, [selectedDate]);
 
   // 월간 state 바꼈을때 월간 state count
@@ -388,27 +388,51 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     <SafeAreaView style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <View style={{ flex: 1 }}>
+        <View>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => setIsCalendar(true)}
             style={styles.headerTab}
           >
-            <Text style={{ ...styles.subTitle, color: theme.grey300 }}>
+            <Text
+              style={{
+                ...styles.subTitle,
+                marginHorizontal: 11,
+                color: theme.grey300,
+              }}
+            >
               캘린더
             </Text>
           </TouchableOpacity>
-          <View style={{ height: 4, backgroundColor: theme.grey150 }} />
+          <View
+            style={{
+              width: 58,
+              height: 4,
+              borderRadius: 8,
+              backgroundColor: "transparent",
+            }}
+          />
         </View>
-        <View style={{ flex: 1 }}>
+        <View>
           <TouchableOpacity activeOpacity={0.5} style={styles.headerTab}>
-            <Text style={{ ...styles.subTitle, color: theme.green500 }}>
+            <Text
+              style={{
+                ...styles.subTitle,
+                marginHorizontal: 17,
+                color: theme.green500,
+              }}
+            >
               분석
             </Text>
           </TouchableOpacity>
-          <LinearGradient colors={["#79BA7E", "#AFCA85"]}>
-            <View style={{ height: 4, backgroundColor: "transperent" }} />
-          </LinearGradient>
+          <View
+            style={{
+              width: 58,
+              height: 4,
+              borderRadius: 8,
+              backgroundColor: theme.green500,
+            }}
+          />
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
@@ -926,10 +950,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     height: 40,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 78,
+    borderBottomWidth: 1,
+    borderColor: "#EBEBEB",
   },
   headerTab: {
     height: 36,
-    alignItems: "center",
     justifyContent: "center",
   },
   scroll: {

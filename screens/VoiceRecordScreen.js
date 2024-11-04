@@ -252,7 +252,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="leftArrow"
-        title="음성기록"
+        title="상담녹음"
         onLeftPress={() => {
           navigation.popToTop();
         }}
@@ -260,7 +260,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.descriptionContainer}>
           <Text style={styles.descriptionText}>
-            {"음성을 녹음하면\n텍스트로 변환해요"}
+            {"상담내용을\n녹음으로 기록해요!"}
           </Text>
           <View style={styles.modeSwitcher}>
             <TouchableOpacity
@@ -298,7 +298,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
           </View>
         </View>
         <Text style={styles.recordingHint}>
-          {"녹음을 하면 글로 기록이 되고\n기록된 내용은 상세기록에 추가돼요"}
+          {"녹음된 내용은 글로 기록돼요"}
         </Text>
         <View style={styles.timerContainer}>
           {(isRecording || isPaused) && (
@@ -412,14 +412,6 @@ const VoiceRecordScreen = ({ navigation, route }) => {
           )}
         </View>
       </SafeAreaView>
-      <View style={{ flexDirection: "row" }}>
-        <LinearGradient colors={["#79BA7E", "#AFCA85"]} style={styles.progress}>
-          <View
-            style={{ ...styles.progress, backgroundColor: "transparent" }}
-          />
-        </LinearGradient>
-        <View style={{ ...styles.progress, backgroundColor: theme.grey150 }} />
-      </View>
     </SafeAreaView>
   );
 };
@@ -433,7 +425,6 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: 4,
     marginHorizontal: 24,
   },
@@ -445,6 +436,7 @@ const styles = StyleSheet.create({
   },
   modeSwitcher: {
     width: 138,
+    height: 40,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -583,40 +575,6 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Bold",
     marginLeft: 8,
   },
-  progress: {
-    width: "50%",
-    height: 4,
-  },
-  // completeIndicator: {
-  //   width: 15,
-  //   height: 15,
-  //   borderRadius: 15 / 2,
-  //   backgroundColor: "#FF7070",
-  //   marginRight: 8,
-  // },
-  // resumeButton: {
-  //   flexDirection: "row",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   backgroundColor: "#78BA7D",
-  //   borderRadius: 24,
-  //   paddingVertical: 13,
-  //   marginBottom: 16,
-  //   marginHorizontal: 106,
-  //   width: 147,
-  //   height: 44,
-  // },
-  // resumeButtonText: {
-  //   color: "#FFFFFF",
-  //   fontSize: 14,
-  // },
-  // resumeIndicator: {
-  //   width: 15,
-  //   height: 15,
-  //   borderRadius: 15 / 2,
-  //   backgroundColor: "#333333",
-  //   marginRight: 8,
-  // },
 });
 
 export default VoiceRecordScreen;

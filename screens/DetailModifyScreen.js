@@ -18,6 +18,7 @@ import Camera from "../assets/photo_camera.svg";
 import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
+import Mic from "../assets/mic_green.svg";
 import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -494,13 +495,13 @@ export default function DetailModifyScreen({ navigation, route }) {
           {voiceList.length !== 0 && (
             <>
               <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
-                <WithLocalSvg width={20} height={20} asset={Hospital} />
+                <WithLocalSvg width={20} height={20} asset={Mic} />
                 <Text style={styles.inputGuideText}>상담녹음</Text>
               </View>
 
               {voiceList.map((voice, index) => (
                 <VoiceButton
-                  key={`hospital-${index}`}
+                  key={`${index}`}
                   place={voice.location}
                   time={voice.timestamp}
                   text={voice.contents}

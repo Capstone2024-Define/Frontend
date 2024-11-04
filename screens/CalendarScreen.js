@@ -118,27 +118,51 @@ export default function CalendarScreen({ navigation, route }) {
         <>
           {/* 헤더 */}
           <View style={styles.header}>
-            <View style={{ flex: 1 }}>
+            <View>
               <TouchableOpacity activeOpacity={0.5} style={styles.headerTab}>
-                <Text style={{ ...styles.subTitle, color: theme.green500 }}>
+                <Text
+                  style={{
+                    ...styles.subTitle,
+                    marginHorizontal: 11,
+                    color: theme.green500,
+                  }}
+                >
                   캘린더
                 </Text>
               </TouchableOpacity>
-              <LinearGradient colors={["#79BA7E", "#AFCA85"]}>
-                <View style={{ height: 4, backgroundColor: "transperant" }} />
-              </LinearGradient>
+              <View
+                style={{
+                  width: 58,
+                  height: 4,
+                  borderRadius: 8,
+                  backgroundColor: theme.green500,
+                }}
+              />
             </View>
-            <View style={{ flex: 1 }}>
+            <View>
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => setIsCalendar(false)}
                 style={styles.headerTab}
               >
-                <Text style={{ ...styles.subTitle, color: theme.grey300 }}>
+                <Text
+                  style={{
+                    ...styles.subTitle,
+                    marginHorizontal: 17,
+                    color: theme.grey300,
+                  }}
+                >
                   분석
                 </Text>
               </TouchableOpacity>
-              <View style={{ height: 4, backgroundColor: theme.grey150 }} />
+              <View
+                style={{
+                  width: 58,
+                  height: 4,
+                  borderRadius: 8,
+                  backgroundColor: "transparent",
+                }}
+              />
             </View>
           </View>
 
@@ -330,13 +354,13 @@ export default function CalendarScreen({ navigation, route }) {
                   <Text
                     style={{
                       ...styles.subTitle,
-                      marginRight: 8,
+                      marginRight: 6,
                       color: theme.grey700,
                     }}
                   >
-                    {new Date(selectedDate).getMonth() + 1}.
-                    {new Date(selectedDate).getDate()}{" "}
-                    {daysOfWeek[new Date(selectedDate).getDay()]}{" "}
+                    {new Date(selectedDate).getMonth() + 1}월{" "}
+                    {new Date(selectedDate).getDate()}일{" "}
+                    {/* {daysOfWeek[new Date(selectedDate).getDay()]}{" "} */}
                     {selectedDate == today && "(오늘)"}
                   </Text>
                   <FontAwesome
@@ -455,10 +479,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     height: 40,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 78,
+    borderBottomWidth: 1,
+    borderColor: "#EBEBEB",
   },
   headerTab: {
     height: 36,
-    alignItems: "center",
     justifyContent: "center",
   },
   title: {

@@ -623,7 +623,7 @@ export default function ExportRecordScreen({ navigation, route }) {
             <View
               style={[
                 styles.circle,
-                page == 2 && { backgroundColor: theme.grey200 },
+                page == 2 && { backgroundColor: theme.green300 },
                 { marginRight: 16 },
               ]}
             >

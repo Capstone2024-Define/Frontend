@@ -128,7 +128,7 @@ const Modal2 = ({
               >
                 <WithLocalSvg asset={TodayRecord} style={{ marginRight: 12 }} />
                 <Text style={{ ...styles.modalText, color: theme.grey800 }}>
-                  이 날 하루기록보기
+                  이 날 기록보기
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -192,8 +192,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
           const rawVoice = await axios.get(
             `http://${ipnumber}:8080/record/list/${user_code}/${timestamp}`
           );
-
-          // console.log(rawVoice.data);
+          // console.log("음성녹음: ", rawVoice.data);
           if (rawVoice.data) {
             setVoice(rawVoice.data);
             setText(rawVoice.data.contents);
@@ -277,9 +276,10 @@ export default function VoiceDetailScreen({ navigation, route }) {
   const getYYYYMMDD = (date) => {
     const newdate = new Date(date);
 
-    return `${newdate.getFullYear()}-${
-      newdate.getMonth() + 1
-    }-${newdate.getDate()}`;
+    return `${newdate.getFullYear()}-${String(newdate.getMonth() + 1).padStart(
+      2,
+      0
+    )}-${String(newdate.getDate()).padStart(2, 0)}`;
   };
 
   // 날짜를 형식에 맞게 바꿔주는 함수
@@ -291,7 +291,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
     const day = newDate.getDate();
     const dayName = dayOfWeek[newDate.getDay()];
 
-    return `${month}.${day} ${dayName}`;
+    return `${month}월 ${day}일 ${dayName}요일`;
   };
 
   const getTime = (time) => {
@@ -356,7 +356,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
       <View style={styles.summaryBox}>
         <View style={{ flexDirection: "row", marginBottom: 12 }}>
           <WithLocalSvg width={20} height={20} asset={Note} />
-          <Text style={styles.summaryTitle}>음성 기록을 요약했어요</Text>
+          <Text style={styles.summaryTitle}>핵심포인트만 정리했어요</Text>
         </View>
         <Text style={styles.summaryText}>{summaryText}</Text>
       </View>

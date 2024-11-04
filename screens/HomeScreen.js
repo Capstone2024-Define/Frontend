@@ -6,16 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Pressable,
-  Modal,
   ImageBackground,
   StatusBar,
   Platform,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { Calendar } from "react-native-calendars";
 import { theme } from "../colors/color";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { WithLocalSvg } from "react-native-svg/css";
 import Rabbit from "../assets/homeRabbit.svg";
@@ -25,36 +21,10 @@ import Mic from "../assets/mic_green.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Calender from "../assets/home_calendar.svg";
-import NoRecord from "../assets/norecord.svg";
-import { Shadow } from "react-native-shadow-2"; // 그림자 라이브러리
-import { LinearGradient } from "expo-linear-gradient"; // 그라데이션 라이브러리
+import { Shadow } from "react-native-shadow-2";
+import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
-
-// 캘린더 모달창
-const CalendarModal = ({ visible, onClose, selectedDate, setSelectedDate }) => {
-  return (
-    <Modal transparent={true} visible={visible} onRequestClose={onClose}>
-      <Pressable style={styles.modalBackground} onPress={onClose}>
-        <Pressable style={styles.modal}>
-          <Calendar
-            initialDate={selectedDate}
-            monthFormat={"yyyy년 MM월"}
-            onDayPress={(day) => {
-              setSelectedDate(day.dateString);
-              onClose();
-            }}
-            markedDates={{
-              [selectedDate]: {
-                selected: true,
-                selectedColor: theme.green500,
-              },
-            }}
-          />
-        </Pressable>
-      </Pressable>
-    </Modal>
-  );
-};
+import CalendarModal from "../component/CalendarModal";
 
 // 홈 스크린
 export default function HomeScreen({ navigation, route }) {
@@ -618,13 +588,14 @@ export default function HomeScreen({ navigation, route }) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.whiteButton}
-                onPress={() =>
+                onPress={() => {
+                  const today = cvtDateString(new Date());
                   navigation.push("MainVoice", {
-                    date: selectedDate,
+                    date: today,
                     user_code: user_code,
                     ipnumber: ipnumber,
-                  })
-                }
+                  });
+                }}
               >
                 <Shadow
                   distance={5}
@@ -659,8 +630,10 @@ export default function HomeScreen({ navigation, route }) {
       <CalendarModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
+        currentDate={selectedDate}
+        setHomeSelectedDate={setSelectedDate}
+        user_code={user_code}
+        ipnumber={ipnumber}
       />
     </SafeAreaView>
   );

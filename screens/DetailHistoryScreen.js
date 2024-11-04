@@ -20,6 +20,7 @@ import Check from "../assets/check.svg";
 import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
+import Mic from "../assets/mic_green.svg";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SmallTag from "../component/SmallTag";
@@ -447,13 +448,12 @@ export default function DetailHistoryScreen({ navigation, route }) {
           {voiceList.length !== 0 && (
             <>
               <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
-                <WithLocalSvg width={20} height={20} asset={Hospital} />
+                <WithLocalSvg width={20} height={20} asset={Mic} />
                 <Text style={styles.inputGuideText}>상담녹음</Text>
               </View>
-
               {voiceList.map((voice, index) => (
                 <VoiceButton
-                  key={`hospital-${index}`}
+                  key={`${index}`}
                   place={voice.location}
                   time={voice.timestamp}
                   text={voice.contents}
