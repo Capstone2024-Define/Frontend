@@ -36,6 +36,7 @@ import InfoSearchResult from "./screens/InfoSearchResult";
 import InfoScreenDetail from "./screens/InfoScreenDetail";
 import ChatbotScreen from "./screens/ChatBotScreen";
 import SplashScreen from "./screens/SplashScreen";
+import AlarmModal from "./component/AlarmModal";
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -65,6 +66,11 @@ export default function App() {
             }}
           >
             {/* 기존 내비게이터에 있는 화면들 */}
+            <Stack.Screen
+              name="AlarmModal"
+              component={AlarmModal}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name="Splash"
               component={SplashScreen}

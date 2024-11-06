@@ -52,7 +52,8 @@ export default function AlarmPage({ navigation }) {
     useCallback(() => {
       async function load() {
         try {
-          const rawAlarm = await AsyncStorage.getItem("alarm");
+          const rawAlarm = await AsyncStorage.getItem("alarms");
+          console.log("rawAlarm ", rawAlarm);
           if (rawAlarm) {
             const alarm = JSON.parse(rawAlarm);
             setAlarms(alarm);
@@ -146,7 +147,7 @@ export default function AlarmPage({ navigation }) {
       }
 
       try {
-        await AsyncStorage.setItem("alarm", JSON.stringify(newAlarms));
+        await AsyncStorage.setItem("alarms", JSON.stringify(newAlarms));
         setAlarms(newAlarms);
         setSelectedAlarms([]);
         setState(false);

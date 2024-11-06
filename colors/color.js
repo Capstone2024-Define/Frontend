@@ -1,6 +1,7 @@
 export const theme = {
   green50: "#F2F8F2",
   green100: "#D5EAD7",
+  green200: "#C1DFC4",
   green300: "#A5D1A9",
   green400: "#94C898",
   green500: "#79BA7E",

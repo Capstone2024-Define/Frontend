@@ -139,8 +139,7 @@ export default function DetailRecordScreen({ navigation, route }) {
           });
           setImages(images.concat(newImage));
           setId(id + k);
-
-          console.log(await fetchImageFromUri(newImage[0].uri));
+          //console.log(await fetchImageFromUri(newImage[0].uri));
         }
       } catch (error) {
         console.log(error);
@@ -152,10 +151,17 @@ export default function DetailRecordScreen({ navigation, route }) {
   };
 
   // 이미지 서버에 올릴 형태로 바꿈
-  const fetchImageFromUri = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    return blob;
+  const fetchImageFromUri = async () => {
+    const newImage = await Promise.all(
+      images.map(async (image) => {
+        const response = await fetch(image.uri);
+        return await response.blob();
+      })
+    );
+
+    console.log("이미지 blob: ", newImage);
+
+    return newImage;
   };
 
   // 이미지 삭제
@@ -186,16 +192,6 @@ export default function DetailRecordScreen({ navigation, route }) {
 
     return jongseong !== 0; // 나머지가 0이 아니면 받침이 있는 것
   };
-
-  // 저장
-  // const save = async (toSave) => {
-  //   try {
-  //     //await AsyncStorage.clear();
-  //     await AsyncStorage.setItem(date, JSON.stringify(toSave));
-  //   } catch (error) {
-  //     console.log("기록 저장 에러");
-  //   }
-  // };
 
   // 저장
   const handlePost = async () => {
@@ -237,43 +233,42 @@ export default function DetailRecordScreen({ navigation, route }) {
         state: route.params.state,
       });
 
-      // 증상 체크리스트 저장
-      await axios.post(`http://${ipnumber}:8080/sx/post`, {
-        user_code: user_code,
-        date: date,
-        checklist: route.params.symptomList,
+      // 이미지 데이터 준비
+      const postingImages = await fetchImageFromUri();
+      const formData = new FormData();
+      postingImages.forEach((blob, index) => {
+        formData.append("url", require("../assets/happy.png"));
       });
+      formData.append("user_code", user_code);
+      formData.append("date", date);
 
-      // 부모 체크리스트 저장
-      await axios.post(`http://${ipnumber}:8080/prnt/post`, {
-        user_code: user_code,
-        date: date,
-        checklist: route.params.checkList,
-      });
+      // 병렬로 요청 실행
+      await Promise.all([
+        // 증상 체크리스트 저장
+        axios.post(`http://${ipnumber}:8080/sx/post`, {
+          user_code: user_code,
+          date: date,
+          checklist: route.params.symptomList,
+        }),
+
+        // 부모 체크리스트 저장
+        axios.post(`http://${ipnumber}:8080/prnt/post`, {
+          user_code: user_code,
+          date: date,
+          checklist: route.params.checkList,
+        }),
+
+        // 이미지 저장
+        axios.post(`http://${ipnumber}:8080/image/post`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
+      ]);
 
       console.log("POST 성공");
-
-      // 서머리
-      // const result = await summary(totalText);
-      // console.log(result.summary);
-
-      // // 객체 설정
-      // const newRecord = {
-      //   date: date,
-      //   home: homeText,
-      //   school: schoolText,
-      //   hospital: hospitalText,
-      //   image: images,
-      //   checkList: route.params.checkList,
-      //   symptomList: route.params.symptomList,
-      //   summaryText: result.summary,
-      // };
-      // console.log("기록하기: ", newRecord);
-
-      // // 스토리지 저장
-      // await save(newRecord);
     } catch (error) {
-      console.log("저장 에러", error);
+      console.log("POST 에러: ", error);
     }
   };
 

@@ -91,7 +91,7 @@ export default function AlarmSettingsPage({ navigation }) {
 
   const save = async (toSave) => {
     try {
-      const rawAlarmList = await AsyncStorage.getItem("alarm");
+      const rawAlarmList = await AsyncStorage.getItem("alarms");
       let alarmList = [];
       if (rawAlarmList) {
         try {
@@ -101,7 +101,7 @@ export default function AlarmSettingsPage({ navigation }) {
         }
       }
       alarmList.push(toSave);
-      await AsyncStorage.setItem("alarm", JSON.stringify(alarmList));
+      await AsyncStorage.setItem("alarms", JSON.stringify(alarmList));
     } catch (error) {
       console.error("기록 저장 에러:", error);
     }

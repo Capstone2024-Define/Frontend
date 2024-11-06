@@ -14,10 +14,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import summarize from "./ChatgptAPI";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
+import AlarmModal from "../component/AlarmModal";
 
 export default function TestPage({ route }) {
   const { ipnumber, user_code } = route.params;
   const navigation = useNavigation();
+  const [visible, setVisible] = useState(false);
 
   // GET 요청 형식
   // const response = await axios.get(
@@ -106,6 +108,10 @@ export default function TestPage({ route }) {
   //   await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
   // };
 
+  const onClose = () => {
+    setVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header
@@ -165,6 +171,13 @@ export default function TestPage({ route }) {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
+            onPress={() => setVisible(true)}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>알림 모달</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
             onPress={handlePost}
             style={styles.button}
           >
@@ -172,6 +185,7 @@ export default function TestPage({ route }) {
           </TouchableOpacity>
         </View>
       </View>
+      <AlarmModal visible={visible} onClose={onClose} />
     </SafeAreaView>
   );
 }

@@ -162,6 +162,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           // }
           // setTotalText(newTotalText);
 
+          // 하루 기록 로드
           const response = await axios.get(
             `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
           );
@@ -170,12 +171,27 @@ export default function DetailHistoryScreen({ navigation, route }) {
           setHospitalText(response.data.hospital);
           setSummaryText(response.data.summary);
           setDayState(response.data.state);
+
+          // 이미지 로드
+          const formData = new FormData();
+          formData.append("user_code", user_code);
+          formData.append("date", date);
+
+          response = await axios.get(
+            `http://${ipnumber}:8080/image/show`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          console.log("이미지 로드: ", response.data);
         } catch (error) {
           console.log("기록 로드 에러: ", error);
         }
       }
       load();
-      // console.log(`전체 텍스트: ${totalText}`);
     }, [])
   );
 
@@ -183,16 +199,27 @@ export default function DetailHistoryScreen({ navigation, route }) {
   useEffect(() => {
     async function load() {
       try {
-        // 증상 체크리스트 로드
-        const response_symptomCheck = await axios.get(
-          `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
+        // // 증상 체크리스트 로드
+        // const response_symptomCheck = await axios.get(
+        //   `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
+        // );
+        // console.log("체크리스트 로드: ", response_symptomCheck.data.checklist);
+        // // 부모 체크리스트 로드
+        // const response_parentCheck = await axios.get(
+        //   `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
+        // );
+
+        // setSymptomList(response_symptomCheck.data.checklist);
+        // setCheckList(response_parentCheck.data.checklist);
+
+        // 체크리스트 로드 병렬로 수정
+        const [response_symptomCheck, response_parentCheck] = await Promise.all(
+          [
+            axios.get(`http://${ipnumber}:8080/sx/list/${user_code}/${date}`),
+            axios.get(`http://${ipnumber}:8080/prnt/list/${user_code}/${date}`),
+          ]
         );
         setSymptomList(response_symptomCheck.data.checklist);
-        console.log(response_symptomCheck.data.checklist);
-        // 부모 체크리스트 로드
-        const response_parentCheck = await axios.get(
-          `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
-        );
         setCheckList(response_parentCheck.data.checklist);
       } catch (error) {
         console.log("체크리스트 GET 에러: ", error);
@@ -219,12 +246,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
     useCallback(() => {
       async function load() {
         try {
-          // const rawVoice = await AsyncStorage.getItem("voice");
-          // const voices = JSON.parse(rawVoice);
-          // if (voices) {
-          //   const filteredVoice = voices.filter((voice) => voice.date === date);
-          //   setVoiceList(filteredVoice);
-          // }
           const response = await axios.get(
             `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
           );
@@ -239,16 +260,28 @@ export default function DetailHistoryScreen({ navigation, route }) {
 
   const deleteRecord = async () => {
     try {
+      // const formData = new FormData();
+      // formData.append("user_code", user_code);
+      // formData.append("date", date);
+
+      // // 이미지 삭제
+      // response = await axios.get(
+      //   `http://${ipnumber}:8080/image/delete`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       // 증상 체크리스트 삭제
       await axios.delete(
         `http://${ipnumber}:8080/sx/delete/${user_code}/${date}`
       );
-
       // 부모 체크리스트 삭제
       await axios.delete(
         `http://${ipnumber}:8080/prnt/delete/${user_code}/${date}`
       );
-
       // 줄글 기록 삭제
       await axios.delete(
         `http://${ipnumber}:8080/daily/delete/${user_code}/${date}`
@@ -283,8 +316,8 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.photoScroll}
         >
-          {images.map((image) => (
-            <View key={image.id}>
+          {images.map((image, index) => (
+            <View key={index}>
               <Image
                 source={{ uri: image.uri }}
                 style={styles.photo}
