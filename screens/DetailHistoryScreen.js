@@ -132,37 +132,10 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [visible, setVisible] = useState(false); // 모달 상태
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
-  // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
   useFocusEffect(
     useCallback(() => {
       async function load() {
         try {
-          // const rawRecord = await AsyncStorage.getItem(date);
-          // const newRecord = JSON.parse(rawRecord);
-
-          // setHomeText(newRecord.home);
-          // setSchoolText(newRecord.school);
-          // setHospitalText(newRecord.hospital);
-          // setImages(newRecord.image);
-          // setDate(newRecord.date);
-          // setCheckList(newRecord.checkList);
-          // setSymptomList(newRecord.symptomList);
-          // setSummaryText(newRecord.summaryText);
-
-          // // totalText
-          // let newTotalText = "";
-          // if (newRecord.home) {
-          //   newTotalText += newRecord.home;
-          // }
-          // if (newRecord.school) {
-          //   newTotalText += ` ${newRecord.school}`;
-          // }
-          // if (newRecord.hospital) {
-          //   newTotalText += ` ${newRecord.hospital}`;
-          // }
-          // setTotalText(newTotalText);
-
-          // 하루 기록 로드
           const response = await axios.get(
             `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
           );
@@ -177,37 +150,29 @@ export default function DetailHistoryScreen({ navigation, route }) {
           formData.append("user_code", user_code);
           formData.append("date", date);
 
-          response = await axios.get(
-            `http://${ipnumber}:8080/image/show`,
-            formData
+          const imageResponse = await axios.get(
+            `http://${ipnumber}:8080/image/show/${user_code}/${date}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
           );
-          console.log("이미지 로드: ", response.data);
+          console.log("이미지 로드: ", imageResponse.data);
+          setImages(imageResponse.data); // 서버가 반환하는 데이터에 따라 설정
         } catch (error) {
           console.log("기록 로드 에러: ", error);
         }
       }
       load();
+      
     }, [])
   );
 
-  // 체크리스트 띄움 (수정 불가능)
   useEffect(() => {
     async function load() {
       try {
-        // // 증상 체크리스트 로드
-        // const response_symptomCheck = await axios.get(
-        //   `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
-        // );
-        // console.log("체크리스트 로드: ", response_symptomCheck.data.checklist);
-        // // 부모 체크리스트 로드
-        // const response_parentCheck = await axios.get(
-        //   `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
-        // );
-
-        // setSymptomList(response_symptomCheck.data.checklist);
-        // setCheckList(response_parentCheck.data.checklist);
-
-        // 체크리스트 로드 병렬로 수정
         const [response_symptomCheck, response_parentCheck] = await Promise.all(
           [
             axios.get(`http://${ipnumber}:8080/sx/list/${user_code}/${date}`),
@@ -223,20 +188,18 @@ export default function DetailHistoryScreen({ navigation, route }) {
     load();
   }, []);
 
-  // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
     useCallback(() => {
-      if (dayState == 2) {
+      if (dayState === 2) {
         setHeaderColor(theme.green);
-      } else if (dayState == 1) {
+      } else if (dayState === 1) {
         setHeaderColor(theme.yellow);
-      } else if (dayState == 0) {
+      } else if (dayState === 0) {
         setHeaderColor(theme.pink);
       }
     }, [dayState])
   );
 
-  // 음성 기록
   useFocusEffect(
     useCallback(() => {
       async function load() {
@@ -245,14 +208,13 @@ export default function DetailHistoryScreen({ navigation, route }) {
             `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
           );
           setVoiceList(response.data);
-        } catch (e) {
+        } catch (error) {
           console.log("음성 GET 에러: ", error);
         }
       }
       load();
     }, [])
   );
-
   const deleteRecord = async () => {
     try {
       // const formData = new FormData();
@@ -311,15 +273,20 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.photoScroll}
         >
-          {images.map((image, index) => (
-            <View key={index}>
-              <Image
-                source={{ uri: image.uri }}
-                style={styles.photo}
-                resizeMode="cover"
-              />
-            </View>
-          ))}
+         {images.map((image, index) => {
+            console.log("이미지: ", image);
+            return (
+              <View key={index}>
+                <Image
+                  source={{
+                    uri: `${image}`,
+                  }}
+                  style={styles.photo}
+                  resizeMode="contain"
+                />
+              </View>
+            );
+          })}
         </ScrollView>
         {summaryText ? (
           <View

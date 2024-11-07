@@ -37,6 +37,7 @@ import InfoScreenDetail from "./screens/InfoScreenDetail";
 import ChatbotScreen from "./screens/ChatBotScreen";
 import SplashScreen from "./screens/SplashScreen";
 import AlarmModal from "./component/AlarmModal";
+import BookmarkScreen from "./screens/Bookmark"; 
 
 // 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
@@ -100,6 +101,11 @@ export default function App() {
               name="InfoScreenDetail"
               component={InfoScreenDetail}
               options={{ title: "정보 상세", headerShown: false }}
+            />
+            <Stack.Screen
+              name="Bookmark"
+              component={BookmarkScreen} 
+              options={{ title: "북마크한 정보", headerShown: false }}
             />
             {/* 나머지 화면들 */}
             <Stack.Screen
