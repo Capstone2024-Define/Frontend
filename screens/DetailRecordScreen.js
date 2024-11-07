@@ -13,6 +13,7 @@ import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { useState, useEffect, useLayoutEffect } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
+
 import { showToast } from "../component/Toast";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
@@ -233,15 +234,6 @@ export default function DetailRecordScreen({ navigation, route }) {
         state: route.params.state,
       });
 
-      // 이미지 데이터 준비
-      const postingImages = await fetchImageFromUri();
-      const formData = new FormData();
-      postingImages.forEach((blob, index) => {
-        formData.append("url", require("../assets/happy.png"));
-      });
-      formData.append("user_code", user_code);
-      formData.append("date", date);
-
       // 병렬로 요청 실행
       await Promise.all([
         // 증상 체크리스트 저장
@@ -257,15 +249,21 @@ export default function DetailRecordScreen({ navigation, route }) {
           date: date,
           checklist: route.params.checkList,
         }),
-
-        // 이미지 저장
-        axios.post(`http://${ipnumber}:8080/image/post`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }),
       ]);
 
+      // 이미지 데이터 준비
+      const postingImages = await fetchImageFromUri();
+      const formData = new FormData();
+      postingImages.forEach((blob, index) => {
+        formData.append("multipartFiles", blob);
+      });
+      formData.append("user_code", user_code);
+      formData.append("date", date);
+
+      console.log("formData ", formData);
+
+      // 이미지 저장
+      await axios.post(`http://${ipnumber}:8080/image/post`, formData);
       console.log("POST 성공");
     } catch (error) {
       console.log("POST 에러: ", error);

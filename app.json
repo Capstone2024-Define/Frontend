@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Capstone2024",
+    "name": "Clobit",
     "slug": "Capstone2024",
     "version": "1.0.0",
     "scheme": "clobit",
@@ -20,24 +20,34 @@
       "package": "com.yourcompany.capstone2024",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["RECORD_AUDIO"]
+      "permissions": [
+        "RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
-    "platforms": ["ios", "android", "web"],
-    "plugins": ["expo-font"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "plugins": [
+      "expo-font"
+    ],
     "extra": {
       "eas": {
         "projectId": "fd9d78f2-cf86-4238-87f8-fbcba18bbadb"
       }
     },
     "linking": {
-      "prefixes": ["clobit://"]
-    }
+      "prefixes": [
+        "clobit://"
+      ]
+    },
+    "owner": "eun4995"
   }
 }

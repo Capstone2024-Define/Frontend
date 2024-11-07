@@ -179,12 +179,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
 
           response = await axios.get(
             `http://${ipnumber}:8080/image/show`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
+            formData
           );
           console.log("이미지 로드: ", response.data);
         } catch (error) {
