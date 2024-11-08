@@ -103,6 +103,7 @@ export default function MyPageScreen({ navigation, route }) {
           >
             <TouchableOpacity
               activeOpacity={0.5}
+              onPress={() => navigation.push("Bookmark")} // Navigate to Bookmark screen
               style={{ justifyContent: "center", alignItems: "center" }}
             >
               <WithLocalSvg asset={Bookmark} />

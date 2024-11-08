@@ -132,7 +132,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
   const [visible, setVisible] = useState(false); // 모달 상태
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
 
-  // 수정하고 돌아왔을때 다시 실행되게 useFocusEffect
   useFocusEffect(
     useCallback(() => {
       async function load() {
@@ -161,7 +160,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
     }, [])
   );
 
-  // 체크리스트 띄움 (수정 불가능)
   useEffect(() => {
     async function load() {
       try {
@@ -181,20 +179,18 @@ export default function DetailHistoryScreen({ navigation, route }) {
     load();
   }, []);
 
-  // 헤더 이모지 색: 체크리스트 개수에 따라 다른 색을 띄워줌
   useFocusEffect(
     useCallback(() => {
-      if (dayState == 2) {
+      if (dayState === 2) {
         setHeaderColor(theme.green);
-      } else if (dayState == 1) {
+      } else if (dayState === 1) {
         setHeaderColor(theme.yellow);
-      } else if (dayState == 0) {
+      } else if (dayState === 0) {
         setHeaderColor(theme.pink);
       }
     }, [dayState])
   );
 
-  // 음성 기록
   useFocusEffect(
     useCallback(() => {
       async function load() {
@@ -203,14 +199,13 @@ export default function DetailHistoryScreen({ navigation, route }) {
             `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
           );
           setVoiceList(response.data);
-        } catch (e) {
+        } catch (error) {
           console.log("음성 GET 에러: ", error);
         }
       }
       load();
     }, [])
   );
-
   const deleteRecord = async () => {
     try {
       // // 이미지 삭제

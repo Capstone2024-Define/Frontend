@@ -12,13 +12,14 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { infos } from "../component/Info";
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 추가
 import { theme } from "../colors/color";
 import TagChip from "../component/TagChip";
 
 function InfoScreen({ route }) {
   const { ipnumber, user_code } = route.params;
   const [nickName, setNickName] = useState("");
-  const [selectedInfos, setSelectedInfos] = useState([]); // 북마크
+  const [selectedInfos, setSelectedInfos] = useState([]); // 북마크 상태
   const navigation = useNavigation();
 
   const handleSearchNavigate = () => {
@@ -49,16 +50,45 @@ function InfoScreen({ route }) {
     load();
   }, []);
 
-  // 테스트
+  // AsyncStorage에서 북마크 불러오기
+  const loadBookmarks = async () => {
+    try {
+      const savedBookmarks = await AsyncStorage.getItem('bookmarkedInfos');
+      if (savedBookmarks) {
+        setSelectedInfos(JSON.parse(savedBookmarks));
+      }
+    } catch (error) {
+      console.log('Error loading bookmarks: ', error);
+    }
+  };
+
+  // AsyncStorage에 북마크 저장
+  const saveBookmarks = async (bookmarks) => {
+    try {
+      await AsyncStorage.setItem('bookmarkedInfos', JSON.stringify(bookmarks));
+    } catch (error) {
+      console.log('Error saving bookmarks: ', error);
+    }
+  };
+
+  // 초기 로드 시 북마크 로드
   useEffect(() => {
-    console.log(selectedInfos);
+    loadBookmarks();
+  }, []);
+
+  // 북마크가 변경될 때마다 AsyncStorage에 저장
+  useEffect(() => {
+    saveBookmarks(selectedInfos);
   }, [selectedInfos]);
 
+  // 북마크 추가/삭제 함수
   const toggleBookmark = (index) => {
-    setSelectedInfos((preSelected) => {
-      return preSelected.includes(index)
-        ? preSelected.filter((s) => s !== index)
-        : [...preSelected, index];
+    setSelectedInfos((prevSelected) => {
+      const updated = prevSelected.includes(index)
+        ? prevSelected.filter((s) => s !== index)
+        : [...prevSelected, index];
+      saveBookmarks(updated); // AsyncStorage에 저장
+      return updated;
     });
   };
 
@@ -152,8 +182,6 @@ function InfoScreen({ route }) {
                     key={index}
                     activeOpacity={0.5}
                     onPress={() => {
-                      // index를 키값으로 보냄
-                      // 다음 페이지(infoScreenDetail)에 key 넘겨줌
                       handleDetailNavigate(index);
                     }}
                     style={{
@@ -249,8 +277,6 @@ function InfoScreen({ route }) {
                       key={index}
                       activeOpacity={0.5}
                       onPress={() => {
-                        // index를 키값으로 보냄
-                        // 다음 페이지(infoScreenDetail)에 key 넘겨줌
                         handleDetailNavigate(index);
                       }}
                       style={{
