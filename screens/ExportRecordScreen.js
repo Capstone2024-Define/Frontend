@@ -357,7 +357,7 @@ const CalendarModal = ({
 
 // 스크린 화면
 export default function ExportRecordScreen({ navigation, route }) {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [email, setEmail] = useState("");
@@ -391,10 +391,8 @@ export default function ExportRecordScreen({ navigation, route }) {
   // 휴대폰 뒤로가기 버튼 커스터마이징
   useEffect(() => {
     const backAction = () => {
-      if (page === 0 || page === 3) {
+      if (page === 1 || page === 3) {
         navigation.pop();
-      } else if (page === 1) {
-        setPage(0);
       } else if (page === 2) {
         setPage(1);
       }
@@ -427,9 +425,10 @@ export default function ExportRecordScreen({ navigation, route }) {
   // };
 
   const getCheckList = async (date) => {
-    const { data } = axios.get(
+    const { data } = await axios.get(
       `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
     );
+    console.log("체크리스트 데이터 ", data);
 
     let checklist = "";
     data.checklist.forEach((symptom) => {
@@ -440,21 +439,25 @@ export default function ExportRecordScreen({ navigation, route }) {
   };
 
   const textToPdf = async (text) => {
-    const [response_user, response_record] = await Promise.all([
+    const [response_user, response_record, response_image] = await Promise.all([
       axios.get(`http://${ipnumber}:8080/userinfo/get/${user_code}`),
-      axios.get(`http://${ipnumber}:8080/daily/period`, {
-        user_code: user_code,
-        start: startDate,
-        end: endDate,
-      }),
+      axios.get(
+        `http://${ipnumber}:8080/daily/period/${user_code}/${startDate}/${endDate}`
+      ),
+      axios.get(
+        `http://${ipnumber}:8080/image/period/${user_code}/${startDate}/${endDate}`
+      ),
     ]);
+    console.log(response_image.data);
 
     const newBirth = response_user.data.birth.replace(/-/g, " / ");
     const newStartDate = startDate.replace(/-/g, " / ");
     const newEndDate = endDate.replace(/-/g, " / ");
 
     const checkLists = await Promise.all(
-      response_record.data.map((data) => getCheckList(data.date))
+      response_record.data.map(async (data) => {
+        return await getCheckList(data.date);
+      })
     );
 
     setTimeout(async () => {
@@ -502,12 +505,14 @@ export default function ExportRecordScreen({ navigation, route }) {
               }
               td.title {
                 text-align: center;
+                width: 60px;
                 padding: 0px 16px 0px 16px;
                 white-space: nowrap;
                 line-height: 30px;
               }
               td.place {
                 text-align: center;
+                width: 40px;
                 padding: 0px 10px 0px 10px;
                 white-space: nowrap;
                 line-height: 30px;
@@ -529,7 +534,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                 <th class="info">성별</th>
                 <td>${response_user.data.sex}</td>
                 <th class="info">기록 기간</th>
-                <td>${startDate}~${endDate}</td>
+                <td>${newStartDate}~${newEndDate}</td>
               </tr>
             </table>
             ${response_record.data
@@ -552,8 +557,21 @@ export default function ExportRecordScreen({ navigation, route }) {
                     사진
                   </td>
                   <td>
-                    <img src="" width="100" height="100" alt="이미지" />
-                  </td>
+                    ${(() => {
+                      const matchedImage = response_image.data.find(
+                        (image) => image.date === data.date
+                      );
+
+                      return matchedImage && matchedImage.url.length > 0
+                        ? matchedImage.url
+                            .map(
+                              (imgUrl) =>
+                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" />`
+                            )
+                            .join("")
+                        : "이미지 없음";
+                    })()}
+                </td>
                 </tr>
                 <tr>
                   <td colspan="2" class="title">
@@ -628,30 +646,10 @@ export default function ExportRecordScreen({ navigation, route }) {
         left={page == 3 ? null : "leftArrow"}
         title="기록 내보내기"
         onLeftPress={() => {
-          page == 0 ? navigation.pop() : page == 1 ? setPage(0) : setPage(1);
+          page == 1 ? navigation.pop() : setPage(1);
         }}
       />
-      {page == 0 ? (
-        // ***0번째 페이지***
-        <View style={{ ...styles.subContainer, alignItems: "center" }}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require("../assets/export.png")}
-              resizeMode="contain"
-              style={styles.paper}
-            />
-            <LinearGradient
-              colors={["transparent", "#00000005", "#00000010"]}
-              style={styles.shadowGradient}
-            />
-          </View>
-          <Text style={{ ...styles.boldText, marginTop: 24, marginBottom: 4 }}>
-            기록한 내용을 PDF로 내보내세요
-          </Text>
-          <Text style={styles.subText}>실제 치료에 활용할 수 있도록</Text>
-          <Text style={styles.subText}>기록한 내용을 PDF로 정리해드려요</Text>
-        </View>
-      ) : page !== 3 ? (
+      {page !== 3 ? (
         // ***1,2번째 페이지***
         <View style={styles.subContainer}>
           <View
@@ -771,28 +769,6 @@ export default function ExportRecordScreen({ navigation, route }) {
               </View>
             </View>
           ) : (
-            // <View>
-            //   <Text style={styles.subTitle}>이메일</Text>
-            //   <TextInput
-            //     placeholder="example@naver.com"
-            //     style={[
-            //       styles.input,
-            //       email.length > 0 &&
-            //         isValidEmail && { backgroundColor: theme.green50 },
-            //       email.length > 0 &&
-            //         isValidEmail &&
-            //         !isKeyboardVisible && { borderColor: theme.green500 },
-            //       email.length > 0 &&
-            //         !isValidEmail &&
-            //         !isKeyboardVisible && { borderColor: theme.red },
-            //     ]}
-            //     placeholderTextColor={theme.grey400}
-            //     onChangeText={setEmail}
-            //     returnKeyType="done"
-            //     value={email}
-            //     keyboardType="email-address"
-            //   />
-            // </View>
             textToPdf()
           )}
         </View>
@@ -829,9 +805,7 @@ export default function ExportRecordScreen({ navigation, route }) {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              page == 0
-                ? setPage(1)
-                : page == 1
+              page == 1
                 ? setPage(2)
                 : // : page == 2
                   // ? setPage(3)

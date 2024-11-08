@@ -31,7 +31,7 @@ export default function VoiceButton({ place, time, text = "", onPress }) {
                   <WithLocalSvg width={20} height={20} asset={Hospital} />
                 )}
                 <Text style={{ ...styles.voiceTime, color: theme.grey700 }}>
-                  음성기록
+                  {place === "school" ? "학교상담" : "병원상담"}
                 </Text>
                 <Text style={styles.voiceTime}>{getTime(time)}</Text>
               </View>

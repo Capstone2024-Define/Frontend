@@ -31,7 +31,7 @@ function InfoScreen({ route }) {
 
   // 플로팅 버튼 클릭 시 챗봇 연결
   const handleChatbotOpen = () => {
-    navigation.navigate("Chatbot");
+    navigation.navigate("Chatbot", { nickName: nickName });
   };
 
   // 닉네임(유저 이름) 가져오기
@@ -138,7 +138,7 @@ function InfoScreen({ route }) {
           }}
         >
           <Text style={{ color: theme.green500 }}>{nickName}</Text>
-          <Text>{"님을 위한\n추천 정보"}</Text>
+          <Text>{"님을 위한\n추천글"}</Text>
         </Text>
 
         {/* 추천 정보에 대해 가로 슬라이드 구현 */}

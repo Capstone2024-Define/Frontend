@@ -137,31 +137,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
     useCallback(() => {
       async function load() {
         try {
-          // const rawRecord = await AsyncStorage.getItem(date);
-          // const newRecord = JSON.parse(rawRecord);
-
-          // setHomeText(newRecord.home);
-          // setSchoolText(newRecord.school);
-          // setHospitalText(newRecord.hospital);
-          // setImages(newRecord.image);
-          // setDate(newRecord.date);
-          // setCheckList(newRecord.checkList);
-          // setSymptomList(newRecord.symptomList);
-          // setSummaryText(newRecord.summaryText);
-
-          // // totalText
-          // let newTotalText = "";
-          // if (newRecord.home) {
-          //   newTotalText += newRecord.home;
-          // }
-          // if (newRecord.school) {
-          //   newTotalText += ` ${newRecord.school}`;
-          // }
-          // if (newRecord.hospital) {
-          //   newTotalText += ` ${newRecord.hospital}`;
-          // }
-          // setTotalText(newTotalText);
-
           // 하루 기록 로드
           const response = await axios.get(
             `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
@@ -173,15 +148,11 @@ export default function DetailHistoryScreen({ navigation, route }) {
           setDayState(response.data.state);
 
           // 이미지 로드
-          const formData = new FormData();
-          formData.append("user_code", user_code);
-          formData.append("date", date);
-
-          response = await axios.get(
-            `http://${ipnumber}:8080/image/show`,
-            formData
+          const response_image = await axios.get(
+            `http://${ipnumber}:8080/image/show/${user_code}/${date}`
           );
-          console.log("이미지 로드: ", response.data);
+          console.log("이미지 로드: ", response_image.data);
+          setImages(response_image.data);
         } catch (error) {
           console.log("기록 로드 에러: ", error);
         }
@@ -194,19 +165,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
   useEffect(() => {
     async function load() {
       try {
-        // // 증상 체크리스트 로드
-        // const response_symptomCheck = await axios.get(
-        //   `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
-        // );
-        // console.log("체크리스트 로드: ", response_symptomCheck.data.checklist);
-        // // 부모 체크리스트 로드
-        // const response_parentCheck = await axios.get(
-        //   `http://${ipnumber}:8080/prnt/list/${user_code}/${date}`
-        // );
-
-        // setSymptomList(response_symptomCheck.data.checklist);
-        // setCheckList(response_parentCheck.data.checklist);
-
         // 체크리스트 로드 병렬로 수정
         const [response_symptomCheck, response_parentCheck] = await Promise.all(
           [
@@ -255,20 +213,12 @@ export default function DetailHistoryScreen({ navigation, route }) {
 
   const deleteRecord = async () => {
     try {
-      // const formData = new FormData();
-      // formData.append("user_code", user_code);
-      // formData.append("date", date);
-
       // // 이미지 삭제
-      // response = await axios.get(
-      //   `http://${ipnumber}:8080/image/delete`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
+      if (images.length > 0) {
+        response = await axios.delete(
+          `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
+        );
+      }
       // 증상 체크리스트 삭제
       await axios.delete(
         `http://${ipnumber}:8080/sx/delete/${user_code}/${date}`
@@ -311,15 +261,20 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.photoScroll}
         >
-          {images.map((image, index) => (
-            <View key={index}>
-              <Image
-                source={{ uri: image.uri }}
-                style={styles.photo}
-                resizeMode="cover"
-              />
-            </View>
-          ))}
+          {images.map((image, index) => {
+            console.log("이미지: ", image);
+            return (
+              <View key={index}>
+                <Image
+                  source={{
+                    uri: `${image}`,
+                  }}
+                  style={styles.photo}
+                  resizeMode="cover"
+                />
+              </View>
+            );
+          })}
         </ScrollView>
         {summaryText ? (
           <View
@@ -530,15 +485,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  photoScroll: { marginLeft: 20 },
+  photoScroll: { marginLeft: 20, marginBottom: 20 },
   photo: {
     width: 75,
     height: 75,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 8,
-    marginBottom: 24,
+    marginRight: 12,
   },
   title: {
     marginLeft: 8,
