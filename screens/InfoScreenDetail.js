@@ -17,6 +17,7 @@ import Note from "../assets/notes.svg";
 import ViewCount from "../assets/viewcount.svg";
 import { WithLocalSvg } from "react-native-svg/css";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function InfoScreenDetail({ route }) {
   const navigation = useNavigation();
@@ -29,11 +30,39 @@ function InfoScreenDetail({ route }) {
     console.log(selectedInfos);
   }, [selectedInfos]);
 
+  useEffect(() => {
+    loadBookmarks();
+  }, []);
+
+  // AsyncStorage에서 북마크 불러오기
+  const loadBookmarks = async () => {
+    try {
+      const savedBookmarks = await AsyncStorage.getItem("bookmarkedInfos");
+      if (savedBookmarks) {
+        setSelectedInfos(JSON.parse(savedBookmarks));
+      }
+    } catch (error) {
+      console.log("Error loading bookmarks: ", error);
+    }
+  };
+
+  // AsyncStorage에 북마크 저장
+  const saveBookmarks = async (bookmarks) => {
+    try {
+      await AsyncStorage.setItem("bookmarkedInfos", JSON.stringify(bookmarks));
+    } catch (error) {
+      console.log("Error saving bookmarks: ", error);
+    }
+  };
+
+  // 북마크 추가/삭제 함수
   const toggleBookmark = (index) => {
-    setSelectedInfos((preSelected) => {
-      return preSelected.includes(index)
-        ? preSelected.filter((s) => s !== index)
-        : [...preSelected, index];
+    setSelectedInfos((prevSelected) => {
+      const updated = prevSelected.includes(index)
+        ? prevSelected.filter((s) => s !== index)
+        : [...prevSelected, index];
+      saveBookmarks(updated); // AsyncStorage에 저장
+      return updated;
     });
   };
 

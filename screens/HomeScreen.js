@@ -9,6 +9,7 @@ import {
   ImageBackground,
   StatusBar,
   Platform,
+  ScrollView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { theme } from "../colors/color";
@@ -454,7 +455,12 @@ export default function HomeScreen({ navigation, route }) {
                   }
                   style={{ width: "100%" }}
                 >
-                  <View style={{ flexDirection: "row", marginBottom: 12 }}>
+                  <ScrollView
+                    contentContainerStyle={{
+                      flexDirection: "row",
+                      marginBottom: 12,
+                    }}
+                  >
                     {images.length > 0 ? (
                       images.map((image, index) => (
                         <View key={index}>
@@ -475,7 +481,7 @@ export default function HomeScreen({ navigation, route }) {
                         ]}
                       />
                     )}
-                  </View>
+                  </ScrollView>
                   <Text
                     style={styles.recordText}
                     numberOfLines={2}
