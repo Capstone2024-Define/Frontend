@@ -127,7 +127,8 @@ export default function DetailRecordScreen({ navigation, route }) {
           allowsMultipleSelection: true,
           selectionLimit: 10 - images.length,
         });
-        //console.log(result);
+        console.log("이미지 선택 응답: ", result);
+        console.log("이미지 선택 응답: ", result.assets);
 
         if (!result.cancelled && result.assets && result.assets.length > 0) {
           // 이미지 업로드 결과
@@ -151,19 +152,20 @@ export default function DetailRecordScreen({ navigation, route }) {
     }
   };
 
-  // 이미지 서버에 올릴 형태로 바꿈
-  const fetchImageFromUri = async () => {
-    const newImage = await Promise.all(
-      images.map(async (image) => {
-        const response = await fetch(image.uri);
-        return await response.blob();
-      })
-    );
+  // // 이미지 서버에 올릴 형태로 바꿈
+  // const fetchImageFromUri = async () => {
+  //   const newImage = await Promise.all(
+  //     images.map(async (image) => {
+  //       const response = await fetch(image.uri);
+  //       console.log("fetch 결과: ", response);
+  //       return await response.blob();
+  //     })
+  //   );
 
-    console.log("이미지 blob: ", newImage);
+  //   console.log("이미지 blob: ", newImage);
 
-    return newImage;
-  };
+  //   return newImage;
+  // };
 
   // 이미지 삭제
   const deleteImage = (key) => {
@@ -252,19 +254,51 @@ export default function DetailRecordScreen({ navigation, route }) {
       ]);
 
       // 이미지 데이터 준비
-      const postingImages = await fetchImageFromUri();
+      // const postingImages = await fetchImageFromUri();
+      // const formData = new FormData();
+      // postingImages.forEach((blob, index) => {
+      //   formData.append("multipartFiles", {
+      //     uri: blob.uri, // Blob 객체가 아닌 URI가 필요할 수도 있음
+      //     name: `image${index}.jpg`, // 파일 이름
+      //     type: blob.type || "image/jpeg", // MIME 타입 명시
+      //   });
+      // });
+
+      // formData.append("user_code", user_code);
+      // formData.append("date", date);
+
+      // console.log("테스트: ", formData.getAll("multipartFiles"));
+
+      // // 이미지 저장
+      // await axios.post(`http://${ipnumber}:8080/image/post`, formData);
+
+      // console.log("POST 성공");
       const formData = new FormData();
-      postingImages.forEach((blob, index) => {
-        formData.append("multipartFiles", blob);
+
+      images.forEach((image, index) => {
+        formData.append("multipartFiles", {
+          uri: image.uri,
+          name: `image${index}.jpg`,
+          type: "image/jpeg",
+        });
       });
+
       formData.append("user_code", user_code);
       formData.append("date", date);
 
-      console.log("formData ", formData);
+      const response = await fetch(`http://${ipnumber}:8080/image/post`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      // 이미지 저장
-      await axios.post(`http://${ipnumber}:8080/image/post`, formData);
-      console.log("POST 성공");
+      if (response.ok) {
+        console.log("POST 성공");
+      } else {
+        console.log("POST 실패: ", response.status);
+      }
     } catch (error) {
       console.log("POST 에러: ", error);
     }

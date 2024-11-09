@@ -9,6 +9,7 @@ import {
   ImageBackground,
   StatusBar,
   Platform,
+  ScrollView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { theme } from "../colors/color";
@@ -20,11 +21,14 @@ import Note_white from "../assets/notes_white.svg";
 import Mic from "../assets/mic_green.svg";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import PloyGon from "../assets/home_polygon.svg";
 import Calender from "../assets/home_calendar.svg";
 import { Shadow } from "react-native-shadow-2";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import CalendarModal from "../component/CalendarModal";
+import Svg, { Circle } from "react-native-svg";
+import PlusBtn from "../component/PlusBtn";
 
 // 홈 스크린
 export default function HomeScreen({ navigation, route }) {
@@ -88,9 +92,17 @@ export default function HomeScreen({ navigation, route }) {
               `http://${ipnumber}:8080/daily/records/${user_code}`
             );
             setTotalDay(response_total.data.length);
-          } catch (e) {
+
+            // 이미지 가져옴
+            const response_image = await axios.get(
+              `http://${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
+            );
+            console.log("이미지 로드: ", response_image.data);
+            setImages(response_image.data);
+          } catch (error) {
             // 기록 없는거니까 텍스트랑 이미지 비움
             // setTotalText("");
+            console.log("GET 오류: ", error);
             setImages([]);
           }
         };
@@ -181,7 +193,7 @@ export default function HomeScreen({ navigation, route }) {
 
   // 이모지 색 컬러
   const getEmojiColor = async (date) => {
-    let emojiColor = theme.grey150;
+    let emojiColor = null;
 
     try {
       const response = await axios.get(
@@ -200,7 +212,7 @@ export default function HomeScreen({ navigation, route }) {
           emojiColor = theme.pink;
           break;
         default:
-          emojiColor = theme.grey150;
+          emojiColor = null;
       }
     } catch (error) {
       // 하루기록이 없음
@@ -302,327 +314,274 @@ export default function HomeScreen({ navigation, route }) {
                 <WithLocalSvg asset={Calender} />
               </TouchableOpacity>
             </View>
+            {/* 주간 날짜 */}
             <View
               style={{
                 flexDirection: "row",
                 width: "100%",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: 16,
+                marginBottom: 4,
               }}
             >
               {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => {
                 const isDisabled = isPastDate(weeks[index]); // 현재 날짜 이후인지 확인
                 return (
-                  <LinearGradient
-                    key={index}
-                    colors={
-                      selectedDate === weeks[index]
-                        ? ["#79BA7E", "#AFCA85"] // 선택된 날짜일 때 그라데이션 색상
-                        : ["transparent", "transparent"] // 선택되지 않은 날짜일 때 투명
-                    }
-                    style={{
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      paddingVertical: 5,
-                      marginHorizontal: 2.5,
-                      borderRadius: 24,
-                    }}
-                  >
-                    <TouchableOpacity
-                      key={index}
+                  <View key={index}>
+                    <LinearGradient
+                      colors={
+                        selectedDate === weeks[index]
+                          ? ["#79BA7E", "#AFCA85"] // 선택된 날짜일 때 그라데이션 색상
+                          : ["transparent", "transparent"] // 선택되지 않은 날짜일 때 투명
+                      }
                       style={{
+                        width: 38,
+                        height: 78,
                         alignItems: "center",
-                        backgroundColor: "transparent",
+                        paddingVertical: 5,
+                        borderRadius: 24,
+                        marginBottom: 4,
                       }}
-                      onPress={() =>
-                        !isDisabled && setSelectedDate(weeks[index])
-                      } // 비활성화된 날짜는 터치 불가
-                      disabled={isDisabled} // 비활성화된 날짜는 터치 불가
                     >
-                      <Text
-                        style={[
-                          styles.subText,
-                          selectedDate === weeks[index]
-                            ? {
-                                color: "#FFFFFF",
-                                fontFamily: "Pretendard-Bold",
-                              }
-                            : { color: "#242424" },
-                        ]}
-                      >
-                        {day}
-                      </Text>
-                      <Text
+                      <TouchableOpacity
+                        key={index}
                         style={{
-                          color:
-                            selectedDate === weeks[index]
-                              ? "#FFFFFF"
-                              : isPastDate(weeks[index])
-                              ? theme.grey400
-                              : "#242424",
-                          fontSize: 12,
-                          marginBottom: 4,
-                          textAlign: "center",
-                          fontFamily:
-                            selectedDate === weeks[index]
-                              ? "Pretendard-Bold"
-                              : "Pretendard-Regular",
+                          alignItems: "center",
+                          backgroundColor: "transparent",
                         }}
+                        onPress={() =>
+                          !isDisabled && setSelectedDate(weeks[index])
+                        } // 비활성화된 날짜는 터치 불가
+                        disabled={isDisabled} // 비활성화된 날짜는 터치 불가
                       >
-                        {new Date(weeks[index]).getDate()}
-                      </Text>
-                      <FontAwesome
-                        name="circle"
-                        size={25}
-                        color={emoji[index] ? emoji[index] : theme.grey100}
-                      />
-                    </TouchableOpacity>
-                  </LinearGradient>
-                );
-              })}
-            </View>
-
-            {images.length > 0 || summaryText ? (
-              <View style={{ flex: 1 }}>
-                <Shadow
-                  distance={5}
-                  startColor="#00000010"
-                  endColor="#00000000"
-                >
-                  <TouchableOpacity
-                    style={styles.recordContainer}
-                    activeOpacity={0.5}
-                    onPress={() =>
-                      navigation.push("DetailHistory", {
-                        date: selectedDate,
-                        user_code: user_code,
-                        ipnumber: ipnumber,
-                      })
-                    }
-                  >
-                    <View style={styles.recordHeader}>
-                      <Text style={styles.recordTitle}>
-                        {`${new Date(selectedDate).getMonth() + 1}.${new Date(
-                          selectedDate
-                        ).getDate()} ${
-                          ["일", "월", "화", "수", "목", "금", "토"][
-                            new Date(selectedDate).getDay()
-                          ]
-                        }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
-                      </Text>
-                      <Text style={styles.dubogi}>더보기</Text>
-                    </View>
-                    <View style={styles.line} />
-                    <View style={{ flexDirection: "row", marginBottom: 10 }}>
-                      {images.map((image) => (
-                        <View key={image.id}>
-                          <Image
-                            source={{ uri: image.uri }}
-                            style={styles.photo}
-                            resizeMode="cover"
-                          />
+                        <Text
+                          style={[
+                            styles.subText,
+                            selectedDate === weeks[index]
+                              ? {
+                                  color: "#FFFFFF",
+                                  fontFamily: "Pretendard-Bold",
+                                }
+                              : isDisabled
+                              ? { color: theme.grey400 }
+                              : { color: "#242424" },
+                          ]}
+                        >
+                          {today === weeks[index] ? "오늘" : day}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.subText,
+                            { marginVertical: 4 },
+                            selectedDate === weeks[index]
+                              ? {
+                                  color: "#FFFFFF",
+                                  fontFamily: "Pretendard-Bold",
+                                }
+                              : isDisabled
+                              ? { color: theme.grey400 }
+                              : { color: "#242424" },
+                          ]}
+                        >
+                          {new Date(weeks[index]).getDate()}
+                        </Text>
+                        <View
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 60,
+                            backgroundColor: emoji[index]
+                              ? emoji[index]
+                              : selectedDate === weeks[index]
+                              ? theme.grey150
+                              : theme.grey50,
+                            position: "relative",
+                          }}
+                        >
+                          {!emoji[index] && (
+                            <Svg style={{ position: "absolute" }}>
+                              <Circle
+                                cx="10"
+                                cy="10"
+                                r="9.6"
+                                stroke={theme.grey300}
+                                strokeWidth="1"
+                                strokeDasharray="2, 2" // 점선 길이와 간격 설정
+                                fill="none"
+                              />
+                            </Svg>
+                          )}
                         </View>
-                      ))}
-                    </View>
-                    <Text
-                      style={styles.recordText}
-                      numberOfLines={3}
-                      ellipsizeMode="tail"
-                    >
-                      {/* {summaryText && summaryText !== ""
-                        ? summaryText.slice(0, 92).replace(/\n/g, " ")
-                        : totalText.slice(0, 92).replace(/\n/g, " ")} */}
-                      {/* {summaryText &&
-                        summaryText.slice(0, 95).replace(/\n/g, " ")}
-                      ... */}
-                      {summaryText.replace(/\n/g, " ")}
-                    </Text>
-                  </TouchableOpacity>
-                </Shadow>
-                <View style={{ marginBottom: 16 }} />
-              </View>
-            ) : (
-              <View style={{ flex: 1 }}>
-                <Shadow
-                  distance={5}
-                  startColor="#00000010"
-                  endColor="#00000000"
-                >
-                  <View
-                    style={{
-                      width: 320,
-                      height: 188,
-                      backgroundColor: "white",
-                      borderRadius: 8,
-                      paddingVertical: 12,
-                      paddingHorizontal: 16,
-                      marginBottom: 36,
-                      alignItems: "center", // 네모 박스들을 중앙 정렬
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#333333",
-                        fontSize: 14,
-                        fontFamily: "Pretendard-Medium",
-                        textAlign: "left", // 왼쪽 정렬
-                        alignSelf: "flex-start", // 텍스트를 부모 뷰의 왼쪽에 정렬
-                      }}
-                    >
-                      {`${new Date(selectedDate).getMonth() + 1}.${new Date(
-                        selectedDate
-                      ).getDate()} ${
-                        ["일", "월", "화", "수", "목", "금", "토"][
-                          new Date(selectedDate).getDay()
-                        ]
-                      }요일${isToday(selectedDate) ? " (오늘)" : ""}`}
-                    </Text>
-                    <View
-                      style={{ ...styles.line, marginTop: 10, marginBottom: 0 }}
-                    />
+                      </TouchableOpacity>
+                    </LinearGradient>
                     <View
                       style={{
-                        flex: 1,
+                        width: 38,
+                        height: 8,
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      {/* <WithLocalSvg asset={NoRecord} /> */}
-                      <Text
-                        style={{
-                          color: "#6F6F6F",
-                          fontSize: 14,
-                          marginVertical: 10,
-                          alignItems: "center",
-                          fontFamily: "Human-beomseok",
-                        }}
-                      >
-                        {"아직 기록하지 않았어요!"}
-                      </Text>
+                      {selectedDate == weeks[index] && (
+                        <WithLocalSvg asset={PloyGon} />
+                      )}
                     </View>
                   </View>
-                </Shadow>
-              </View>
-            )}
+                );
+              })}
+            </View>
+            {/* 상세 기록 */}
+            <View
+              style={{
+                width: "100%",
+                height: 151,
+                alignItems: summaryText ? "flex-start" : "center",
+                justifyContent: "center",
+                backgroundColor: "white",
+                borderRadius: 8,
+                paddingHorizontal: 16,
+              }}
+            >
+              {summaryText ? (
+                // 기록 O
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() =>
+                    navigation.push("DetailHistory", {
+                      date: selectedDate,
+                      user_code: user_code,
+                      ipnumber: ipnumber,
+                    })
+                  }
+                  style={{ width: "100%" }}
+                >
+                  <ScrollView
+                    contentContainerStyle={{
+                      flexDirection: "row",
+                      marginBottom: 12,
+                    }}
+                  >
+                    {images.length > 0 ? (
+                      images.map((image, index) => (
+                        <View key={index}>
+                          <Image
+                            source={{
+                              uri: `${image}`,
+                            }}
+                            style={styles.photo}
+                            resizeMode="cover"
+                          />
+                        </View>
+                      ))
+                    ) : (
+                      <View
+                        style={[
+                          styles.photo,
+                          { backgroundColor: theme.grey150 },
+                        ]}
+                      />
+                    )}
+                  </ScrollView>
+                  <Text
+                    style={styles.recordText}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {summaryText.replace(/\n/g, " ")}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                // 기록 X
+                <PlusBtn
+                  onPress={() =>
+                    navigation.push("SymptomCheck", {
+                      date: selectedDate,
+                      user_code: user_code,
+                      ipnumber: ipnumber,
+                    })
+                  }
+                />
+              )}
+            </View>
+            <View style={styles.line} />
+            {/* 버튼 */}
             <View
               style={{
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 alignItems: "center",
                 width: "100%",
-                maxWidth: 350,
               }}
             >
-              {/* {images.length > 0 || totalText ? (
-                <TouchableOpacity
-                  style={{ borderRadius: 24 }}
-                  onPress={() =>
-                    navigation.push("DetailModify", { date: selectedDate })
-                  }
-                >
-                  <LinearGradient
-                    colors={["#79BA7E", "#AFCA85"]}
-                    style={{ padding: 1, borderRadius: 24 }}
-                  >
-                    <View style={styles.whiteButton}>
-                      <WithLocalSvg asset={Edit_green} />
-                      <Text
-                        style={{
-                          color: theme.green500,
-                          fontSize: 14,
-                          marginLeft: 8,
-                          fontFamily: "Pretendard-Medium",
-                        }}
-                      >
-                        {"수정하기"}
-                      </Text>
-                    </View>
-                  </LinearGradient>
-                </TouchableOpacity>
-              ) : ( */}
-              <Shadow distance={5} startColor="#00000009" endColor="#00000000">
-                <LinearGradient
-                  colors={["#79BA7E", "#AFCA85"]}
-                  style={styles.gradientGButton}
-                >
-                  <TouchableOpacity
-                    style={styles.greenButton}
-                    onPress={() =>
-                      images.length > 0 || summaryText
-                        ? navigation.push("DetailModify", {
-                            date: selectedDate,
-                            user_code: user_code,
-                            ipnumber: ipnumber,
-                          })
-                        : navigation.push("SymptomCheck", {
-                            date: selectedDate,
-                            user_code: user_code,
-                            ipnumber: ipnumber,
-                          })
-                    }
-                  >
-                    {images.length > 0 || summaryText ? (
-                      <WithLocalSvg asset={Edit_white} />
-                    ) : (
-                      <WithLocalSvg asset={Note_white} />
-                    )}
-                    <Text
-                      style={{
-                        color: "#FFFFFF",
-                        fontSize: 16,
-                        lineHeight: 24,
-                        marginLeft: 8,
-                        fontFamily: "Pretendard-Bold",
-                      }}
-                    >
-                      {images.length > 0 || summaryText
-                        ? "수정하기"
-                        : "하루기록"}
-                    </Text>
-                  </TouchableOpacity>
-                </LinearGradient>
-              </Shadow>
-              {/* )} */}
-
+              {/* 상담녹음 버튼 */}
               <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.whiteButton}
+                activeOpacity={0.5}
                 onPress={() => {
-                  const today = cvtDateString(new Date());
+                  //const today = cvtDateString(new Date());
                   navigation.push("MainVoice", {
                     date: today,
                     user_code: user_code,
                     ipnumber: ipnumber,
                   });
                 }}
+                style={[
+                  styles.buttonContainer,
+                  { width: "57%", marginRight: 12 },
+                ]}
               >
-                <Shadow
-                  distance={5}
-                  startColor="#00000009"
-                  endColor="#00000000"
+                <View style={{ height: "100%" }}>
+                  <Text style={[styles.boldTitle, { marginBottom: 4 }]}>
+                    상담녹음
+                  </Text>
+                  <Text style={styles.subText}>
+                    상담내용을 빠르게{"\n"}음성으로 기록해요
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    height: "100%",
+                    alignItems: "flex-end",
+                    justifyContent: "flex-end",
+                  }}
                 >
-                  <LinearGradient
-                    colors={["#79BA7E", "#AFCA85"]}
-                    style={{ padding: 1.4, borderRadius: 24 }}
-                  >
-                    <View style={styles.whiteButton}>
-                      <WithLocalSvg asset={Mic} />
-                      <Text
-                        style={{
-                          color: theme.green500,
-                          fontSize: 16,
-                          lineHeight: 24,
-                          marginLeft: 8,
-                          fontFamily: "Pretendard-Bold",
-                        }}
-                      >
-                        {"음성기록"}
-                      </Text>
-                    </View>
-                  </LinearGradient>
-                </Shadow>
+                  <Image
+                    source={require("../assets/home_mike.png")}
+                    resizeMode="contain"
+                    style={{ width: 52, height: 68 }}
+                  />
+                </View>
+              </TouchableOpacity>
+              {/* 내보내기 버튼 */}
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
+                  navigation.push("ExportRecord", {
+                    user_code: user_code,
+                    ipnumber: ipnumber,
+                  });
+                }}
+                style={[styles.buttonContainer, { width: "39%" }]}
+              >
+                <View style={{ height: "100%" }}>
+                  <Text style={[styles.boldTitle, { marginBottom: 4 }]}>
+                    내보내기
+                  </Text>
+                  <Text style={styles.subText}>
+                    기록을 문서파일로{"\n"}정리해드려요
+                  </Text>
+                </View>
+
+                <Image
+                  source={require("../assets/home_export.png")}
+                  resizeMode="contain"
+                  style={{
+                    width: 58,
+                    height: 57,
+                    position: "absolute",
+                    bottom: 4,
+                    right: 4,
+                  }}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -665,62 +624,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  dayContainer: {
-    alignItems: "center",
-  },
   subText: {
     fontSize: 12,
     lineHeight: 20,
     fontFamily: "Pretendard-Regular",
   },
-  dayCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#F0F0F0",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 5,
-  },
-  selectedDay: {
-    backgroundColor: "#66BB6A",
-  },
-  dateText: {
-    color: "#333",
-  },
-  recordContainer: {
-    width: 320,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: "white",
-  },
-  recordHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  recordTitle: {
-    fontSize: 14,
-    fontFamily: "Pretendard-Medium",
-    color: theme.grey700,
-  },
-  dubogi: {
-    fontSize: 12,
-    fontFamily: "Pretendard-Bold",
-    color: theme.grey400,
-  },
   line: {
     width: "100%",
     height: 1,
-    marginBottom: 10,
-    backgroundColor: theme.grey250,
-    borderRadius: 40,
+    marginVertical: 15,
+    backgroundColor: "#EBEBEB",
+    borderRadius: 20,
   },
   recordText: {
     fontSize: 14,
-    fontFamily: "Human-beomseok",
+    lineHeight: 20,
+    fontFamily: "Pretendard-Regular",
     color: theme.grey800,
   },
   photo: {
@@ -729,78 +648,15 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 8,
   },
-  noRecord: {
-    alignItems: "center",
-  },
-  noRecordImage: {
-    width: 40,
-    height: 40,
-  },
-  noRecordText: {
-    fontSize: 14,
-    color: "#888",
-    marginTop: 5,
-  },
-  buttonsContainer: {
+  buttonContainer: {
     flexDirection: "row",
+    height: 135,
     justifyContent: "space-between",
-    alignItems: "center",
-  },
-  gradientGButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 24,
-  },
-  greenButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 184,
-    paddingVertical: 12,
-    backgroundColor: "transparent",
-  },
-  whiteButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    borderRadius: 16,
     backgroundColor: "white",
-    borderRadius: 24,
-    width: 124,
-    justifyContent: "center",
-    paddingVertical: 10,
-  },
-  // gradientYButton: {
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   borderRadius: 24,
-  //   width: 119,
-  //   height: 44,
-  // },
-  // yellowButton: {
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   backgroundColor: "transparent",
-  // },
-  buttonText: {
-    color: "white",
-    marginLeft: 5,
-  },
-  buttonIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 8,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-  },
-  modal: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 15,
-    alignItems: "center",
+    paddingLeft: 16,
+    paddingTop: 12,
+    paddingBottom: 4,
+    paddingRight: 4,
   },
 });

@@ -21,25 +21,25 @@ const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 export default function KakaoLoginScreen({ navigation }) {
   const [activePage, setActivePage] = useState(0); // 현재 페이지 상태
   const scrollViewRef = useRef(null);
-  const title = ["하루기록/음성기록", "정보", "캘린더", "내보내기"];
+  const title = ["기록하기", "상담녹음", "내보내기", "정보"];
   const contentTop = [
-    "ADHD 증상체크부터",
-    "ADHD에 대한 정보를 제공하고",
-    "기록한 내용을 날짜별로 확인하고,",
-    "기록한 내용을 치료에",
+    "증상체크부터",
+    "선생님과 상담을 녹음하면",
+    "기록을 활용할 수 있도록",
+    "기록한 내용을 기반으로",
   ];
   const contentBottom = [
     "부모행동까지 기록을 한번에!",
-    "챗봇으로 정보 탐색을 도와드려요",
-    "분석된 그래프를 제공해요",
-    "활용할 수 있도록 문서화해드려요!",
+    "텍스트로 바꿔드려요",
+    "문서화해드려요!",
+    "꼭 필요한 정보만 보여드릴게요",
   ];
 
   const images = [
-    require("../assets/LoginImage1.png"),
-    require("../assets/LoginImage2.png"),
-    require("../assets/LoginImage3.png"),
-    require("../assets/LoginImage4.png"),
+    require("../assets/loginImage/LoginImage1.png"),
+    require("../assets/loginImage/LoginImage2.png"),
+    require("../assets/loginImage/LoginImage3.png"),
+    require("../assets/loginImage/LoginImage4.png"),
   ];
 
   // 이미지 4배
@@ -112,7 +112,7 @@ export default function KakaoLoginScreen({ navigation }) {
                 key={index}
                 style={{
                   ...styles.imageContainer,
-                  backgroundColor: theme.yellow25,
+                  backgroundColor: theme.grey50,
                 }}
               >
                 <Image
@@ -155,7 +155,7 @@ export default function KakaoLoginScreen({ navigation }) {
       >
         <WithLocalSvg asset={Kakao} />
         <Text style={{ ...styles.buttonText, marginLeft: 9 }}>
-          카카오 로그인
+          카카오로 시작하기
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
     marginTop: 47,
     width: 194,
     height: 410,
-    borderWidth: 4,
-    borderColor: theme.grey500,
-    borderRadius: 8,
+    borderWidth: 5,
+    borderColor: theme.green100,
+    borderRadius: 12,
   },
   subContainer: {
     alignItems: "center",

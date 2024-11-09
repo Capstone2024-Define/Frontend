@@ -136,6 +136,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
     useCallback(() => {
       async function load() {
         try {
+          // 하루 기록 로드
           const response = await axios.get(
             `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
           );
@@ -146,33 +147,23 @@ export default function DetailHistoryScreen({ navigation, route }) {
           setDayState(response.data.state);
 
           // 이미지 로드
-          const formData = new FormData();
-          formData.append("user_code", user_code);
-          formData.append("date", date);
-
-          const imageResponse = await axios.get(
-            `http://${ipnumber}:8080/image/show/${user_code}/${date}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
+          const response_image = await axios.get(
+            `http://${ipnumber}:8080/image/show/${user_code}/${date}`
           );
-          console.log("이미지 로드: ", imageResponse.data);
-          setImages(imageResponse.data); // 서버가 반환하는 데이터에 따라 설정
+          console.log("이미지 로드: ", response_image.data);
+          setImages(response_image.data);
         } catch (error) {
           console.log("기록 로드 에러: ", error);
         }
       }
       load();
-      
     }, [])
   );
 
   useEffect(() => {
     async function load() {
       try {
+        // 체크리스트 로드 병렬로 수정
         const [response_symptomCheck, response_parentCheck] = await Promise.all(
           [
             axios.get(`http://${ipnumber}:8080/sx/list/${user_code}/${date}`),
@@ -217,20 +208,12 @@ export default function DetailHistoryScreen({ navigation, route }) {
   );
   const deleteRecord = async () => {
     try {
-      // const formData = new FormData();
-      // formData.append("user_code", user_code);
-      // formData.append("date", date);
-
       // // 이미지 삭제
-      // response = await axios.get(
-      //   `http://${ipnumber}:8080/image/delete`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
+      if (images.length > 0) {
+        response = await axios.delete(
+          `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
+        );
+      }
       // 증상 체크리스트 삭제
       await axios.delete(
         `http://${ipnumber}:8080/sx/delete/${user_code}/${date}`
@@ -273,7 +256,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.photoScroll}
         >
-         {images.map((image, index) => {
+          {images.map((image, index) => {
             console.log("이미지: ", image);
             return (
               <View key={index}>
@@ -282,7 +265,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
                     uri: `${image}`,
                   }}
                   style={styles.photo}
-                  resizeMode="contain"
+                  resizeMode="cover"
                 />
               </View>
             );
@@ -497,15 +480,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  photoScroll: { marginLeft: 20 },
+  photoScroll: { marginLeft: 20, marginBottom: 20 },
   photo: {
     width: 75,
     height: 75,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 8,
-    marginBottom: 24,
+    marginRight: 12,
   },
   title: {
     marginLeft: 8,

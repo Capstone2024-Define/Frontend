@@ -9,7 +9,7 @@ export default function PlusBtn({ onPress }) {
     <>
       <Shadow distance={5} startColor="#00000009" endColor="#00000000">
         <LinearGradient colors={["#79BA7E", "#AFCA85"]} style={styles.button}>
-          <View
+          {/* <View
             style={[
               styles.button,
               {
@@ -19,15 +19,15 @@ export default function PlusBtn({ onPress }) {
                 borderRadius: 20,
               },
             ]}
-          >
-            <TouchableOpacity activeOpacity={0.3} onPress={onPress}>
-              <Image
-                source={require("../assets/add.png")}
-                resizeMode="contain"
-                style={{ width: 27, height: 27 }}
-              />
-            </TouchableOpacity>
-          </View>
+          > */}
+          <TouchableOpacity activeOpacity={0.3} onPress={onPress}>
+            <Image
+              source={require("../assets/add.png")}
+              resizeMode="contain"
+              style={{ width: 27, height: 27 }}
+            />
+          </TouchableOpacity>
+          {/* </View> */}
         </LinearGradient>
       </Shadow>
       <Text
@@ -35,11 +35,22 @@ export default function PlusBtn({ onPress }) {
           fontSize: 14,
           lineHeight: 20,
           fontFamily: "Pretendard-Bold",
-          color: theme.green500,
-          marginTop: 10,
+          color: theme.green700,
+          marginTop: 8,
+          marginBottom: 4,
         }}
       >
         기록하기
+      </Text>
+      <Text
+        style={{
+          fontSize: 12,
+          lineHeight: 20,
+          fontWeight: "Pretendard-Regular",
+          color: theme.grey500,
+        }}
+      >
+        하루를 기록해주세요!
       </Text>
     </>
   );
@@ -53,11 +64,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "transparent",
     borderRadius: 36,
-  },
-  buttonText: {
-    marginLeft: 8,
-    fontSize: 14,
-    fontFamily: "Pretendard-Medium",
-    color: "white",
   },
 });

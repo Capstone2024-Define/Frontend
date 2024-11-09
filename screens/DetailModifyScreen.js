@@ -50,17 +50,6 @@ export default function DetailModifyScreen({ navigation, route }) {
   useState(() => {
     async function load() {
       try {
-        // const rawRecord = await AsyncStorage.getItem(date);
-        // const newRecord = JSON.parse(rawRecord);
-
-        // setHomeText(newRecord.home);
-        // setSchoolText(newRecord.school);
-        // setHospitalText(newRecord.hospital);
-        // setImages(newRecord.image);
-        // setCheckList(newRecord.checkList);
-        // setSymptomList(newRecord.symptomList);
-        // setId(newRecord.image[newRecord.image.length - 1].id + 1); // id 안겹치게
-
         // 이미지 저장 DB 로직 짜여지면 이미지 id 관리 윗줄처럼
         const response = await axios.get(
           `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
@@ -69,6 +58,13 @@ export default function DetailModifyScreen({ navigation, route }) {
         setSchoolText(response.data.school);
         setHospitalText(response.data.hospital);
         setState(response.data.state);
+
+        // 이미지 로드
+        const response_image = await axios.get(
+          `http://${ipnumber}:8080/image/show/${user_code}/${date}`
+        );
+        console.log("이미지 로드: ", response_image.data);
+        setImages(response_image.data);
       } catch (e) {
         console.log("기록 로드 에러");
       }
@@ -89,6 +85,10 @@ export default function DetailModifyScreen({ navigation, route }) {
     }
     setTotalText(newTotalText);
   }, [homeText, schoolText, hospitalText]);
+
+  useEffect(() => {
+    console.log(images);
+  }, [images]);
 
   // 이미지 업로드
   const uploadImage = async () => {
@@ -236,25 +236,6 @@ export default function DetailModifyScreen({ navigation, route }) {
       );
 
       console.log("Post 응답:", response.data);
-
-      // // 서머리
-      // const result = await summary(totalText);
-      // console.log(result.summary);
-
-      // // 객체 설정
-      // const newRecord = {
-      //   date: date,
-      //   home: homeText,
-      //   school: schoolText,
-      //   hospital: hospitalText,
-      //   image: images,
-      //   checkList: checkList,
-      //   symptomList: symptomList,
-      //   summaryText: result.summary,
-      // };
-
-      // // 스토리지 저장
-      // await save(newRecord);
     } catch (error) {
       console.log("수정 에러", error);
     }
@@ -305,7 +286,7 @@ export default function DetailModifyScreen({ navigation, route }) {
           {images.map((image) => (
             <View key={image.id}>
               <Image
-                source={{ uri: image.uri }}
+                source={{ uri: `${image}` }}
                 style={styles.photo}
                 resizeMode="cover"
               />

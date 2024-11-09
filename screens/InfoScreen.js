@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { infos } from "../component/Info";
 import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 추가
+import AsyncStorage from "@react-native-async-storage/async-storage"; // AsyncStorage 추가
 import { theme } from "../colors/color";
 import TagChip from "../component/TagChip";
 
@@ -32,7 +32,7 @@ function InfoScreen({ route }) {
 
   // 플로팅 버튼 클릭 시 챗봇 연결
   const handleChatbotOpen = () => {
-    navigation.navigate("Chatbot");
+    navigation.navigate("Chatbot", { nickName: nickName });
   };
 
   // 닉네임(유저 이름) 가져오기
@@ -53,28 +53,30 @@ function InfoScreen({ route }) {
   // AsyncStorage에서 북마크 불러오기
   const loadBookmarks = async () => {
     try {
-      const savedBookmarks = await AsyncStorage.getItem('bookmarkedInfos');
+      const savedBookmarks = await AsyncStorage.getItem("bookmarkedInfos");
       if (savedBookmarks) {
         setSelectedInfos(JSON.parse(savedBookmarks));
       }
     } catch (error) {
-      console.log('Error loading bookmarks: ', error);
+      console.log("Error loading bookmarks: ", error);
     }
   };
 
   // AsyncStorage에 북마크 저장
   const saveBookmarks = async (bookmarks) => {
     try {
-      await AsyncStorage.setItem('bookmarkedInfos', JSON.stringify(bookmarks));
+      await AsyncStorage.setItem("bookmarkedInfos", JSON.stringify(bookmarks));
     } catch (error) {
-      console.log('Error saving bookmarks: ', error);
+      console.log("Error saving bookmarks: ", error);
     }
   };
 
-  // 초기 로드 시 북마크 로드
-  useEffect(() => {
-    loadBookmarks();
-  }, []);
+  // 북마크 로드
+  useFocusEffect(
+    useCallback(() => {
+      loadBookmarks();
+    }, [])
+  );
 
   // 북마크가 변경될 때마다 AsyncStorage에 저장
   useEffect(() => {
@@ -168,7 +170,7 @@ function InfoScreen({ route }) {
           }}
         >
           <Text style={{ color: theme.green500 }}>{nickName}</Text>
-          <Text>{"님을 위한\n추천 정보"}</Text>
+          <Text>{"님을 위한\n추천글"}</Text>
         </Text>
 
         {/* 추천 정보에 대해 가로 슬라이드 구현 */}
