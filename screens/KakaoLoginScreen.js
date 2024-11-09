@@ -175,12 +175,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   phone: {
-    marginTop: 47,
-    width: 194,
+    marginTop: 36,
+    width: 198,
     height: 410,
-    borderWidth: 5,
-    borderColor: theme.green100,
-    borderRadius: 12,
+    // borderWidth: 5,
+    // borderColor: theme.green100,
+    // borderRadius: 12,
   },
   subContainer: {
     alignItems: "center",

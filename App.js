@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, KeyboardAvoidingView, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -37,18 +37,45 @@ import InfoScreenDetail from "./screens/InfoScreenDetail";
 import ChatbotScreen from "./screens/ChatBotScreen";
 import SplashScreen from "./screens/SplashScreen";
 import AlarmModal from "./component/AlarmModal";
-import BookmarkScreen from "./screens/Bookmark"; 
+import BookmarkScreen from "./screens/Bookmark";
+import StartInfoScreen3 from "./screens/StartInfoScreen3";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const ipnumber = "192.168.123.167";
+  const [user_code, setUserCode] = useState(1000);
+
+  // 폰트 로드 상태
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
     "Pretendard-Bold": require("./assets/fonts/Pretendard-Bold.ttf"),
     "Pretendard-Medium": require("./assets/fonts/Pretendard-Medium.ttf"),
     "Pretendard-Regular": require("./assets/fonts/Pretendard-Regular.ttf"),
   });
-  if (!fontsLoaded) return null;
+
+  useEffect(() => {
+    // user_code 가져오기
+    const loadUserCode = async () => {
+      try {
+        const savedUserCode = await AsyncStorage.getItem("user_code");
+        if (savedUserCode !== null) {
+          setUserCode(Number(savedUserCode));
+        } else {
+          console.log("user_code가 null입니다.");
+        }
+      } catch (error) {
+        console.log("유저id 불러오기 실패:", error);
+      }
+    };
+    loadUserCode();
+  }, []);
+
+  // 폰트 로드가 완료되지 않았을 때는 빈 화면 반환
+  if (!fontsLoaded) {
+    return <View style={{ flex: 1, backgroundColor: "white" }} />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -66,11 +93,6 @@ export default function App() {
           >
             {/* 기존 내비게이터에 있는 화면들 */}
             <Stack.Screen
-              name="AlarmModal"
-              component={AlarmModal}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
               name="Splash"
               component={SplashScreen}
               options={{ headerShown: false }}
@@ -79,6 +101,10 @@ export default function App() {
               name="Main"
               component={MainScreen}
               options={{ headerShown: false }}
+              initialParams={{
+                ipnumber: ipnumber,
+                user_code: user_code,
+              }}
             />
             <Stack.Screen
               name="InfoScreen"
@@ -102,7 +128,7 @@ export default function App() {
             />
             <Stack.Screen
               name="Bookmark"
-              component={BookmarkScreen} 
+              component={BookmarkScreen}
               options={{ title: "북마크한 정보", headerShown: false }}
             />
             {/* 나머지 화면들 */}
@@ -191,6 +217,9 @@ export default function App() {
               name="KakaoLogin"
               component={KakaoLoginScreen}
               options={{ headerShown: false }}
+              initialParams={{
+                ipnumber: ipnumber,
+              }}
             />
             <Stack.Screen
               name="KakaoLoginWeb"
@@ -200,6 +229,11 @@ export default function App() {
             <Stack.Screen
               name="StartInfo"
               component={StartInfoScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="StartInfo3"
+              component={StartInfoScreen3}
               options={{ headerShown: false }}
             />
             <Stack.Screen
@@ -241,7 +275,10 @@ export default function App() {
               name="Chatbot"
               component={ChatbotScreen}
               options={{ headerShown: false }}
-              initialParams={{ ipnumber: 'your_ipnumber', user_code: 'your_user_code' }} // 기본 파라미터 전달
+              initialParams={{
+                ipnumber: "your_ipnumber",
+                user_code: "your_user_code",
+              }} // 기본 파라미터 전달
             />
           </Stack.Navigator>
         </NavigationContainer>

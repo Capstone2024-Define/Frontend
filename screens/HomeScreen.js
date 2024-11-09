@@ -230,7 +230,7 @@ export default function HomeScreen({ navigation, route }) {
           <View
             style={{
               flexDirection: "row",
-              marginTop: 4,
+              marginTop: 1,
               marginLeft: 25,
               marginRight: 6,
               justifyContent: "space-between",

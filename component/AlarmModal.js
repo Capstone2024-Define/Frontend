@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Platform,
   Modal,
-  TouchableWithoutFeedback,
   Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,7 +15,12 @@ import { theme } from "../colors/color";
 import * as Notifications from "expo-notifications";
 import { bottomBtn } from "../component/BottomButton";
 
-export default function AlarmModal({ visible, onClose, onToggle }) {
+export default function AlarmModal({
+  visible,
+  onClose,
+  onToggle,
+  buttonPosition = { top: 317 },
+}) {
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -102,6 +106,10 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
         if (alarm_exist.length <= 0) {
           await scheduleAlarm(alarm.hour, alarm.minute, alarm.ampm);
         }
+      } else {
+        console.log("아싱크스토리지 결과 없음");
+        save();
+        await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm);
       }
       console.log("아싱크스토리지 알람: ", rawAlarm);
     } catch (e) {
@@ -113,7 +121,6 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
       console.log("알림 삭제 성공");
-      printScheduledAlarms(); // 알림 확인용
     } catch (error) {
       console.error("알림 삭제 실패:", error);
     }
@@ -135,6 +142,8 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
 
   const scheduleAlarm = async (hour, minute, ampm) => {
     try {
+      await cancleAlarm(); // 기존 알림 삭제
+
       const triggerHour =
         ampm === "pm" && parseInt(hour) !== 12
           ? parseInt(hour) + 12
@@ -164,7 +173,6 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
 
   // 완료 눌렀을 시
   const handleComplete = async () => {
-    await cancleAlarm();
     await save();
     await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm);
     onClose();
@@ -174,7 +182,9 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.modalBackground}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <View style={styles.container}>
+        <View
+          style={[styles.container, { top: buttonPosition.top + 8, right: 20 }]}
+        >
           {/* 시계 */}
           <View style={styles.timePickerContainer}>
             <View style={styles.pickerActiveView} />
@@ -267,8 +277,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     position: "absolute",
     zIndex: 10,
-    top: 317,
-    right: 20,
   },
   timePickerContainer: {
     justifyContent: "center",

@@ -6,6 +6,7 @@ import {
   TextInput,
   Keyboard,
   TouchableOpacity,
+  BackHandler,
 } from "react-native";
 import Header from "../component/Header";
 import { theme } from "../colors/color";
@@ -13,6 +14,8 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
+import { WithLocalSvg } from "react-native-svg/css";
+import Check from "../assets/start_check.svg";
 
 export default function StartInfoScreen({ navigation, route }) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
@@ -50,6 +53,25 @@ export default function StartInfoScreen({ navigation, route }) {
     };
   }, []);
 
+  // 휴대폰 뒤로가기 버튼 커스터마이징
+  useEffect(() => {
+    const backAction = () => {
+      if (page === 1) {
+        navigation.pop();
+      } else if (page === 2) {
+        setPage(1);
+      }
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [page]);
+
   // 각 TextInput 키보드 감지
   useEffect(() => {
     if (!isKeyboardVisible && nameFocus) {
@@ -67,7 +89,7 @@ export default function StartInfoScreen({ navigation, route }) {
 
   // 잘되나 test
   useEffect(() => {
-    console.log("유저 id: ", route.params.user_id);
+    console.log("유저 id: ", route.params.user_code);
     console.log("닉네임: ", nickName);
     console.log("이름: ", name);
     console.log("생일: ", birth);
@@ -133,14 +155,15 @@ export default function StartInfoScreen({ navigation, route }) {
     try {
       const newBirth = birth.replace(/\s\/\s/g, "-");
 
-      await axios.post(`http://3.34.193.230:8080/userinfo/post`, {
-        //user_code: route.params.user_id,
-        user_code: 7274,
+      await axios.post(`http://${ipnumber}:8080/userinfo/post`, {
+        user_code: route.params.user_code,
         user_name: nickName,
         child_name: name,
         birth: newBirth,
         sex: gender,
       });
+
+      console.log("저장 성공");
     } catch (error) {
       console.log("POST 에러 : ", error);
     }
@@ -166,13 +189,11 @@ export default function StartInfoScreen({ navigation, route }) {
                   { marginRight: 16 },
                 ]}
               >
-                <Text style={styles.number}>
-                  {page == 1 ? (
-                    1
-                  ) : (
-                    <Feather name="check" size={18} color="white" />
-                  )}
-                </Text>
+                {page <= 1 ? (
+                  <Text style={styles.number}>1</Text>
+                ) : (
+                  <WithLocalSvg asset={Check} />
+                )}
               </View>
               <View
                 style={[
@@ -181,7 +202,24 @@ export default function StartInfoScreen({ navigation, route }) {
                   { marginRight: 16 },
                 ]}
               >
-                <Text style={styles.number}>2</Text>
+                {page <= 2 ? (
+                  <Text style={styles.number}>2</Text>
+                ) : (
+                  <WithLocalSvg asset={Check} />
+                )}
+              </View>
+              <View
+                style={[
+                  styles.circle,
+                  { backgroundColor: theme.grey200 },
+                  { marginRight: 16 },
+                ]}
+              >
+                {page <= 2 ? (
+                  <Text style={styles.number}>3</Text>
+                ) : (
+                  <WithLocalSvg asset={Check} />
+                )}
               </View>
             </View>
           ) : (
@@ -462,7 +500,7 @@ export default function StartInfoScreen({ navigation, route }) {
                   }
                   onPress={async () => {
                     await handlePost();
-                    navigation.navigate("Main");
+                    navigation.navigate("StartInfo3");
                   }}
                 >
                   <LinearGradient
@@ -481,7 +519,7 @@ export default function StartInfoScreen({ navigation, route }) {
                       ]}
                     >
                       <Text style={[styles.buttonText, { color: "white" }]}>
-                        시작하기
+                        다음
                       </Text>
                     </View>
                   </LinearGradient>

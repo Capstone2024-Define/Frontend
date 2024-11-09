@@ -34,27 +34,8 @@ const SvgIcon = ({ asset }) => (
   <WithLocalSvg width="25" height="25" asset={asset} />
 );
 
-export default function MainScreen() {
-  let user_code = 1000;
-  // const ipnumber = "3.35.238.20";
-  const ipnumber = "192.168.123.167";
-
-  useState(() => {
-    // user_code 가져오기
-    const load = async () => {
-      try {
-        const value = await AsyncStorage.getItem("user_code");
-        if (value !== null) {
-          user_code = value;
-        } else {
-          console.log("user_code가 null입니다.");
-        }
-      } catch (error) {
-        console.log("유저id 불러오기 실패");
-      }
-    };
-    // load()
-  }, []);
+export default function MainScreen({ route }) {
+  const { user_code, ipnumber } = route.params;
 
   return (
     <Tab.Navigator

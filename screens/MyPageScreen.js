@@ -12,8 +12,7 @@ import {
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import SwitchToggle from "react-native-switch-toggle";
 import AlarmModal from "../component/AlarmModal";
@@ -25,6 +24,18 @@ export default function MyPageScreen({ navigation, route }) {
   const [reminderToggle, setReminderToggle] = useState(false);
   const [weeklyToggle, setWeeklyToggle] = useState(false);
   const [visible, setVisible] = useState(false); // 알림 모달
+
+  // 모달 위치를 위한 버튼 위치
+  const [buttonPosition, setButtonPosition] = useState({ top: 0 }); // 알림 버튼 위치
+  const buttonRef = useRef(null); // 버튼 참조
+
+  const openModal = () => {
+    // 버튼 위치 가져오기
+    buttonRef.current.measure((x, y, width, height, pageX, pageY) => {
+      setButtonPosition({ top: pageY + height });
+    });
+    setVisible(true);
+  };
 
   // 알림 관련 시간 초기 설정(아싱크스토리지 저장 내용이 없을 때)
   const now = new Date();
@@ -118,7 +129,7 @@ export default function MyPageScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{ paddingTop: 16, backgroundColor: "#FFFFFF" }}>
+      <ScrollView style={{ paddingTop: 18, backgroundColor: "#FFFFFF" }}>
         <Text style={styles.greeting}>{"안녕하세요,"}</Text>
         <View style={styles.nickNameContainer}>
           <TouchableOpacity
@@ -203,8 +214,9 @@ export default function MyPageScreen({ navigation, route }) {
           </Text>
           {reminderToggle && (
             <TouchableOpacity
+              ref={buttonRef}
               activeOpacity={0.5}
-              onPress={() => setVisible(true)}
+              onPress={openModal}
               style={styles.timeButton}
             >
               <Text style={styles.timeButtonText}>
@@ -218,8 +230,8 @@ export default function MyPageScreen({ navigation, route }) {
         <View style={styles.notificationContainer}>
           <Image
             source={require("../assets/my_chart.png")}
-            resizeMode={"stretch"}
-            style={styles.notificationIcon}
+            resizeMode={"center"}
+            style={{ width: 24, height: 18, marginRight: 12 }}
           />
           <Text style={styles.notificationText}>{"주간분석결과 알림"}</Text>
           <View style={{ flex: 1, alignSelf: "stretch" }} />
@@ -326,11 +338,27 @@ export default function MyPageScreen({ navigation, route }) {
             로그아웃
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            console.log("test");
+            navigation.push("Test", {
+              ipnumber: ipnumber,
+              user_code: user_code,
+            });
+          }}
+          style={styles.logoutItem}
+        >
+          <Text style={[styles.notificationText, { color: theme.grey400 }]}>
+            테스트 페이지
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
       <AlarmModal
         visible={visible}
         onClose={modalClose}
         onToggle={reminderToggle}
+        buttonPosition={buttonPosition}
       />
     </SafeAreaView>
   );
