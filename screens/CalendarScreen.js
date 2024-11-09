@@ -18,7 +18,6 @@ import { useEffect, useState, useCallback } from "react";
 import GraphScreen from "./GraphScreen";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
-import PlusBtn from "../component/PlusBtn";
 
 export default function CalendarScreen({ navigation, route }) {
   const daysOfWeek = [
@@ -390,15 +389,46 @@ export default function CalendarScreen({ navigation, route }) {
                     marginTop: 12,
                   }}
                 >
-                  <PlusBtn
-                    onPress={() => {
-                      navigation.navigate("SymptomCheck", {
-                        date: selectedDate,
-                        user_code: user_code,
-                        ipnumber: ipnumber,
-                      });
+                  <Text
+                    style={{
+                      ...styles.norecordText,
+                      marginBottom: 16,
                     }}
-                  />
+                  >
+                    {"아직 기록하지 않았어요!"}
+                  </Text>
+                  <LinearGradient
+                    colors={["#79BA7E", "#AFCA85"]}
+                    style={{
+                      ...styles.button,
+                      paddingHorizontal: 36,
+                      paddingVertical: 12,
+                    }}
+                  >
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      onPress={() => {
+                        navigation.navigate("SymptomCheck", {
+                          date: selectedDate,
+                          user_code: user_code,
+                          ipnumber: ipnumber,
+                        });
+                      }}
+                      style={styles.button}
+                    >
+                      <WithLocalSvg asset={Edit_white} />
+                      <Text
+                        style={{
+                          ...styles.subTitle,
+                          marginLeft: 8,
+                          fontFamily: "Pretendard-Medium",
+                          color: "white",
+                        }}
+                      >
+                        {"하루기록"}
+                      </Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
                 </View>
               ) : (
                 <>
