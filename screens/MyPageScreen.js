@@ -6,16 +6,11 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
+  Image,
+  Switch,
 } from "react-native";
 import { theme } from "../colors/color";
-import { WithLocalSvg } from "react-native-svg/css";
-import Notice from "../assets/notice_white.svg";
-import Export from "../assets/export_white.svg";
-import Bookmark from "../assets/bookmark_white.svg";
-import Edit from "../assets/edit_green.svg";
-import Guide from "../assets/guide_green.svg";
-import Info from "../assets/appInfo_green.svg";
-import Logout from "../assets/logout_green.svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
@@ -24,6 +19,8 @@ import axios from "axios";
 export default function MyPageScreen({ navigation, route }) {
   const { ipnumber, user_code } = route.params;
   const [nickName, setNickName] = useState("");
+  const [reminderToggle, setReminderToggle] = useState(true);
+  const [weeklyToggle, setWeeklyToggle] = useState(false);
 
   // 상태바 변경(안드로이드)
   useFocusEffect(
@@ -60,175 +57,128 @@ export default function MyPageScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={["#79BA7E", "#AFCA85"]}
-        locations={[0.3, 1]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.subContainer}>
-          <Text style={{ ...styles.m_text, color: "white" }}>안녕하세요!</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 33,
-            }}
-          >
-            <Text style={{ ...styles.L_text, marginTop: 4 }}>{nickName}님</Text>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() =>
-                navigation.push("ProfileModify", {
-                  user_code: user_code,
-                  ipnumber: ipnumber,
-                })
-              }
-              style={styles.button}
+      <ScrollView style={{ backgroundColor: "#FFFFFF", paddingTop: 7 }}>
+        <Text style={styles.greeting}>{"안녕하세요,"}</Text>
+        <View style={styles.nickNameContainer}>
+          <Text style={styles.nickName}>{nickName}님</Text>
+          <View>
+            <LinearGradient
+              start={{ x: 0, y: -0 }}
+              end={{ x: 1, y: 1 }}
+              colors={["#79BA7E", "#AFCA85"]}
+              style={styles.streakBox}
             >
-              <Text style={{ ...styles.ss_text, marginRight: 2 }}>
-                프로필수정
-              </Text>
-              <WithLocalSvg asset={Edit} />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 10,
-            }}
-          >
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => navigation.push("Bookmark")} // Navigate to Bookmark screen
-              style={{ justifyContent: "center", alignItems: "center" }}
-            >
-              <WithLocalSvg asset={Bookmark} />
-              <Text style={styles.s_text}>북마크한 정보</Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                width: 2,
-                height: 34,
-                borderRadius: 40,
-                backgroundColor: "#ABD2A6",
-              }}
-            />
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() =>
-                navigation.push("ExportRecord", {
-                  user_code: user_code,
-                  ipnumber: ipnumber,
-                })
-              }
-              style={{ justifyContent: "center", alignItems: "center" }}
-            >
-              <WithLocalSvg asset={Export} />
-              <Text style={styles.s_text}>기록 내보내기</Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                width: 2,
-                height: 34,
-                borderRadius: 40,
-                backgroundColor: "#ABD2A6",
-              }}
-            />
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={{ justifyContent: "center", alignItems: "center" }}
-              onPress={() => navigation.push("AlarmPage")} // 알림 설정 페이지로 이동
-            >
-              <WithLocalSvg asset={Notice} />
-              <Text style={styles.s_text}>알림 설정하기</Text>
-            </TouchableOpacity>
+              <Text style={styles.streakText}>{"7일"}</Text>
+              <Text style={styles.streakSubText}>{"연속기록 중!"}</Text>
+              <Image
+                source={require("../assets/my_rabbit.png")}
+                resizeMode={"stretch"}
+                style={styles.rabbitImage}
+              />
+            </LinearGradient>
           </View>
         </View>
-      </LinearGradient>
-      {/* <View style={styles.line}/> */}
-      <View style={{ ...styles.subContainer, paddingTop: 40 }}>
-        <LinearGradient
-          colors={["#00000020", "#00000000", "transparent"]}
-          style={styles.shadowGradient}
-        />
-        <TouchableOpacity
-          activeOpacity={0.5}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <WithLocalSvg asset={Guide} />
-          <Text
-            style={{
-              ...styles.m_text,
-              color: theme.grey600,
-              marginLeft: 8,
-            }}
-          >
-            이용가이드
+
+        {/* 기록하기 리마인드 알림 */}
+        <View style={styles.notificationContainer}>
+          <Image
+            source={require("../assets/my_notifications.png")}
+            resizeMode={"stretch"}
+            style={styles.notificationIcon}
+          />
+          <Text style={styles.notificationText}>{"기록하기 리마인드 알림"}</Text>
+          <View style={{ flex: 1, alignSelf: "stretch" }} />
+          <Switch
+            value={reminderToggle}
+            onValueChange={(value) => setReminderToggle(value)}
+            trackColor={{ false: "#A5A5A5", true: "#78BA7D" }}
+            thumbColor={"#FFFFFF"}
+          />
+        </View>
+        <View style={styles.notificationDescriptionContainer}>
+          <Text style={styles.notificationDescription}>
+            {"매일 잊지 않게 푸시알림을 보내드려요"}
           </Text>
-        </TouchableOpacity>
+          <View style={styles.timeButton}>
+            <Text style={styles.timeButtonText}>{"시간연결"}</Text>
+          </View>
+        </View>
+
+        {/* 주간분석결과 알림 */}
+        <View style={styles.notificationContainer}>
+          <Image
+            source={require("../assets/my_chart.png")}
+            resizeMode={"stretch"}
+            style={styles.notificationIcon}
+          />
+          <Text style={styles.notificationText}>{"주간분석결과 알림"}</Text>
+          <View style={{ flex: 1, alignSelf: "stretch" }} />
+          <Switch
+            value={weeklyToggle}
+            onValueChange={(value) => setWeeklyToggle(value)}
+            trackColor={{ false: "#A5A5A5", true: "#78BA7D" }}
+            thumbColor={"#FFFFFF"}
+          />
+        </View>
+        <Text style={styles.notificationDescription}>
+          {"매주 일요일 주간분석결과 알림을 보내드려요"}
+        </Text>
+
+        {/* 주간 분석 결과 밑에 구분선 추가 */}
+        <View style={styles.divider} />
+
+        {/* 메뉴 항목 */}
         <TouchableOpacity
-          activeOpacity={0.5}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
+          style={styles.menuItem}
+          onPress={() => navigation.navigate("Bookmark")} // Bookmark 화면으로 이동
         >
-          <WithLocalSvg asset={Info} />
-          <Text
-            style={{
-              ...styles.m_text,
-              color: theme.grey600,
-              marginLeft: 8,
-            }}
-          >
-            앱 정보
-          </Text>
+          <Image
+            source={require("../assets/my_bookmark.png")}
+            style={styles.menuIcon}
+          />
+          <Text style={styles.menuText}>북마크한 정보</Text>
+          <Image
+            source={require("../assets/right_arrow.png")} // 오른쪽 화살표 아이콘 추가
+            style={styles.arrowIcon}
+          />
         </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <WithLocalSvg asset={Logout} />
-          <Text
-            style={{
-              ...styles.m_text,
-              color: theme.grey600,
-              marginLeft: 8,
-            }}
-          >
-            로그아웃
-          </Text>
+
+        <TouchableOpacity style={styles.menuItem}>
+          <Image
+            source={require("../assets/my_guide.png")}
+            style={styles.menuIcon}
+          />
+          <Text style={styles.menuText}>이용가이드</Text>
+          <Image
+            source={require("../assets/right_arrow.png")}
+            style={styles.arrowIcon}
+          />
         </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => {
-            console.log("test");
-            navigation.push("Test", {
-              ipnumber: ipnumber,
-              user_code: user_code,
-            });
-          }}
-        >
-          <Text
-            style={{ ...styles.m_text, color: theme.grey250, marginBottom: 11 }}
-          >
-            TEST 페이지
-          </Text>
+
+        <TouchableOpacity style={styles.menuItem}>
+          <Image
+            source={require("../assets/my_info.png")}
+            style={styles.menuIcon}
+          />
+          <Text style={styles.menuText}>앱 정보</Text>
+          <Image
+            source={require("../assets/right_arrow.png")}
+            style={styles.arrowIcon}
+          />
         </TouchableOpacity>
-      </View>
+
+        {/* 앱 정보 밑에 구분선 추가 */}
+        <View style={styles.divider} />
+
+        {/* 로그아웃 */}
+        <TouchableOpacity style={styles.logoutItem}>
+          <Image
+            source={require("../assets/my_logout.png")}
+            style={styles.menuIcon}
+          />
+          <Text style={styles.logoutText}>로그아웃</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -238,55 +188,125 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-  subContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 32,
-  },
-  L_text: {
-    fontSize: 20,
-    lineHeight: 30,
-    fontFamily: "Pretendard-Bold",
-    color: "white",
-  },
-  m_text: {
+  greeting: {
+    color: "#6F6F6F",
     fontSize: 16,
-    lineHeight: 24,
-    fontFamily: "Pretendard-Regular",
+    marginBottom: 10,
+    marginLeft: 21,
   },
-  s_text: {
-    marginTop: 12,
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Pretendard-Medium",
-    color: "white",
+  nickNameContainer: {
+    marginBottom: 24,
+    marginHorizontal: 20,
   },
-  ss_text: {
-    fontSize: 12,
-    lineHeight: 20,
-    fontFamily: "Pretendard-Medium",
-    color: theme.green500,
+  nickName: {
+    color: "#333333",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    marginLeft: 1,
   },
-  button: {
-    flexDirection: "row",
-    height: 25,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingLeft: 12,
-    paddingRight: 8,
-    borderRadius: 50,
-    backgroundColor: theme.green100,
+  streakBox: {
+    borderRadius: 8,
+    paddingTop: 18,
+    paddingBottom: 31,
+    paddingHorizontal: 16,
   },
-  line: {
-    width: "100%",
-    height: 8,
-    backgroundColor: "#F8F8F8",
-    borderTopWidth: 1,
-    borderTopColor: "#ECECEC",
+  streakText: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 9,
   },
-  shadowGradient: {
+  streakSubText: {
+    color: "#F2F8F2",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  rabbitImage: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    height: 30, // 그림자 높이
+    top: -5,
+    right: 31,
+    width: 67,
+    height: 105,
+  },
+  notificationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+    marginHorizontal: 20,
+  },
+  notificationIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
+  },
+  notificationText: {
+    color: "#555555",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  notificationDescriptionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 20,
+    marginHorizontal: 20,
+  },
+  notificationDescription: {
+    color: "#6F6F6F",
+    fontSize: 12,
+    marginLeft: 56,
+  },
+  timeButton: {
+    width: 90,
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 8,
+    paddingVertical: 14,
+  },
+  timeButtonText: {
+    color: "#78BA7D",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#EBEBEB",
+    marginVertical: 19,
+    marginHorizontal: 20,
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    marginHorizontal: 20,
+  },
+  menuIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
+  },
+  menuText: {
+    color: "#555555",
+    fontSize: 16,
+    fontWeight: "bold",
+    flex: 1,
+  },
+  arrowIcon: {
+    width: 24,
+    height: 24,
+  },
+  logoutItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 44,
+    marginHorizontal: 20,
+  },
+  logoutText: {
+    color: "#8B8B8B",
+    fontSize: 16,
+    fontWeight: "bold",
+    flex: 1,
   },
 });
+

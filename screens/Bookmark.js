@@ -32,7 +32,6 @@ function Bookmark() {
     }
   };
 
-  // 컴포넌트가 처음 렌더링될 때 북마크 로드
   useEffect(() => {
     loadBookmarks();
   }, []);
@@ -44,8 +43,19 @@ function Bookmark() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
+            source={require("../assets/arrow_back_ios.png")}
+            resizeMode={"stretch"}
+            style={styles.headerIcon}
+          />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }} />
+        <Text style={styles.headerText}>저장한 정보</Text>
+      </View>
+
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <Text style={styles.header}>북마크한 정보</Text>
         {bookmarkedInfos.length === 0 ? (
           <Text style={styles.emptyText}>북마크된 정보가 없습니다.</Text>
         ) : (
@@ -78,9 +88,22 @@ function Bookmark() {
 
 const styles = StyleSheet.create({
   header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderColor: "#EBEBEB",
+    borderWidth: 1,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+  },
+  headerIcon: {
+    width: 10,
+    height: 19,
+  },
+  headerText: {
+    color: "#242424",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   emptyText: {
     fontSize: 16,

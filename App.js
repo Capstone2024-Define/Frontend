@@ -39,11 +39,9 @@ import SplashScreen from "./screens/SplashScreen";
 import AlarmModal from "./component/AlarmModal";
 import BookmarkScreen from "./screens/Bookmark"; 
 
-// 스택 내비게이터 생성
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  // 폰트 - 엑스포 방법
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
     "Pretendard-Bold": require("./assets/fonts/Pretendard-Bold.ttf"),
@@ -243,6 +241,7 @@ export default function App() {
               name="Chatbot"
               component={ChatbotScreen}
               options={{ headerShown: false }}
+              initialParams={{ ipnumber: 'your_ipnumber', user_code: 'your_user_code' }} // 기본 파라미터 전달
             />
           </Stack.Navigator>
         </NavigationContainer>

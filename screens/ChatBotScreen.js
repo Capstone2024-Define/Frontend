@@ -8,23 +8,20 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
 import axios from "axios";
 
-const API_KEY =
-  "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";
+const API_KEY = "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";
 const MODEL = "gpt-3.5-turbo";
 
-const ChatbotScreen = ({ navigaion }) => {
+const ChatbotScreen = ({ navigation }) => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ChatGPT API 요청 함수
   useEffect(() => {
     const initialMessages = [
       { sender: "bot", text: "안녕하세요 디파님!" },
@@ -65,28 +62,22 @@ const ChatbotScreen = ({ navigaion }) => {
     }
   };
 
-  // 사용자가 메시지를 보냈을 때 호출되는 함수
   const sendMessage = async (text = inputText) => {
     if (text.trim()) {
-      // 사용자의 메시지를 추가하기
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "user", text },
       ]);
-
       setInputText("");
 
       setLoading(true);
 
-      // ChatGPT에게 질문을 보내고 응답 받기
       const chatbotResponse = await getChatbotResponse(text);
 
-      // 챗봇 응답 추가
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "bot", text: chatbotResponse },
       ]);
-
       setLoading(false);
     }
   };
@@ -97,47 +88,12 @@ const ChatbotScreen = ({ navigaion }) => {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <Header
-          left={"leftArrow"}
-          title={"AI 로빗"}
-          onLeftPress={() => {
-            navigation.pop();
-          }}
-        />
-        <ScrollView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
-          <View
-            style={{
-              width: "100%",
-              height: 134,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: theme.grey150,
-              paddingHorizontal: 20,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                lineHeight: 20,
-                fontFamily: "Pretendard-Regular",
-                color: theme.grey300,
-              }}
-            >
-              * 이 서비스는 인공지능(chatGPT)에 의해 제공되는 내용으로, 클로빗의
-              공식 의견과 다를 수 있음을 알려드립니다. 따라서 제공되는 정보의
-              정확성이나 신뢰성에 대해 클로빗이 보장할 수 없으며, 자료의 정확성,
-              저작권 준수여부, 적법성에 대해 책임을 지지 않습니다. 또한 정보
-              보호를 위해 개인정보는 입력하지 않도록 주의해주세요.
-            </Text>
-          </View>
-          {/* 메시지 출력 영역 */}
+        <Header left={"leftArrow"} title={"AI 로빗"} onLeftPress={() => {}} />
+        <ScrollView
+          style={{ flex: 1, backgroundColor: "#F6F6F6", paddingTop: 20 }}
+        >
           <ScrollView
-            style={{
-              flex: 1,
-              paddingHorizontal: 20,
-              paddingTop: 12,
-              paddingBottom: 40,
-            }}
+            style={{ flex: 1, paddingHorizontal: 20, paddingBottom: 40 }}
           >
             {messages.map((message, index) => (
               <View
@@ -186,7 +142,7 @@ const ChatbotScreen = ({ navigaion }) => {
                 </View>
               </View>
             ))}
-            {/* 로딩 중일 때 표시되는 애니메이션 */}
+
             {loading && (
               <View
                 style={{
@@ -204,7 +160,7 @@ const ChatbotScreen = ({ navigaion }) => {
                     marginRight: 8,
                   }}
                 />
-                <View
+                <View 
                   style={{
                     width: 75,
                     flexDirection: "row",
@@ -248,81 +204,11 @@ const ChatbotScreen = ({ navigaion }) => {
           </ScrollView>
         </ScrollView>
 
-        {/* 자주 찾는 질문 */}
-        <View
-          style={{
-            backgroundColor: "#EFEFEF",
-            paddingVertical: 16,
-          }}
-        >
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingLeft: 20, paddingRight: 7 }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => sendMessage("현재 아이의 증상 상태가 궁금해")}
-                style={styles.recommandTextContainer}
-              >
-                <Text
-                  style={{
-                    color: "#242424",
-                    fontSize: 14,
-                    lineHeight: 20,
-                    fontFamily: "Pretendard-Regular",
-                  }}
-                >
-                  {"현재 아이의 \n증상 상태가 궁금해"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => sendMessage("아이와 대화하는 방법을 알려줘")}
-                style={styles.recommandTextContainer}
-              >
-                <Text
-                  style={{
-                    color: "#242424",
-                    fontSize: 14,
-                    lineHeight: 20,
-                    fontFamily: "Pretendard-Regular",
-                  }}
-                >
-                  {"아이와 대화하는 \n방법을 알려줘"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => sendMessage("ADHD 기록은 어떻게 하는게 좋을까?")}
-                style={styles.recommandTextContainer}
-              >
-                <Text
-                  style={{
-                    color: "#242424",
-                    fontSize: 14,
-                    lineHeight: 20,
-                    fontFamily: "Pretendard-Regular",
-                  }}
-                >
-                  {"ADHD 기록은 \n어떻게 하는게 좋을까?"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-
-        {/* 입력 필드 */}
         <View
           style={{
             backgroundColor: "#EFEFEF",
             paddingHorizontal: 20,
-            paddingBottom: 12,
+            paddingVertical: 10,
           }}
         >
           <View
@@ -343,7 +229,6 @@ const ChatbotScreen = ({ navigaion }) => {
                 fontSize: 14,
                 flex: 1,
                 marginRight: 12,
-                paddingVertical: 3,
                 fontFamily: "Pretendard-Regular",
               }}
               placeholder="무엇이든 물어보세요!"
@@ -369,20 +254,5 @@ const ChatbotScreen = ({ navigaion }) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  recommandTextContainer: {
-    height: 70,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    borderColor: "#78BA7D",
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 13,
-  },
-});
 
 export default ChatbotScreen;
