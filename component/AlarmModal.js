@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Platform,
   Modal,
-  TouchableWithoutFeedback,
   Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,13 +16,14 @@ import * as Notifications from "expo-notifications";
 import { bottomBtn } from "../component/BottomButton";
 
 export default function AlarmModal({ visible, onClose, onToggle }) {
+  // 초기값 설정
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
   const ampmValue = currentHour >= 12 ? "pm" : "am";
 
   if (currentHour > 12) {
-    currentHour = currentHour - 12;
+    currentHour -= 12;
   } else if (currentHour === 0) {
     currentHour = 12;
   }
@@ -52,7 +52,6 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
     };
     getPermissions();
 
-    // 알림 확인용
     printScheduledAlarms();
 
     if (Platform.OS === "android") {
@@ -68,40 +67,46 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
   useEffect(() => {
     console.log("알림 활성화: ", onToggle);
 
-    if (onToggle) {
-      loadTime(); // 화면에 세팅된 시간 띄움
-    } else {
-      cancleAlarm(); // 알림 삭제
-    }
+    const toggleAlarm = async () => {
+      if (onToggle) {
+        await loadTime();
+      } else {
+        await cancelAlarm();
+      }
+    };
+
+    toggleAlarm();
   }, [onToggle]);
 
-  // 알림 확인용
   const printScheduledAlarms = async () => {
     try {
       const scheduledNotifications =
         await Notifications.getAllScheduledNotificationsAsync();
       console.log("스케줄된 알림:", scheduledNotifications);
-      return scheduledNotifications;
     } catch (error) {
       console.error("스케줄된 알림 가져오기 에러:", error);
     }
   };
 
-  // 알림 시간 로드
   const loadTime = async () => {
     try {
       const rawAlarm = await AsyncStorage.getItem("alarm");
       if (rawAlarm) {
         const alarm = JSON.parse(rawAlarm);
 
-        setSelectedAmPm(alarm.ampm);
-        setSelectedHour(alarm.hour);
-        setSelectedMinute(alarm.minute);
+        setSelectedAmPm(alarm.ampm || ampmValue);
+        setSelectedHour(alarm.hour || currentHour.toString());
+        setSelectedMinute(alarm.minute || currentMinute.toString().padStart(2, "0"));
 
-        const alarm_exist = await printScheduledAlarms();
-        if (alarm_exist.length <= 0) {
+        const alarmExist = await Notifications.getAllScheduledNotificationsAsync();
+        if (alarmExist.length <= 0) {
           await scheduleAlarm(alarm.hour, alarm.minute, alarm.ampm);
         }
+      } else {
+        // 저장된 알람 데이터가 없을 때 현재 시간을 기본값으로 설정
+        setSelectedAmPm(ampmValue);
+        setSelectedHour(currentHour.toString());
+        setSelectedMinute(currentMinute.toString().padStart(2, "0"));
       }
       console.log("아싱크스토리지 알람: ", rawAlarm);
     } catch (e) {
@@ -109,11 +114,11 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
     }
   };
 
-  const cancleAlarm = async () => {
+  const cancelAlarm = async () => {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
       console.log("알림 삭제 성공");
-      printScheduledAlarms(); // 알림 확인용
+      printScheduledAlarms();
     } catch (error) {
       console.error("알림 삭제 실패:", error);
     }
@@ -142,6 +147,13 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
           ? 0
           : parseInt(hour);
       const triggerMinute = parseInt(minute);
+
+      // NaN 체크
+      if (isNaN(triggerHour) || isNaN(triggerMinute)) {
+        console.error("알림 설정 오류: 유효하지 않은 시간 값입니다.");
+        return;
+      }
+
       console.log("알림 설정 시간:", triggerHour, "시", triggerMinute, "분");
 
       await Notifications.scheduleNotificationAsync({
@@ -159,12 +171,11 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
       console.error("알림 스케줄 오류:", error);
     }
 
-    printScheduledAlarms(); // 알림 확인용
+    printScheduledAlarms();
   };
 
-  // 완료 눌렀을 시
   const handleComplete = async () => {
-    await cancleAlarm();
+    await cancelAlarm();
     await save();
     await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm);
     onClose();
@@ -175,7 +186,6 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
       <View style={styles.modalBackground}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.container}>
-          {/* 시계 */}
           <View style={styles.timePickerContainer}>
             <View style={styles.pickerActiveView} />
             <View style={styles.timePickerMainRow}>
@@ -234,7 +244,6 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
               />
             </View>
           </View>
-          {/* 확인 버튼 */}
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={handleComplete}
@@ -258,7 +267,6 @@ export default function AlarmModal({ visible, onClose, onToggle }) {
   );
 }
 
-// 스타일 정의
 const styles = StyleSheet.create({
   container: {
     width: 227,
