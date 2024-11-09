@@ -4,6 +4,7 @@ import {
   Text,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
@@ -18,6 +19,7 @@ import { useEffect, useState, useCallback } from "react";
 import GraphScreen from "./GraphScreen";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import PlusBtn from "../component/PlusBtn";
 
 export default function CalendarScreen({ navigation, route }) {
   const daysOfWeek = [
@@ -38,7 +40,7 @@ export default function CalendarScreen({ navigation, route }) {
     new Date(today).getMonth() + 1
   );
   const [record, setRecord] = useState(null);
-  const [images, setImages] = useState(null);
+  const [images, setImages] = useState([]);
   const { ipnumber, user_code } = route.params;
 
   useFocusEffect(
@@ -56,6 +58,15 @@ export default function CalendarScreen({ navigation, route }) {
           );
           // console.log(response.data);
           setRecord(response.data);
+
+          // 이미지 가져옴
+          const response_image = await axios.get(
+            `http://${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
+          );
+          console.log("이미지 로드: ", response_image.data);
+          if (response_image) {
+            setImages(response_image.data);
+          }
         } catch (error) {
           console.log("선택 날짜 GET: ", error);
         }
@@ -389,72 +400,56 @@ export default function CalendarScreen({ navigation, route }) {
                     marginTop: 12,
                   }}
                 >
-                  <Text
-                    style={{
-                      ...styles.norecordText,
-                      marginBottom: 16,
+                  <PlusBtn
+                    onPress={() => {
+                      navigation.navigate("SymptomCheck", {
+                        date: selectedDate,
+                        user_code: user_code,
+                        ipnumber: ipnumber,
+                      });
                     }}
-                  >
-                    {"아직 기록하지 않았어요!"}
-                  </Text>
-                  <LinearGradient
-                    colors={["#79BA7E", "#AFCA85"]}
-                    style={{
-                      ...styles.button,
-                      paddingHorizontal: 36,
-                      paddingVertical: 12,
-                    }}
-                  >
-                    <TouchableOpacity
-                      activeOpacity={0.5}
-                      onPress={() => {
-                        navigation.navigate("SymptomCheck", {
-                          date: selectedDate,
-                          user_code: user_code,
-                          ipnumber: ipnumber,
-                        });
-                      }}
-                      style={styles.button}
-                    >
-                      <WithLocalSvg asset={Edit_white} />
-                      <Text
-                        style={{
-                          ...styles.subTitle,
-                          marginLeft: 8,
-                          fontFamily: "Pretendard-Medium",
-                          color: "white",
-                        }}
-                      >
-                        {"하루기록"}
-                      </Text>
-                    </TouchableOpacity>
-                  </LinearGradient>
+                  />
                 </View>
               ) : (
-                <>
-                  {/* <View style={{ flexDirection: "row", marginVertical: 12 }}>
-                    {images.map((image) => (
-                      <View key={image.id}>
-                        <Image
-                          source={{ uri: image.uri }}
-                          style={styles.photo}
-                          resizeMode="cover"
-                        />
-                      </View>
-                    ))}
-                  </View> */}
+                <View>
+                  <ScrollView
+                    contentContainerStyle={{
+                      flexDirection: "row",
+                      marginVertical: 12,
+                    }}
+                  >
+                    {images.length > 0 ? (
+                      images.map((image, index) => (
+                        <View key={index}>
+                          <Image
+                            source={{
+                              uri: `${image}`,
+                            }}
+                            style={styles.photo}
+                            resizeMode="cover"
+                          />
+                        </View>
+                      ))
+                    ) : (
+                      <View
+                        style={[
+                          styles.photo,
+                          { backgroundColor: theme.grey150 },
+                        ]}
+                      />
+                    )}
+                  </ScrollView>
                   <Text
                     style={{
                       ...styles.norecordText,
                       color: theme.grey800,
-                      marginTop: 12,
                     }}
-                    numberOfLines={images ? 2 : 6}
+                    numberOfLines={2}
                     ellipsizeMode="tail"
                   >
                     {(record.summary || "").replace(/\n/g, " ")}
                   </Text>
-                </>
+                </View>
               )}
             </TouchableOpacity>
           </View>

@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Platform,
   Modal,
+  TouchableWithoutFeedback,
+  Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,7 +16,7 @@ import { theme } from "../colors/color";
 import * as Notifications from "expo-notifications";
 import { bottomBtn } from "../component/BottomButton";
 
-export default function AlarmModal({ visible, onClose }) {
+export default function AlarmModal({ visible, onClose, onToggle }) {
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -48,23 +50,10 @@ export default function AlarmModal({ visible, onClose }) {
         }
       }
     };
-    async function loadTime() {
-      try {
-        const rawAlarm = await AsyncStorage.getItem("alarm");
-        if (rawAlarm) {
-          const alarm = JSON.parse(rawAlarm);
-
-          setSelectedAmPm(alarm.ampm);
-          setSelectedHour(alarm.hour);
-          setSelectedMinute(alarm.minute);
-        }
-        console.log("아싱크스토리지 알람: ", rawAlarm);
-      } catch (e) {
-        console.log("알람 기록 로드 에러");
-      }
-    }
     getPermissions();
-    loadTime();
+
+    // 알림 확인용
+    printScheduledAlarms();
 
     if (Platform.OS === "android") {
       Notifications.setNotificationChannelAsync("default", {
@@ -75,6 +64,60 @@ export default function AlarmModal({ visible, onClose }) {
       });
     }
   }, []);
+
+  useEffect(() => {
+    console.log("알림 활성화: ", onToggle);
+
+    if (onToggle) {
+      loadTime(); // 화면에 세팅된 시간 띄움
+    } else {
+      cancleAlarm(); // 알림 삭제
+    }
+  }, [onToggle]);
+
+  // 알림 확인용
+  const printScheduledAlarms = async () => {
+    try {
+      const scheduledNotifications =
+        await Notifications.getAllScheduledNotificationsAsync();
+      console.log("스케줄된 알림:", scheduledNotifications);
+      return scheduledNotifications;
+    } catch (error) {
+      console.error("스케줄된 알림 가져오기 에러:", error);
+    }
+  };
+
+  // 알림 시간 로드
+  const loadTime = async () => {
+    try {
+      const rawAlarm = await AsyncStorage.getItem("alarm");
+      if (rawAlarm) {
+        const alarm = JSON.parse(rawAlarm);
+
+        setSelectedAmPm(alarm.ampm);
+        setSelectedHour(alarm.hour);
+        setSelectedMinute(alarm.minute);
+
+        const alarm_exist = await printScheduledAlarms();
+        if (alarm_exist.length <= 0) {
+          await scheduleAlarm(alarm.hour, alarm.minute, alarm.ampm);
+        }
+      }
+      console.log("아싱크스토리지 알람: ", rawAlarm);
+    } catch (e) {
+      console.log("알람 기록 로드 에러 ", e);
+    }
+  };
+
+  const cancleAlarm = async () => {
+    try {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      console.log("알림 삭제 성공");
+      printScheduledAlarms(); // 알림 확인용
+    } catch (error) {
+      console.error("알림 삭제 실패:", error);
+    }
+  };
 
   const save = async () => {
     try {
@@ -91,117 +134,125 @@ export default function AlarmModal({ visible, onClose }) {
   };
 
   const scheduleAlarm = async (hour, minute, ampm) => {
-    const triggerTime = new Date();
-    triggerTime.setHours(
-      (ampm === "pm" && parseInt(hour) !== 12) ||
-        (ampm === "am" && parseInt(hour) === 12)
-        ? parseInt(hour) + 12
-        : parseInt(hour)
-    );
-    triggerTime.setMinutes(parseInt(minute));
-    triggerTime.setSeconds(0);
+    try {
+      const triggerHour =
+        ampm === "pm" && parseInt(hour) !== 12
+          ? parseInt(hour) + 12
+          : ampm === "am" && parseInt(hour) === 12
+          ? 0
+          : parseInt(hour);
+      const triggerMinute = parseInt(minute);
+      console.log("알림 설정 시간:", triggerHour, "시", triggerMinute, "분");
 
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Clobit",
-        body: "설정된 시간입니다!",
-      },
-      trigger: {
-        date: triggerTime,
-        repeats: true,
-      },
-    });
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Clobit",
+          body: "설정된 시간입니다!",
+        },
+        trigger: {
+          hour: triggerHour,
+          minute: triggerMinute,
+          repeats: true,
+        },
+      });
+    } catch (error) {
+      console.error("알림 스케줄 오류:", error);
+    }
+
+    printScheduledAlarms(); // 알림 확인용
   };
 
+  // 완료 눌렀을 시
   const handleComplete = async () => {
-    await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm);
+    await cancleAlarm();
     await save();
+    await scheduleAlarm(selectedHour, selectedMinute, selectedAmPm);
     onClose();
   };
 
-  // 모든 알림 취소 코드
-  // await Notifications.cancelAllScheduledNotificationAsync()
-
   return (
     <Modal transparent={true} visible={visible} onRequestClose={onClose}>
-      <View style={styles.container}>
-        {/* 시계 */}
-        <View style={styles.timePickerContainer}>
-          <View style={styles.pickerActiveView} />
-          <View style={styles.timePickerMainRow}>
-            <ScrollPicker
-              dataSource={hours}
-              selectedIndex={hours.indexOf(selectedHour)}
-              wrapperHeight={140}
-              wrapperBackground={"transparent"}
-              itemHeight={34}
-              highlightBorderWidth={0}
-              activeItemTextStyle={styles.pickerActiveText}
-              itemTextStyle={styles.pickerDefaultText}
-              onValueChange={(data) => {
-                setSelectedHour(data);
-              }}
-            />
-            <Text
-              style={{
-                ...styles.pickerActiveText,
-                paddingHorizontal: 8,
-              }}
-            >
-              :
-            </Text>
-            <ScrollPicker
-              dataSource={minutes}
-              selectedIndex={minutes.indexOf(selectedMinute)}
-              wrapperHeight={140}
-              wrapperBackground={"transparent"}
-              itemHeight={34}
-              highlightBorderWidth={0}
-              activeItemTextStyle={styles.pickerActiveText}
-              itemTextStyle={styles.pickerDefaultText}
-              onValueChange={(data) => {
-                setSelectedMinute(data);
-              }}
-            />
-            <ScrollPicker
-              dataSource={ampm}
-              selectedIndex={ampm.indexOf(selectedAmPm)}
-              wrapperHeight={140}
-              wrapperBackground={"transparent"}
-              itemHeight={34}
-              highlightBorderWidth={0}
-              activeItemTextStyle={{
-                ...styles.pickerActiveText,
-                paddingLeft: 2,
-              }}
-              itemTextStyle={{
-                ...styles.pickerDefaultText,
-                marginLeft: 2,
-              }}
-              onValueChange={(data) => {
-                setSelectedAmPm(data);
-              }}
-            />
+      <View style={styles.modalBackground}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <View style={styles.container}>
+          {/* 시계 */}
+          <View style={styles.timePickerContainer}>
+            <View style={styles.pickerActiveView} />
+            <View style={styles.timePickerMainRow}>
+              <ScrollPicker
+                dataSource={hours}
+                selectedIndex={hours.indexOf(selectedHour)}
+                wrapperHeight={140}
+                wrapperBackground={"transparent"}
+                itemHeight={34}
+                highlightBorderWidth={0}
+                activeItemTextStyle={styles.pickerActiveText}
+                itemTextStyle={styles.pickerDefaultText}
+                onValueChange={(data) => {
+                  setSelectedHour(data);
+                }}
+              />
+              <Text
+                style={{
+                  ...styles.pickerActiveText,
+                  paddingHorizontal: 8,
+                }}
+              >
+                :
+              </Text>
+              <ScrollPicker
+                dataSource={minutes}
+                selectedIndex={minutes.indexOf(selectedMinute)}
+                wrapperHeight={140}
+                wrapperBackground={"transparent"}
+                itemHeight={34}
+                highlightBorderWidth={0}
+                activeItemTextStyle={styles.pickerActiveText}
+                itemTextStyle={styles.pickerDefaultText}
+                onValueChange={(data) => {
+                  setSelectedMinute(data);
+                }}
+              />
+              <ScrollPicker
+                dataSource={ampm}
+                selectedIndex={ampm.indexOf(selectedAmPm)}
+                wrapperHeight={140}
+                wrapperBackground={"transparent"}
+                itemHeight={34}
+                highlightBorderWidth={0}
+                activeItemTextStyle={{
+                  ...styles.pickerActiveText,
+                  paddingLeft: 2,
+                }}
+                itemTextStyle={{
+                  ...styles.pickerDefaultText,
+                  marginLeft: 2,
+                }}
+                onValueChange={(data) => {
+                  setSelectedAmPm(data);
+                }}
+              />
+            </View>
           </View>
-        </View>
-        {/* 확인 버튼 */}
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={handleComplete}
-          style={{
-            width: "100%",
-            alignItems: "center",
-          }}
-        >
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            colors={["#79BA7E", "#AFCA85"]}
-            style={styles.button}
+          {/* 확인 버튼 */}
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={handleComplete}
+            style={{
+              width: "100%",
+              alignItems: "center",
+            }}
           >
-            <Text style={bottomBtn.buttonText}>확인</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              colors={["#79BA7E", "#AFCA85"]}
+              style={styles.button}
+            >
+              <Text style={bottomBtn.buttonText}>확인</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
     </Modal>
   );
@@ -214,6 +265,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.grey100,
     borderRadius: 8,
     paddingVertical: 12,
+    position: "absolute",
+    zIndex: 10,
+    top: 317,
+    right: 20,
   },
   timePickerContainer: {
     justifyContent: "center",
@@ -260,5 +315,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
     borderRadius: 8,
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "transparent",
   },
 });

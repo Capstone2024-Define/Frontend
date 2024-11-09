@@ -15,33 +15,37 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import SwitchToggle from "react-native-switch-toggle";
+import AlarmModal from "../component/AlarmModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MyPageScreen({ navigation, route }) {
   const { ipnumber, user_code } = route.params;
   const [nickName, setNickName] = useState("");
-  const [reminderToggle, setReminderToggle] = useState(true);
+  const [reminderToggle, setReminderToggle] = useState(false);
   const [weeklyToggle, setWeeklyToggle] = useState(false);
+  const [visible, setVisible] = useState(false); // 알림 모달
 
-  // 상태바 변경(안드로이드)
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === "android") {
-        StatusBar.setBarStyle("light-content");
-        StatusBar.setBackgroundColor("#79BA7E");
-      }
+  // 알림 관련 시간 초기 설정(아싱크스토리지 저장 내용이 없을 때)
+  const now = new Date();
+  let currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const ampmValue = currentHour >= 12 ? "pm" : "am";
 
-      // Android에서 다른 화면으로 나갈 때 상태바 기본값으로 복구
-      return () => {
-        if (Platform.OS === "android") {
-          StatusBar.setBarStyle("dark-content");
-          StatusBar.setBackgroundColor("#FFFFFF"); // Android 기본 배경색
-        }
-      };
-    }, [])
+  if (currentHour > 12) {
+    currentHour = currentHour - 12;
+  } else if (currentHour === 0) {
+    currentHour = 12;
+  }
+
+  const [selectedAmPm, setSelectedAmPm] = useState(ampmValue);
+  const [selectedHour, setSelectedHour] = useState(currentHour.toString());
+  const [selectedMinute, setSelectedMinute] = useState(
+    currentMinute.toString().padStart(2, "0")
   );
 
-  // 닉네임(유저 이름) 가져오기
   useEffect(() => {
+    // 유저 이름 가져오기
     async function load() {
       try {
         const response = await axios.get(
@@ -52,19 +56,95 @@ export default function MyPageScreen({ navigation, route }) {
         console.log("유저 GET 에러: ", error);
       }
     }
+    // 토글 상태 가져오기
+    const loadToggle = async () => {
+      try {
+        const savedToggle = await AsyncStorage.getItem("toggleState");
+        if (savedToggle !== null) {
+          setReminderToggle(JSON.parse(savedToggle));
+        }
+        console.log("토글 상태: ", savedToggle);
+      } catch (error) {
+        console.error("토글 상태 로드 에러:", error);
+      }
+    };
     load();
+    loadToggle();
+    loadTime();
   }, []);
+
+  useEffect(() => {
+    // 알림 시간 불러오기
+    if (reminderToggle) {
+      loadTime();
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    // 토글 상태 저장
+    const saveToggle = async () => {
+      try {
+        await AsyncStorage.setItem(
+          "toggleState",
+          JSON.stringify(reminderToggle)
+        );
+        console.log("토글 상태 저장 완료");
+      } catch (error) {
+        console.log("토글 저장 에러: ", error);
+      }
+    };
+    saveToggle();
+  }, [reminderToggle]);
+
+  const modalClose = () => {
+    setVisible(false);
+  };
+
+  // 알림 시간 로드
+  const loadTime = async () => {
+    try {
+      const rawAlarm = await AsyncStorage.getItem("alarm");
+      if (rawAlarm) {
+        const alarm = JSON.parse(rawAlarm);
+        setSelectedAmPm(alarm.ampm);
+        setSelectedHour(alarm.hour);
+        setSelectedMinute(alarm.minute);
+      }
+      console.log("마이페이지 아싱크스토리지 알람: ", rawAlarm);
+    } catch (e) {
+      console.log("알람 기록 로드 에러");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{ backgroundColor: "#FFFFFF", paddingTop: 7 }}>
+      <ScrollView style={{ paddingTop: 16, backgroundColor: "#FFFFFF" }}>
         <Text style={styles.greeting}>{"안녕하세요,"}</Text>
         <View style={styles.nickNameContainer}>
-          <Text style={styles.nickName}>{nickName}님</Text>
-          <View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() =>
+              navigation.push("ProfileModify", {
+                user_code: user_code,
+                ipnumber: ipnumber,
+              })
+            }
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <Text style={styles.nickName}>{nickName}님</Text>
+            <Image
+              source={require("../assets/right_arrow.png")}
+              style={styles.arrowIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.5}>
             <LinearGradient
-              start={{ x: 0, y: -0 }}
-              end={{ x: 1, y: 1 }}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
               colors={["#79BA7E", "#AFCA85"]}
               style={styles.streakBox}
             >
@@ -72,36 +152,66 @@ export default function MyPageScreen({ navigation, route }) {
               <Text style={styles.streakSubText}>{"연속기록 중!"}</Text>
               <Image
                 source={require("../assets/my_rabbit.png")}
-                resizeMode={"stretch"}
+                resizeMode={"contain"}
                 style={styles.rabbitImage}
               />
             </LinearGradient>
-          </View>
+          </TouchableOpacity>
         </View>
-
+        <View
+          style={{
+            width: "100%",
+            height: 8,
+            backgroundColor: "#F8F8F8",
+            borderTopWidth: 1,
+            borderTopColor: "#ECECEC",
+          }}
+        />
         {/* 기록하기 리마인드 알림 */}
-        <View style={styles.notificationContainer}>
+        <View style={[styles.notificationContainer, { paddingTop: 20 }]}>
           <Image
             source={require("../assets/my_notifications.png")}
-            resizeMode={"stretch"}
+            resizeMode={"contain"}
             style={styles.notificationIcon}
           />
-          <Text style={styles.notificationText}>{"기록하기 리마인드 알림"}</Text>
+          <Text style={styles.notificationText}>
+            {"기록하기 리마인드 알림"}
+          </Text>
           <View style={{ flex: 1, alignSelf: "stretch" }} />
-          <Switch
-            value={reminderToggle}
-            onValueChange={(value) => setReminderToggle(value)}
-            trackColor={{ false: "#A5A5A5", true: "#78BA7D" }}
-            thumbColor={"#FFFFFF"}
+          <SwitchToggle
+            switchOn={reminderToggle}
+            onPress={() => setReminderToggle(!reminderToggle)}
+            circleColorOff="#fff"
+            circleColorOn="#fff"
+            backgroundColorOn={theme.green500}
+            backgroundColorOff={theme.grey300}
+            containerStyle={{
+              width: 47,
+              borderRadius: 46,
+              padding: 2,
+            }}
+            circleStyle={{
+              width: 25,
+              height: 25,
+              borderRadius: 20,
+            }}
           />
         </View>
         <View style={styles.notificationDescriptionContainer}>
           <Text style={styles.notificationDescription}>
             {"매일 잊지 않게 푸시알림을 보내드려요"}
           </Text>
-          <View style={styles.timeButton}>
-            <Text style={styles.timeButtonText}>{"시간연결"}</Text>
-          </View>
+          {reminderToggle && (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => setVisible(true)}
+              style={styles.timeButton}
+            >
+              <Text style={styles.timeButtonText}>
+                {selectedHour}:{selectedMinute} {selectedAmPm}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* 주간분석결과 알림 */}
@@ -113,14 +223,26 @@ export default function MyPageScreen({ navigation, route }) {
           />
           <Text style={styles.notificationText}>{"주간분석결과 알림"}</Text>
           <View style={{ flex: 1, alignSelf: "stretch" }} />
-          <Switch
-            value={weeklyToggle}
-            onValueChange={(value) => setWeeklyToggle(value)}
-            trackColor={{ false: "#A5A5A5", true: "#78BA7D" }}
-            thumbColor={"#FFFFFF"}
+          <SwitchToggle
+            switchOn={weeklyToggle}
+            onPress={() => setWeeklyToggle(!weeklyToggle)}
+            circleColorOff="#fff"
+            circleColorOn="#fff"
+            backgroundColorOn={theme.green500}
+            backgroundColorOff={theme.grey300}
+            containerStyle={{
+              width: 47,
+              borderRadius: 46,
+              padding: 2,
+            }}
+            circleStyle={{
+              width: 25,
+              height: 25,
+              borderRadius: 20,
+            }}
           />
         </View>
-        <Text style={styles.notificationDescription}>
+        <Text style={[styles.notificationDescription, { marginLeft: 56 }]}>
           {"매주 일요일 주간분석결과 알림을 보내드려요"}
         </Text>
 
@@ -132,11 +254,19 @@ export default function MyPageScreen({ navigation, route }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate("Bookmark")} // Bookmark 화면으로 이동
         >
-          <Image
-            source={require("../assets/my_bookmark.png")}
-            style={styles.menuIcon}
-          />
-          <Text style={styles.menuText}>북마크한 정보</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Image
+              source={require("../assets/my_bookmark.png")}
+              style={styles.menuIcon}
+            />
+            <Text style={styles.notificationText}>북마크한 정보</Text>
+          </View>
           <Image
             source={require("../assets/right_arrow.png")} // 오른쪽 화살표 아이콘 추가
             style={styles.arrowIcon}
@@ -144,23 +274,39 @@ export default function MyPageScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Image
-            source={require("../assets/my_guide.png")}
-            style={styles.menuIcon}
-          />
-          <Text style={styles.menuText}>이용가이드</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Image
+              source={require("../assets/my_guide.png")}
+              style={styles.menuIcon}
+            />
+            <Text style={styles.notificationText}>이용가이드</Text>
+          </View>
           <Image
             source={require("../assets/right_arrow.png")}
             style={styles.arrowIcon}
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
-          <Image
-            source={require("../assets/my_info.png")}
-            style={styles.menuIcon}
-          />
-          <Text style={styles.menuText}>앱 정보</Text>
+        <TouchableOpacity style={[styles.menuItem, { marginBottom: 0 }]}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Image
+              source={require("../assets/my_info.png")}
+              style={styles.menuIcon}
+            />
+            <Text style={styles.notificationText}>앱 정보</Text>
+          </View>
           <Image
             source={require("../assets/right_arrow.png")}
             style={styles.arrowIcon}
@@ -176,9 +322,16 @@ export default function MyPageScreen({ navigation, route }) {
             source={require("../assets/my_logout.png")}
             style={styles.menuIcon}
           />
-          <Text style={styles.logoutText}>로그아웃</Text>
+          <Text style={[styles.notificationText, { color: theme.grey400 }]}>
+            로그아웃
+          </Text>
         </TouchableOpacity>
       </ScrollView>
+      <AlarmModal
+        visible={visible}
+        onClose={modalClose}
+        onToggle={reminderToggle}
+      />
     </SafeAreaView>
   );
 }
@@ -191,40 +344,45 @@ const styles = StyleSheet.create({
   greeting: {
     color: "#6F6F6F",
     fontSize: 16,
-    marginBottom: 10,
-    marginLeft: 21,
+    lineHeight: 24,
+    fontFamily: "Pretendard-Regular",
+    marginBottom: 4,
+    marginLeft: 20,
   },
   nickNameContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
     marginHorizontal: 20,
   },
   nickName: {
     color: "#333333",
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    marginLeft: 1,
+    lineHeight: 30,
+    fontFamily: "Pretendard-Bold",
+    marginRight: 4,
   },
   streakBox: {
+    height: 94,
     borderRadius: 8,
-    paddingTop: 18,
     paddingBottom: 31,
     paddingHorizontal: 16,
+    paddingTop: 12,
+    overflow: "hidden",
   },
   streakText: {
     color: "#FFFFFF",
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 9,
+    lineHeight: 30,
+    fontFamily: "Pretendard-Bold",
   },
   streakSubText: {
     color: "#F2F8F2",
     fontSize: 16,
-    fontWeight: "bold",
+    lineHeight: 24,
+    fontFamily: "Pretendard-Medium",
   },
   rabbitImage: {
     position: "absolute",
-    top: -5,
+    top: 5,
     right: 31,
     width: 67,
     height: 105,
@@ -243,7 +401,8 @@ const styles = StyleSheet.create({
   notificationText: {
     color: "#555555",
     fontSize: 16,
-    fontWeight: "bold",
+    lineHeight: 24,
+    fontFamily: "Pretendard-Medium",
   },
   notificationDescriptionContainer: {
     flexDirection: "row",
@@ -251,32 +410,36 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     marginBottom: 20,
     marginHorizontal: 20,
+    paddingLeft: 36,
   },
   notificationDescription: {
     color: "#6F6F6F",
     fontSize: 12,
-    marginLeft: 56,
+    lineHeight: 20,
+    fontFamily: "Pretendard-Regular",
   },
   timeButton: {
-    width: 90,
     alignItems: "center",
     backgroundColor: "#F6F6F6",
     borderRadius: 8,
-    paddingVertical: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 11,
   },
   timeButtonText: {
-    color: "#78BA7D",
+    color: "#79BA7E",
     fontSize: 16,
-    fontWeight: "bold",
+    lineHeight: 24,
+    fontFamily: "Pretendard-Medium",
   },
   divider: {
     height: 1,
     backgroundColor: "#EBEBEB",
-    marginVertical: 19,
+    marginVertical: 20,
     marginHorizontal: 20,
   },
   menuItem: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
     marginHorizontal: 20,
@@ -299,7 +462,7 @@ const styles = StyleSheet.create({
   logoutItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 44,
+    marginBottom: 20,
     marginHorizontal: 20,
   },
   logoutText: {
