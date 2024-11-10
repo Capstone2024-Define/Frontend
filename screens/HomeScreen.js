@@ -39,11 +39,46 @@ export default function HomeScreen({ navigation, route }) {
   // const [totalText, setTotalText] = useState("");
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
-  const [totalDay, setTotalDay] = useState(0);
+  // const [totalDay, setTotalDay] = useState(0);
   const { ipnumber, user_code } = route.params;
   const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
+  const [adviseTitle, setAdviseTitle] = useState("");
+  const checklistBadItems = [
+    "욕을 했어요",
+    "무시하는 말을 했어요",
+    "아이의 말을 자르고 하고 싶은 말을 했어요",
+    "“항상”, “절대”라는 표현을 사용했어요",
+    "오랫동안 잔소리를 했어요",
+    "다른 곳을 보면서 말했어요",
+    "서서 혹은 걸어 다니면서 말했어요",
+    "높고 날카로운 어조로 말했어요",
+    "한번에 여러가지 문제를 말했어요",
+    "최악의 상황을 생각해서 말했어요",
+    "과거를 들추어서 말했어요",
+    "말하고 싶지 않을때 침묵했어요",
+    "벌컥 화를 냈어요",
+    "내가 한 일을 부정했어요",
+    "아이의 작은 실수를 잔소리 했어요",
+  ];
+  const checklistGoodItems = [
+    `아이에게 상처주지 않는${"\n"}말로 표현해봐요!`,
+    `아이에게 화난 이유를${"\n"}차분하게 설명해봐요!`,
+    `아이에게 차례를 기다리고${"\n"}짧게 말해봐요!`,
+    `“대부분”, “가끔”이라는${"\n"}표현을 사용해봐요!`,
+    `잔소리는 핵심적인 내용만${"\n"}짧게 말해봐요!`,
+    `아이와 눈을 맞추며${"\n"}말해봐요!`,
+    `앉아서 주의를 기울이며${"\n"}말해봐요!`,
+    `차분하고 침착한 어조로${"\n"}말해봐요!`,
+    `한번에 하나의 문제만${"\n"}말해봐요!`,
+    `넘겨짚어 생각하지${"\n"}말아요!`,
+    `지금의 문제에만${"\n"}집중해봐요!`,
+    `느끼는 것을 솔직하게${"\n"}표현해봐요!`,
+    `화가 났을땐${"\n"}다른 장소에서 진정해봐요!`,
+    `자신이 한 일을 인정하고${"\n"}오해를 풀어봐요!`,
+    `누구도 완벽하진 못해요{'\n'}사소한 일은 넘어가주세요!`,
+  ];
 
   // 상태바 변경(안드로이드)
   useFocusEffect(
@@ -69,6 +104,48 @@ export default function HomeScreen({ navigation, route }) {
     setSelectedDate(date);
   }, []);
 
+  // 연속 날짜, 가장 최근 체크리스트 로드
+  useFocusEffect(
+    useCallback(() => {
+      async function load() {
+        try {
+          // 연속 날짜 로드
+          const response_consecutiveDays = await axios.get(
+            `http://${ipnumber}:8080/daily/consecutive/${user_code}`
+          );
+          console.log("연속 일자: ", response_consecutiveDays.data);
+
+          // 가장 최근 체크리스트 로드
+          const response_resentChecklist = await axios.get(
+            `http://${ipnumber}:8080/prnt/recent/${user_code}`
+          );
+          console.log("최근 체크리스트: ", response_resentChecklist.data);
+
+          // 체크된 항목 중 랜덤으로 한개를 뽑음
+          if (response_resentChecklist.data.length > 0) {
+            const randomChecklist =
+              response_resentChecklist.data[
+                Math.floor(Math.random() * response_resentChecklist.data.length)
+              ];
+            console.log("랜덤 체크리스트: ", randomChecklist);
+            checklistBadItems.forEach((item, index) => {
+              if (randomChecklist === item) {
+                setAdviseTitle(checklistGoodItems[index]);
+              }
+            });
+          } else {
+            const randomIndex = Math.floor(Math.random() * 15);
+            console.log("랜덤 체크리스트: ", checklistBadItems[randomIndex]);
+            setAdviseTitle(checklistGoodItems[randomIndex]);
+          }
+        } catch (error) {
+          console.log("연속 기록/체크리스트 로드 에러 ", error);
+        }
+      }
+      load();
+    }, [])
+  );
+
   // 선택날짜 기록 로드(DB)
   useFocusEffect(
     useCallback(() => {
@@ -83,18 +160,16 @@ export default function HomeScreen({ navigation, route }) {
               `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
             );
             setSummaryText(response.data.summary);
-            console.log("서머리: ", response.data.summary);
             // 몇일째 기록하는중인지 가져옴
-            const response_total = await axios.get(
-              `http://${ipnumber}:8080/daily/records/${user_code}`
-            );
-            setTotalDay(response_total.data.length);
+            // const response_total = await axios.get(
+            //   `http://${ipnumber}:8080/daily/records/${user_code}`
+            // );
+            // setTotalDay(response_total.data.length);
 
             // 이미지 가져옴
             const response_image = await axios.get(
               `http://${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
             );
-            console.log("이미지 로드: ", response_image.data);
             setImages(response_image.data);
           } catch (error) {
             // 기록 없는거니까 텍스트랑 이미지 비움
@@ -208,7 +283,7 @@ export default function HomeScreen({ navigation, route }) {
               style={{
                 flex: 1,
                 justifyContent: "flex-end",
-                marginRight: 28,
+                marginRight: 6,
               }}
             >
               <TouchableOpacity
@@ -244,7 +319,7 @@ export default function HomeScreen({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
               <Text style={[styles.title, { marginVertical: 8 }]}>
-                아이에게 상처주지 않는 말로 표현해봐요!
+                {adviseTitle}
               </Text>
             </View>
             <WithLocalSvg asset={Rabbit} />

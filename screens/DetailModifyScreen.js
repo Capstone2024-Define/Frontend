@@ -35,22 +35,18 @@ export default function DetailModifyScreen({ navigation, route }) {
   const [state, setState] = useState("");
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const [totalText, setTotalText] = useState("");
+  const [serverImages, setServerImages] = useState(false); // 서버에 이미지 있나없나 확인
+  const [deleteTargetImages, setDeleteTargetImages] = useState([]); // 삭제 대상 이미지
   const { date, user_code, ipnumber } = route.params;
 
   // 갤러리 권한
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-
-  // 이미지 배열
   const [images, setImages] = useState([]);
-  // 이미지 객체 id 설정 위한 변수
-  const [id, setId] = useState(0);
-  let k = 0;
 
   // 기록 로드
-  useState(() => {
+  useEffect(() => {
     async function load() {
       try {
-        // 이미지 저장 DB 로직 짜여지면 이미지 id 관리 윗줄처럼
         const response = await axios.get(
           `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
         );
@@ -63,8 +59,11 @@ export default function DetailModifyScreen({ navigation, route }) {
         const response_image = await axios.get(
           `http://${ipnumber}:8080/image/show/${user_code}/${date}`
         );
-        console.log("이미지 로드: ", response_image.data);
-        setImages(response_image.data);
+        if (response_image.data.length > 0) {
+          console.log("이미지 로드: ", response_image.data);
+          setImages(response_image.data);
+          setServerImages(true);
+        }
       } catch (e) {
         console.log("기록 로드 에러");
       }
@@ -128,10 +127,9 @@ export default function DetailModifyScreen({ navigation, route }) {
 
           // 이미지 객체 배열에 추가
           const newImage = selectedUri.map((uri) => {
-            return { id: id + k++, uri: uri };
+            return uri;
           });
           setImages(images.concat(newImage));
-          setId(id + k);
         }
       } catch (error) {
         console.log(error);
@@ -142,10 +140,28 @@ export default function DetailModifyScreen({ navigation, route }) {
     }
   };
 
-  // 이미지 삭제
-  const deleteImage = (key) => {
-    setImages(images.filter((image) => image.id !== key));
-    console.log(images);
+  // 이미지 삭제 함수 (URI 기반)
+  const deleteImage = async (uri) => {
+    try {
+      if (uri.startsWith("http")) {
+        // setDeleteTargetImages((prev) => [...prev, uri]);
+        const sliceURL = uri.split(".com/")[1];
+        console.log("삭제 대상: ", sliceURL);
+        await axios.put(
+          `http://${ipnumber}:8080/image/edit/${user_code}/${date}`,
+          {},
+          {
+            headers: {
+              url: sliceURL, // 헤더에 url을 추가
+            },
+          }
+        );
+        console.log(sliceURL, " 삭제완료");
+      }
+      setImages((prev) => prev.filter((image) => image !== uri));
+    } catch (error) {
+      console.log("이미지 삭제 에러: ", error);
+    }
   };
 
   // TextInput 제한 글자 색
@@ -160,18 +176,10 @@ export default function DetailModifyScreen({ navigation, route }) {
   };
 
   // 음성 기록
-  // useFocusEffect(
-  //   useCallback(() => {
   useFocusEffect(
     useCallback(() => {
       async function load() {
         try {
-          // const rawVoice = await AsyncStorage.getItem("voice");
-          // const voices = JSON.parse(rawVoice);
-          // if (voices) {
-          //   const filteredVoice = voices.filter((voice) => voice.date === date);
-          //   setVoiceList(filteredVoice);
-          // }
           const response = await axios.get(
             `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
           );
@@ -183,16 +191,6 @@ export default function DetailModifyScreen({ navigation, route }) {
       load();
     }, [])
   );
-  // );
-
-  // 저장
-  // const save = async (toSave) => {
-  //   try {
-  //     await AsyncStorage.setItem(date, JSON.stringify(toSave));
-  //   } catch (error) {
-  //     console.log("기록 저장 에러");
-  //   }
-  // };
 
   // 기록 저장
   const handlePost = async () => {
@@ -222,20 +220,48 @@ export default function DetailModifyScreen({ navigation, route }) {
       });
 
       // 수정
-      const response = await axios.put(
-        `http://${ipnumber}:8080/daily/records/edit`,
-        {
-          user_code: user_code,
-          date: date,
-          home: homeText,
-          school: schoolText,
-          hospital: hospitalText,
-          summary: summarizeText,
-          state: state,
-        }
-      );
+      await axios.put(`http://${ipnumber}:8080/daily/records/edit`, {
+        user_code: user_code,
+        date: date,
+        home: homeText,
+        school: schoolText,
+        hospital: hospitalText,
+        summary: summarizeText,
+        state: state,
+      });
 
-      console.log("Post 응답:", response.data);
+      // 이미지 삭제
+      // if (serverImages) {
+      //   await axios.delete(
+      //     `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
+      //   );
+      // }
+      // console.log("이미지 삭제 완료");
+
+      // 이미지 다시 저장(서버 이미지들 제외)
+      const formData = new FormData();
+      images.forEach((image, index) => {
+        if (image.startsWith("file")) {
+          console.log("file로 시작하나요? ", image);
+          formData.append("multipartFiles", {
+            uri: image,
+            name: `image${index}.jpg`,
+            type: "image/jpeg",
+          });
+        }
+      });
+      formData.append("user_code", user_code);
+      formData.append("date", date);
+
+      await fetch(`http://${ipnumber}:8080/image/post`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("수정 완료");
     } catch (error) {
       console.log("수정 에러", error);
     }
@@ -283,16 +309,18 @@ export default function DetailModifyScreen({ navigation, route }) {
               </View>
             </View>
           </TouchableOpacity>
-          {images.map((image) => (
-            <View key={image.id}>
+          {images.map((image, index) => (
+            <View key={index}>
               <Image
-                source={{ uri: `${image}` }}
+                source={{ uri: image }}
                 style={styles.photo}
                 resizeMode="cover"
               />
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => deleteImage(image.id)}
+                onPress={async () => {
+                  await deleteImage(image);
+                }}
               >
                 <View style={styles.deleteButton}>
                   <WithLocalSvg width={18} height={18} asset={X} />
@@ -390,24 +418,6 @@ export default function DetailModifyScreen({ navigation, route }) {
           >
             {schoolText}
           </TextInput>
-          {/* {voiceList.map((voice, index) =>
-            voice.location === "school" ? (
-              <VoiceButton
-                key={`school-${index}`}
-                place={voice.location}
-                time={voice.timestamp}
-                text={voice.contents}
-                onPress={() =>
-                  navigation.push("DetailVoice", {
-                    detail: false,
-                    user_code: user_code,
-                    ipnumber: ipnumber,
-                    timestamp: voice.timestamp,
-                  })
-                }
-              />
-            ) : null
-          )} */}
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Hospital} />
             <Text style={styles.inputGuideText}>병원에서 어땠나요?</Text>
@@ -455,24 +465,6 @@ export default function DetailModifyScreen({ navigation, route }) {
           >
             {hospitalText}
           </TextInput>
-          {/* {voiceList.map((voice, index) =>
-            voice.location === "hospital" ? (
-              <VoiceButton
-                key={`hospital-${index}`}
-                place={voice.location}
-                time={voice.timestamp}
-                text={voice.contents}
-                onPress={() =>
-                  navigation.push("DetailVoice", {
-                    detail: false,
-                    user_code: user_code,
-                    ipnumber: ipnumber,
-                    timestamp: voice.timestamp,
-                  })
-                }
-              />
-            ) : null
-          )} */}
           {voiceList.length !== 0 && (
             <>
               <View style={{ ...styles.subTextContainer, marginTop: 12 }}>
@@ -516,7 +508,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  photoScroll: { marginLeft: 20, marginTop: 28, marginBottom: 8 },
+  photoScroll: {
+    paddingLeft: 20,
+    paddingRight: 8,
+    marginTop: 28,
+    marginBottom: 8,
+  },
   photo: {
     width: 60,
     height: 60,

@@ -44,7 +44,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "192.168.123.167";
+  const ipnumber = "3.38.93.11";
   const [user_code, setUserCode] = useState(1000);
 
   // 폰트 로드 상태
