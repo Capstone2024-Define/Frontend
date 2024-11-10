@@ -82,9 +82,6 @@ export default function HomeScreen({ navigation, route }) {
             const response = await axios.get(
               `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
             );
-
-            // console.log("GET: ", response.data);
-            // setTotalText(response.data.summary);
             setSummaryText(response.data.summary);
             console.log("서머리: ", response.data.summary);
             // 몇일째 기록하는중인지 가져옴
@@ -152,37 +149,8 @@ export default function HomeScreen({ navigation, route }) {
       tempDate.setDate(startDate.getDate() + i);
       newWeeks.push(cvtDateString(tempDate));
     }
+    console.log("주간 날짜: ", newWeeks);
     setWeeks(newWeeks);
-  };
-
-  // 몇주차인지 얻기
-  const getWeekNumber = (date) => {
-    const dateFrom = new Date(date);
-    const currentDate = dateFrom.getDate();
-    const startOfMonth = new Date(dateFrom.setDate(1));
-    const weekDay = startOfMonth.getDay();
-
-    return parseInt((weekDay - 1 + currentDate) / 7) + 1;
-  };
-
-  // 주 변경 화살표 함수
-  const handleWeekChange = (direction) => {
-    const current = new Date(selectedDate);
-    const newDate = new Date(
-      current.setDate(current.getDate() + direction * 7)
-    );
-    setSelectedDate(cvtDateString(newDate));
-  };
-
-  // 현재 날짜와 선택한 날짜가 같은지 확인하는 함수
-  const isToday = (date) => {
-    const today = new Date();
-    const compareDate = new Date(date);
-    return (
-      today.getFullYear() === compareDate.getFullYear() &&
-      today.getMonth() === compareDate.getMonth() &&
-      today.getDate() === compareDate.getDate()
-    );
   };
 
   const isPastDate = (date) => {

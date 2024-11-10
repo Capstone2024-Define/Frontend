@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  photoScroll: { marginLeft: 20, marginBottom: 20 },
+  photoScroll: { marginLeft: 20 },
   photo: {
     width: 75,
     height: 75,
@@ -488,6 +488,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
+    marginBottom: 20,
   },
   title: {
     marginLeft: 8,

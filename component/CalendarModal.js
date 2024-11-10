@@ -59,7 +59,7 @@ export default function CalendarModal({
 
   useEffect(() => {
     load();
-  }, [currentMonth]);
+  }, [visible]);
 
   // 기록 로드
   const load = async () => {

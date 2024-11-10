@@ -149,7 +149,7 @@ export default function AlarmModal({
 
   const scheduleAlarm = async (hour, minute, ampm) => {
     try {
-      await cancleAlarm(); // 기존 알림 삭제
+      await Notifications.cancelAllScheduledNotificationsAsync(); // 기존 알림 삭제
 
       const triggerHour =
         ampm === "pm" && parseInt(hour) !== 12
