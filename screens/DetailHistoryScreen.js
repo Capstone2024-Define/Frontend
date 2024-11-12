@@ -208,7 +208,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
   );
   const deleteRecord = async () => {
     try {
-      // // 이미지 삭제
+      // 이미지 삭제
       if (images.length > 0) {
         response = await axios.delete(
           `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
@@ -257,7 +257,6 @@ export default function DetailHistoryScreen({ navigation, route }) {
           contentContainerStyle={styles.photoScroll}
         >
           {images.map((image, index) => {
-            console.log("이미지: ", image);
             return (
               <View key={index}>
                 <Image
@@ -310,30 +309,25 @@ export default function DetailHistoryScreen({ navigation, route }) {
             paddingVertical: 16,
           }}
         >
-          <View style={styles.remind}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => setRemindVisible(!remindVisible)}
+            style={styles.remind}
+          >
             <View style={{ flexDirection: "row" }}>
               <WithLocalSvg width={23} height={23} asset={Check} />
               <Text style={{ ...styles.title, marginLeft: 5 }}>되돌아보기</Text>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => setRemindVisible(!remindVisible)}
-            >
-              {!remindVisible ? (
-                <Entypo
-                  name="chevron-small-down"
-                  size={24}
-                  color={theme.grey300}
-                />
-              ) : (
-                <Entypo
-                  name="chevron-small-up"
-                  size={24}
-                  color={theme.grey300}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
+            {!remindVisible ? (
+              <Entypo
+                name="chevron-small-down"
+                size={24}
+                color={theme.grey300}
+              />
+            ) : (
+              <Entypo name="chevron-small-up" size={24} color={theme.grey300} />
+            )}
+          </TouchableOpacity>
           {remindVisible ? (
             <View style={{ marginTop: 12, paddingHorizontal: 24 }}>
               {checkList.map((check, index) => (
@@ -479,7 +473,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-
   photoScroll: { marginLeft: 20 },
   photo: {
     width: 75,

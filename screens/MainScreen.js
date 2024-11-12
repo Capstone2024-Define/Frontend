@@ -37,6 +37,8 @@ const SvgIcon = ({ asset }) => (
 export default function MainScreen({ route }) {
   const { user_code, ipnumber } = route.params;
 
+  console.log(user_code, ipnumber);
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
