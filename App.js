@@ -42,13 +42,14 @@ import SplashScreen from "./screens/SplashScreen";
 import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import PreparingGuide from "./screens/PreparingGuide";
-// import PreparingGuide from "./screens/PreparingInfo"; 
+// import PreparingGuide from "./screens/PreparingInfo";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const ipnumber = "13.209.14.26";
   const [user_code, setUserCode] = useState(1000);
+  const [adviseTitle, setAdviseTitle] = useState("");
 
   // 폰트 로드 상태
   const [fontsLoaded] = useFonts({
@@ -118,6 +119,10 @@ export default function App() {
               name="InfoSearch"
               component={InfoSearch}
               options={{ title: "검색 화면", headerShown: false }}
+              initialParams={{
+                ipnumber: ipnumber,
+                user_code: user_code,
+              }}
             />
             <Stack.Screen
               name="InfoSearchResult"
