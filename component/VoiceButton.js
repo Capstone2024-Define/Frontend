@@ -1,7 +1,6 @@
 import { StyleSheet, TouchableOpacity, View, Text, Image } from "react-native";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
-import Voice from "../assets/graphic_eq.svg";
 import PropTypes from "prop-types";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
@@ -61,10 +60,10 @@ VoiceButton.propTypes = {
 const styles = StyleSheet.create({
   voiceButton: {
     flexDirection: "row",
-    width: 312,
+    width: "100%",
     height: 68,
     borderRadius: 16,
-    backgroundColor: theme.grey50,
+    backgroundColor: "#fff",
     paddingVertical: 8,
     paddingHorizontal: 20,
     alignItems: "center",

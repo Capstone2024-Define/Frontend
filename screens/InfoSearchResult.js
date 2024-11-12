@@ -1,45 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   SafeAreaView,
   ScrollView,
   View,
   Text,
-  Image,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../colors/color";
 import { infos } from "../component/Info";
-import InfoScreenDetail from "./InfoScreenDetail";
+import { Entypo } from "@expo/vector-icons";
+import SortModal from "../component/SortModal";
 
 function InfoSearchResult() {
-  const [searchResults, setSearchResults] = useState(null);
-  const [formatText, setFormatText] = useState([]);
+  const [searchResults_recent, setSearchResults_recent] = useState(null); // 최신순 검색결과
+  const [searchResults_viewcount, setSearchResults_viewcount] = useState(null); // 조회순 검색결과
   const [isLoading, setIsLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [sortState, setSortState] = useState("viewCount"); // 디폴트 조회순
   const route = useRoute();
   const navigation = useNavigation(); // 네비게이션 훅 사용
   const { searchText } = route.params; // 전달된 검색어를 가져옴
 
+  // 원하는 위치에 모달 띄우기
+  const [buttonPosition, setButtonPosition] = useState({ top: 0 });
+  const buttonRef = useRef(null);
+  const openModal = () => {
+    // 버튼 위치 가져오기
+    buttonRef.current.measure((x, y, width, height, pageX, pageY) => {
+      setButtonPosition({ top: pageY + height });
+    });
+    setModalVisible(true);
+  };
+
   useEffect(() => {
-    // const searchDatabase = async () => {
-    //   try {
-    //     const allData = await AsyncStorage.getItem("database"); // 가상의 데이터베이스
-    //     const parsedData = allData ? JSON.parse(allData) : [];
-    //     // 검색어를 포함하는 데이터 필터링
-    //     const results = parsedData.filter((item) =>
-    //       item.toLowerCase().includes(searchText.toLowerCase())
-    //     );
-    //     setSearchResults(results);
-    //   } catch (error) {
-    //     console.error("Error reading data from AsyncStorage:", error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-    // searchDatabase();
+    console.log("정렬 방법: ", sortState);
+  }, [sortState]);
+
+  useEffect(() => {
     const searchData = () => {
       let searchResult = [];
 
@@ -57,7 +57,9 @@ function InfoSearchResult() {
         }
       });
 
-      setSearchResults(searchResult);
+      const reverseSearchResult = searchResult.reverse(); // 역순(최신순)
+      setSearchResults_recent(reverseSearchResult);
+
       console.log(searchResult);
       setIsLoading(false);
     };
@@ -171,46 +173,74 @@ function InfoSearchResult() {
           style={{
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: "space-between",
             marginBottom: 14,
           }}
         >
-          <Text
+          <View
             style={{
-              color: "#555555",
-              fontSize: 16,
-              marginRight: 4,
-              fontFamily: "Pretendard-Medium",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            {"총"}
-          </Text>
-          <Text
+            <Text
+              style={{
+                color: "#555555",
+                fontSize: 16,
+                marginRight: 4,
+                fontFamily: "Pretendard-Medium",
+              }}
+            >
+              {"총"}
+            </Text>
+            <Text
+              style={{
+                color: "#78BA7D",
+                fontSize: 16,
+                marginRight: 0,
+                fontFamily: "Pretendard-Bold",
+              }}
+            >
+              {searchResults_recent ? searchResults_recent.length : 0}
+            </Text>
+            <Text
+              style={{
+                color: "#555555",
+                fontSize: 16,
+                fontFamily: "Pretendard-Medium",
+              }}
+            >
+              {"개 검색결과"}
+            </Text>
+          </View>
+          <TouchableOpacity
+            ref={buttonRef}
+            activeOpacity={0.5}
+            onPress={openModal}
             style={{
-              color: "#78BA7D",
-              fontSize: 16,
-              marginRight: 0,
-              fontFamily: "Pretendard-Bold",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            {searchResults ? searchResults.length : 0}
-          </Text>
-          <Text
-            style={{
-              color: "#555555",
-              fontSize: 16,
-              flex: 1,
-              fontFamily: "Pretendard-Medium",
-            }}
-          >
-            {"개 검색결과"}
-          </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                lineHeight: 20,
+                fontFamily: "Pretendard-Medium",
+                color: theme.grey400,
+              }}
+            >
+              {sortState === "viewCount" ? "조회순" : "최신순"}
+            </Text>
+            <Entypo name="chevron-small-down" size={20} color={theme.grey400} />
+          </TouchableOpacity>
         </View>
         <View style={styles.line} />
 
         {/* 검색결과가 있을 경우 */}
-        {searchResults && searchResults.length > 0 ? (
+        {searchResults_recent && searchResults_recent.length > 0 ? (
           <>
-            {searchResults.map((result, index) => {
+            {searchResults_recent.map((result, index) => {
               const [start, middle, end] = getTotalText(result, searchText);
               return (
                 <TouchableOpacity
@@ -264,6 +294,13 @@ function InfoSearchResult() {
           </>
         )}
       </ScrollView>
+      <SortModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        buttonPosition={buttonPosition}
+        sortState={sortState}
+        setSortState={setSortState}
+      />
     </SafeAreaView>
   );
 }

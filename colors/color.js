@@ -31,8 +31,8 @@ export const theme = {
   green: "#BDE776",
   yellow: "#FFD47F",
   pink: "#EF9DA2",
-
   red: "#F05757",
+  line_gray: "#EBEBEB",
 
   modalBackground: {
     flex: 1,

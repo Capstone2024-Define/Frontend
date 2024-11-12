@@ -273,18 +273,18 @@ export default function DetailHistoryScreen({ navigation, route }) {
         {summaryText ? (
           <View
             style={{
-              ...styles.subContainer,
-              backgroundColor: theme.grey100,
+              backgroundColor: "#fff",
+              borderWidth: 1,
+              borderColor: theme.line_gray,
               borderRadius: 8,
-              paddingHorizontal: 12,
-              paddingVertical: 12,
+              padding: 12,
               marginHorizontal: 20,
             }}
           >
             <View style={{ marginBottom: 0 }}>
               <View style={{ flexDirection: "row", marginBottom: 4 }}>
                 <WithLocalSvg width={20} height={20} asset={Note} />
-                <Text style={styles.title}>기록을 요약했어요</Text>
+                <Text style={styles.title}>핵심 포인트만 정리했어요</Text>
               </View>
               <Text style={{ ...styles.subText, color: theme.grey700 }}>
                 {summaryText}
@@ -297,9 +297,10 @@ export default function DetailHistoryScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.tagContainer}
         >
-          {symptomList.map((symptom, index) => (
-            <SmallTag key={index} text={symptom} />
-          ))}
+          {symptomList &&
+            symptomList.map((symptom, index) => (
+              <SmallTag key={index} text={symptom} />
+            ))}
 
           <View style={{ width: 35 }} />
         </ScrollView>
@@ -330,17 +331,22 @@ export default function DetailHistoryScreen({ navigation, route }) {
           </TouchableOpacity>
           {remindVisible ? (
             <View style={{ marginTop: 12, paddingHorizontal: 24 }}>
-              {checkList.map((check, index) => (
-                <View style={styles.subRemind} key={index}>
-                  <FontAwesome name="circle" size={6} color={theme.green300} />
-                  <Text style={styles.remindText}>{check}</Text>
-                </View>
-              ))}
+              {checkList &&
+                checkList.map((check, index) => (
+                  <View style={styles.subRemind} key={index}>
+                    <FontAwesome
+                      name="circle"
+                      size={6}
+                      color={theme.green300}
+                    />
+                    <Text style={styles.remindText}>{check}</Text>
+                  </View>
+                ))}
             </View>
           ) : null}
         </View>
         <View style={styles.line} />
-        <View style={styles.space} />
+        {/* <View style={styles.space} /> */}
         <View style={{ ...styles.subContainer, paddingTop: 16 }}>
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Home} />
@@ -441,7 +447,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
               ))}
             </>
           )}
-          <View style={{ marginBottom: 50 }} />
+          <View style={{ marginBottom: 40 }} />
         </View>
       </ScrollView>
       <Modal2
@@ -467,11 +473,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingVertical: 24,
+    paddingVertical: 20,
   },
   subContainer: {
     flex: 1,
     paddingHorizontal: 20,
+    backgroundColor: theme.grey100,
   },
   photoScroll: { marginLeft: 20 },
   photo: {
@@ -550,7 +557,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 12,
     borderRadius: 8,
-    backgroundColor: theme.green50,
+    backgroundColor: "#fff",
   },
   recordText: {
     fontSize: 14,

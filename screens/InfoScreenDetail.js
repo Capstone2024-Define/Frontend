@@ -169,7 +169,9 @@ function InfoScreenDetail({ route }) {
         </Text>
         <View
           style={{
-            backgroundColor: "#F6F6F6",
+            backgroundColor: "#fff",
+            borderWidth: 1,
+            borderColor: theme.line_gray,
             borderRadius: 8,
             padding: 12,
             marginBottom: 32,

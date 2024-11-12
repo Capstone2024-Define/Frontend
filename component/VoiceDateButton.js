@@ -6,8 +6,12 @@ import Hospital from "../assets/stethoscope.svg";
 
 export default function VoiceDateButton({ place, date, time, text, onPress }) {
   return (
-    <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
-      <View style={styles.voiceButton}>
+    <View style={{ width: "100%", alignItems: "center" }}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={onPress}
+        style={styles.voiceButton}
+      >
         <View style={styles.voiceContent}>
           <View style={styles.voiceContentHeader}>
             <View style={{ flexDirection: "row" }}>
@@ -25,8 +29,8 @@ export default function VoiceDateButton({ place, date, time, text, onPress }) {
             {text}
           </Text>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -34,10 +38,10 @@ const styles = StyleSheet.create({
   voiceButton: {
     flexDirection: "row",
     flex: 1,
-    width: 312,
+    width: "100%",
     height: 75,
     borderRadius: 16,
-    backgroundColor: theme.grey50,
+    backgroundColor: "#fff",
     paddingVertical: 8,
     paddingHorizontal: 20,
     marginBottom: 16,

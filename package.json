@@ -26,7 +26,6 @@
     "expo-cli": "^6.3.10",
     "expo-file-system": "~17.0.1",
     "expo-font": "~12.0.7",
-    "expo-image-manipulator": "~12.0.5",
     "expo-image-picker": "~15.0.5",
     "expo-linear-gradient": "^13.0.2",
     "expo-media-library": "^16.0.3",

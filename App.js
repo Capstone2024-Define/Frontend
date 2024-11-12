@@ -36,7 +36,6 @@ import InfoSearchResult from "./screens/InfoSearchResult";
 import InfoScreenDetail from "./screens/InfoScreenDetail";
 import ChatbotScreen from "./screens/ChatBotScreen";
 import SplashScreen from "./screens/SplashScreen";
-import AlarmModal from "./component/AlarmModal";
 import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -44,7 +43,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "192.168.123.106";
+  const ipnumber = "13.209.14.26";
   const [user_code, setUserCode] = useState(1000);
 
   // 폰트 로드 상태

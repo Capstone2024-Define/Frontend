@@ -170,7 +170,7 @@ export default function AlarmModal({
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Clobit",
-          body: "클로빗과 함께 기록하실 시간이에요!",
+          body: "클로빗과 함께 기록하실 시간이에요! 오늘도 고생 많으셨어요🍀",
         },
         trigger: {
           hour: triggerHour,

@@ -24,6 +24,7 @@ import X from "../assets/close_small.svg";
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import summarize from "./ChatgptAPI";
+import * as FileSystem from "expo-file-system";
 
 export default function DetailModifyScreen({ navigation, route }) {
   // 상세 기록 state
@@ -35,9 +36,9 @@ export default function DetailModifyScreen({ navigation, route }) {
   const [totalText, setTotalText] = useState("");
   const { date, user_code, ipnumber } = route.params;
 
-  // 갤러리 권한
-  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions(); // 갤러리 권한
   const [images, setImages] = useState([]);
+  const [serverImages, setServerImages] = useState([]);
 
   // 기록 로드
   useEffect(() => {
@@ -56,8 +57,14 @@ export default function DetailModifyScreen({ navigation, route }) {
           `http://${ipnumber}:8080/image/show/${user_code}/${date}`
         );
         if (response_image.data.length > 0) {
-          console.log("이미지 로드: ", response_image.data);
-          setImages(response_image.data);
+          console.log("서버 이미지 로드: ", response_image.data);
+
+          const cvtServerImages = await Promise.all(
+            response_image.data.map(async (image) => await downloadImage(image))
+          );
+          console.log("서버 이미지 로컬 변경: ", cvtServerImages);
+          setImages(cvtServerImages.filter((uri) => uri !== null));
+          setServerImages(cvtServerImages.filter((uri) => uri !== null));
         }
       } catch (e) {
         console.log("기록 로드 에러");
@@ -135,24 +142,54 @@ export default function DetailModifyScreen({ navigation, route }) {
     }
   };
 
+  // 이미지 다운로드
+  const downloadImage = async (url) => {
+    const uniqueFileName = `${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 9)}_img.jpg`; // 고유 파일명 생성
+    const fileUri = `${FileSystem.documentDirectory}${uniqueFileName}`;
+    try {
+      const { uri } = await FileSystem.downloadAsync(url, fileUri);
+      return uri;
+    } catch (error) {
+      console.error("서버 이미지 다운로드 에러:", error);
+      return null;
+    }
+  };
+
+  // 다운 받은 이미지 삭제함수
+  const deleteLocalFile = async (fileUri) => {
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(fileUri);
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(fileUri);
+        console.log("다운로드 파일 삭제 성공:", fileUri);
+      } else {
+        console.log("파일이 이미 삭제되었거나 존재하지 않습니다:", fileUri);
+      }
+    } catch (error) {
+      console.error("다운로드 파일 삭제 에러:", error);
+    }
+  };
+
   // 이미지 삭제 함수 (URI 기반)
   const deleteImage = async (uri) => {
     try {
-      if (uri.startsWith("http")) {
-        // setDeleteTargetImages((prev) => [...prev, uri]);
-        const sliceURL = uri.split(".com/")[1];
-        console.log("삭제 대상: ", sliceURL);
-        await axios.put(
-          `http://${ipnumber}:8080/image/edit/${user_code}/${date}`,
-          {},
-          {
-            headers: {
-              url: sliceURL, // 헤더에 url을 추가
-            },
-          }
-        );
-        console.log(sliceURL, " 삭제완료");
-      }
+      // if (uri.startsWith("http")) {
+      //   // setDeleteTargetImages((prev) => [...prev, uri]);
+      //   const sliceURL = uri.split(".com/")[1];
+      //   console.log("삭제 대상: ", sliceURL);
+      //   await axios.put(
+      //     `http://${ipnumber}:8080/image/edit/${user_code}/${date}`,
+      //     {},
+      //     {
+      //       headers: {
+      //         url: sliceURL, // 헤더에 url을 추가
+      //       },
+      //     }
+      //   );
+      //   console.log(sliceURL, " 삭제완료");
+      // }
       setImages((prev) => prev.filter((image) => image !== uri));
     } catch (error) {
       console.log("이미지 삭제 에러: ", error);
@@ -199,7 +236,7 @@ export default function DetailModifyScreen({ navigation, route }) {
         state: state,
       });
 
-      // 수정
+      // 기록 수정
       await axios.put(`http://${ipnumber}:8080/daily/records/edit`, {
         user_code: user_code,
         date: date,
@@ -210,18 +247,23 @@ export default function DetailModifyScreen({ navigation, route }) {
         state: state,
       });
 
-      // 이미지 다시 저장(서버 이미지들 제외)
+      // 서버 이미지 삭제
+      if (serverImages.length > 0) {
+        response = await axios.delete(
+          `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
+        );
+      }
+
+      // 이미지 다시 저장
       const formData = new FormData();
       images.forEach((image, index) => {
-        if (image.startsWith("file")) {
-          console.log("file로 시작하나요? ", image);
-          formData.append("multipartFiles", {
-            uri: image,
-            name: `image${index}.jpg`,
-            type: "image/jpeg",
-          });
-        }
+        formData.append("multipartFiles", {
+          uri: image,
+          name: `image${index}.jpg`,
+          type: "image/jpeg",
+        });
       });
+
       formData.append("user_code", user_code);
       formData.append("date", date);
 
@@ -233,6 +275,12 @@ export default function DetailModifyScreen({ navigation, route }) {
         },
       });
 
+      // 다운 받은 파일 삭제
+      await Promise.all(
+        serverImages.map(async (image) => {
+          await deleteLocalFile(image);
+        })
+      );
       console.log("수정 완료");
     } catch (error) {
       console.log("수정 에러", error);
@@ -281,25 +329,28 @@ export default function DetailModifyScreen({ navigation, route }) {
               </View>
             </View>
           </TouchableOpacity>
-          {images.map((image, index) => (
-            <View key={index}>
-              <Image
-                source={{ uri: image }}
-                style={styles.photo}
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={async () => {
-                  await deleteImage(image);
-                }}
-              >
-                <View style={styles.deleteButton}>
-                  <WithLocalSvg width={18} height={18} asset={X} />
-                </View>
-              </TouchableOpacity>
-            </View>
-          ))}
+          {images.map((image, index) => {
+            console.log("이미지 출력: ", image);
+            return (
+              <View key={index}>
+                <Image
+                  source={{ uri: image }}
+                  style={styles.photo}
+                  resizeMode="cover"
+                />
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={async () => {
+                    await deleteImage(image);
+                  }}
+                >
+                  <View style={styles.deleteButton}>
+                    <WithLocalSvg width={18} height={18} asset={X} />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
         </ScrollView>
         <View style={styles.subContainer}>
           <View style={styles.subTextContainer}>

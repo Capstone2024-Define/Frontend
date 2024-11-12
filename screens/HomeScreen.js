@@ -11,19 +11,12 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { theme } from "../colors/color";
 import { useFocusEffect } from "@react-navigation/native";
 import { WithLocalSvg } from "react-native-svg/css";
 import Rabbit from "../assets/homeRabbit.svg";
-import Edit_white from "../assets/edit_white.svg";
-import Note_white from "../assets/notes_white.svg";
-import Mic from "../assets/mic_green.svg";
-import Left from "../assets/chevron_left.svg";
-import Right from "../assets/chevron_right.svg";
 import PloyGon from "../assets/home_polygon.svg";
 import Calender from "../assets/home_calendar.svg";
-import { Shadow } from "react-native-shadow-2";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import CalendarModal from "../component/CalendarModal";
@@ -44,6 +37,7 @@ export default function HomeScreen({ navigation, route }) {
   const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
+  const [consecutiveDay, setConsecutiveDay] = useState(0);
   const [adviseTitle, setAdviseTitle] = useState("");
   const checklistBadItems = [
     "욕을 했어요",
@@ -114,6 +108,7 @@ export default function HomeScreen({ navigation, route }) {
             `http://${ipnumber}:8080/daily/consecutive/${user_code}`
           );
           console.log("연속 일자: ", response_consecutiveDays.data);
+          setConsecutiveDay(response_consecutiveDays.data);
 
           // 가장 최근 체크리스트 로드
           const response_resentChecklist = await axios.get(
@@ -224,7 +219,7 @@ export default function HomeScreen({ navigation, route }) {
       tempDate.setDate(startDate.getDate() + i);
       newWeeks.push(cvtDateString(tempDate));
     }
-    console.log("주간 날짜: ", newWeeks);
+    // console.log("주간 날짜: ", newWeeks);
     setWeeks(newWeeks);
   };
 
@@ -315,7 +310,7 @@ export default function HomeScreen({ navigation, route }) {
                     color: "white",
                   }}
                 >
-                  7일
+                  {`${consecutiveDay}일`}
                 </Text>
               </TouchableOpacity>
               <Text style={[styles.title, { marginVertical: 8 }]}>

@@ -534,7 +534,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                 <th class="info">성별</th>
                 <td>${response_user.data.sex}</td>
                 <th class="info">기록 기간</th>
-                <td>${newStartDate}~${newEndDate}</td>
+                <td>${newStartDate} ~ ${newEndDate}</td>
               </tr>
             </table>
             ${response_record.data

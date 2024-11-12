@@ -88,7 +88,7 @@ export default function VoiceHistoryScreen({ navigation, route }) {
     <SafeAreaView style={styles.container}>
       <Header
         left="leftArrow"
-        title="음성기록"
+        title="상담녹음"
         onLeftPress={() => navigation.pop()}
       />
       {/* 이상하게 이 화면만 Header 라인이 적용이 안돼서 추가 */}
@@ -132,7 +132,17 @@ export default function VoiceHistoryScreen({ navigation, route }) {
             />
           </View>
         </View>
-        <ScrollView>
+        <View
+          style={{ width: "100%", height: 1, backgroundColor: "#EBEBEB" }}
+        />
+        <ScrollView
+          contentContainerStyle={{
+            width: "100%",
+            paddingHorizontal: 20,
+            backgroundColor: theme.grey100,
+            paddingTop: 16,
+          }}
+        >
           {filteredContents &&
             filteredContents.length > 0 &&
             filteredContents
@@ -158,7 +168,6 @@ export default function VoiceHistoryScreen({ navigation, route }) {
                   </View>
                 ) : null
               )}
-          <View style={{ marginBottom: 30 }} />
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -174,10 +183,12 @@ const styles = StyleSheet.create({
   },
   subContainer: {
     flex: 1,
-    marginHorizontal: 20,
+    width: "100%",
   },
   headerContainer: {
     paddingTop: 20,
+    paddingHorizontal: 20,
+    alignItems: "center",
   },
   textInput: {
     flexDirection: "row",
@@ -191,6 +202,7 @@ const styles = StyleSheet.create({
   search: { marginRight: 10 },
   filterView: {
     flexDirection: "row",
+    width: "100%",
     marginVertical: 16,
   },
 });

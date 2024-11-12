@@ -2,14 +2,15 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
-import * as AuthSession from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const REST_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
-const REDIRECT_URI = "http://3.34.193.230:8080/Login";
+const REDIRECT_URI = "http://43.203.169.94:8080/Login";
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
 export default function KakaoLoginWeb({ navigation }) {
+  let kakao_token = "";
+
   // 인증 코드
   const KakaoLoginWebView = (data) => {
     const exp = "code=";
@@ -43,6 +44,7 @@ export default function KakaoLoginWeb({ navigation }) {
       .then((response) => {
         const accessToken = response.data.access_token;
         console.log("AccessToken: ", accessToken);
+        kakao_token = accessToken;
         requestUserInfo(accessToken);
       })
       .catch((error) => {
@@ -62,8 +64,7 @@ export default function KakaoLoginWeb({ navigation }) {
       .then((response) => {
         // response.date ex. {"connected_at": "2024-09-22T10:07:10Z", "id": 3715761500}
         console.log("유저 고유 ID: ", response.data.id);
-        // save(response.data.id);
-        navigation.replace("StartInfo", { user_id: response.data.id }); // 다음페이지로 id 전달
+        console.log("카카오 토큰: ", kakao_token);
       })
       .catch((error) => {
         console.error("error: ", error.response ? error.response.data : error);
@@ -73,12 +74,12 @@ export default function KakaoLoginWeb({ navigation }) {
   // 아싱크스토리지에 user_code 저장
   const save = async (kakao_code) => {
     try {
-      // await AsyncStorage.clear()
-      // kakao_id 보내고 user_code 받아올 로직
       const { data } = axios.post("http://:8080/", {
         kakao_code: kakao_code,
       });
-      await AsyncStorage.setItem("user_code", data.user_code);
+      console.log("서버 응답(유저코드) :", data);
+      // await AsyncStorage.setItem("user_code", data.user_code);
+      navigation.replace("StartInfo", { user_code: 1000 }); // 다음페이지로 id 전달
     } catch (error) {
       console.log("유저 ID 저장 에러 ", error);
     }

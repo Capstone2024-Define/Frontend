@@ -356,7 +356,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
       <View style={styles.summaryBox}>
         <View style={{ flexDirection: "row", marginBottom: 12 }}>
           <WithLocalSvg width={20} height={20} asset={Note} />
-          <Text style={styles.summaryTitle}>핵심포인트만 정리했어요</Text>
+          <Text style={styles.summaryTitle}>핵심 포인트만 정리했어요</Text>
         </View>
         <Text style={styles.summaryText}>{summaryText}</Text>
       </View>
@@ -436,10 +436,13 @@ const styles = StyleSheet.create({
   },
   summaryBox: {
     width: "100%",
-    padding: 12,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: theme.line_gray,
     borderRadius: 8,
-    backgroundColor: theme.grey100,
+    padding: 12,
     marginBottom: 26,
+    marginHorizontal: 20,
   },
   summaryTitle: {
     marginLeft: 8,

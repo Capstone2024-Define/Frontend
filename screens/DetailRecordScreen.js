@@ -241,9 +241,9 @@ export default function DetailRecordScreen({ navigation, route }) {
       });
 
       if (response.ok) {
-        console.log("POST 성공");
+        console.log("이미지 POST 성공");
       } else {
-        console.log("POST 실패: ", response.status);
+        console.log("이미지 POST 실패: ", response.status);
       }
     } catch (error) {
       console.log("POST 에러: ", error);

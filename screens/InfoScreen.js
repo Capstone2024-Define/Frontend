@@ -247,7 +247,7 @@ function InfoScreen({ route }) {
             fontFamily: "Pretendard-Bold",
           }}
         >
-          {"꼭 읽어야하는 정보"}
+          {"조회수가 높은 글"}
         </Text>
         {[0, 1].map((row, i) => {
           let minIndex = 0;
