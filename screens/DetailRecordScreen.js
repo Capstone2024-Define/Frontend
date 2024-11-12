@@ -13,7 +13,6 @@ import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { useState, useEffect, useLayoutEffect } from "react";
 import Header from "../component/Header";
 import * as ImagePicker from "expo-image-picker";
-
 import { showToast } from "../component/Toast";
 import { theme } from "../colors/color";
 import { WithLocalSvg } from "react-native-svg/css";
@@ -22,8 +21,6 @@ import Home from "../assets/home_green.svg";
 import School from "../assets/school.svg";
 import Hospital from "../assets/stethoscope.svg";
 import X from "../assets/close_small.svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import summary from "./SummaryAPI";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import summarize from "./ChatgptAPI";
@@ -152,36 +149,10 @@ export default function DetailRecordScreen({ navigation, route }) {
     }
   };
 
-  // // 이미지 서버에 올릴 형태로 바꿈
-  // const fetchImageFromUri = async () => {
-  //   const newImage = await Promise.all(
-  //     images.map(async (image) => {
-  //       const response = await fetch(image.uri);
-  //       console.log("fetch 결과: ", response);
-  //       return await response.blob();
-  //     })
-  //   );
-
-  //   console.log("이미지 blob: ", newImage);
-
-  //   return newImage;
-  // };
-
   // 이미지 삭제
   const deleteImage = (key) => {
     setImages(images.filter((image) => image.id !== key));
     //console.log(images);
-  };
-
-  // TextInput 제한 글자 색
-  const getColor = (num, length) => {
-    if (length === 0) {
-      return theme.grey400;
-    } else if (length > num) {
-      return "#F86D6D";
-    } else {
-      return theme.grey600;
-    }
   };
 
   // 이름 받침 여부 확인
@@ -199,12 +170,7 @@ export default function DetailRecordScreen({ navigation, route }) {
   // 저장
   const handlePost = async () => {
     try {
-      // 전체 텍스트 요약
-      // 서머리
-      // const result = await summary(totalText);
-      // console.log(result.summary);
-
-      // 챗지피티 - 요금때문에 일단 주석처리하고 서머리로 진행(작동확인 완)
+      // 전체 텍스트 요약(챗지피티)
       let summarizeText = "";
 
       if (totalText.length > 50) {
@@ -253,26 +219,6 @@ export default function DetailRecordScreen({ navigation, route }) {
         }),
       ]);
 
-      // 이미지 데이터 준비
-      // const postingImages = await fetchImageFromUri();
-      // const formData = new FormData();
-      // postingImages.forEach((blob, index) => {
-      //   formData.append("multipartFiles", {
-      //     uri: blob.uri, // Blob 객체가 아닌 URI가 필요할 수도 있음
-      //     name: `image${index}.jpg`, // 파일 이름
-      //     type: blob.type || "image/jpeg", // MIME 타입 명시
-      //   });
-      // });
-
-      // formData.append("user_code", user_code);
-      // formData.append("date", date);
-
-      // console.log("테스트: ", formData.getAll("multipartFiles"));
-
-      // // 이미지 저장
-      // await axios.post(`http://${ipnumber}:8080/image/post`, formData);
-
-      // console.log("POST 성공");
       const formData = new FormData();
 
       images.forEach((image, index) => {
@@ -308,7 +254,7 @@ export default function DetailRecordScreen({ navigation, route }) {
     <SafeAreaView style={styles.container}>
       <Header
         left="leftArrow"
-        title="기록하기"
+        title="종합기록"
         onLeftPress={() => {
           navigation.pop();
         }}
@@ -371,34 +317,14 @@ export default function DetailRecordScreen({ navigation, route }) {
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Home} />
             <Text style={styles.inputGuideText}>가정에서 어땠나요?</Text>
-            <View style={styles.limit}>
-              <Text
-                style={{
-                  ...styles.limitText1,
-                  color: getColor(800, homeText.length),
-                }}
-              >
-                {homeText.length}
-              </Text>
-              <Text style={styles.limitText2}>/800</Text>
-            </View>
           </View>
           <TextInput
             placeholder="가정에서 있었던 일을 작성해주세요"
             style={{
               ...styles.input,
               backgroundColor:
-                homeText.length > 800
-                  ? theme.grey100
-                  : homeText.length > 0
-                  ? theme.green50
-                  : theme.grey100,
-              borderColor:
-                homeText.length > 800
-                  ? theme.red
-                  : homeText.length > 0
-                  ? theme.green500
-                  : "white",
+                homeText.length > 0 ? theme.green50 : theme.grey100,
+              borderColor: homeText.length > 0 ? theme.green500 : "white",
             }}
             placeholderTextColor={theme.grey400}
             multiline
@@ -419,34 +345,14 @@ export default function DetailRecordScreen({ navigation, route }) {
             >
               (선택)
             </Text>
-            <View style={styles.limit}>
-              <Text
-                style={{
-                  ...styles.limitText1,
-                  color: getColor(600, schoolText.length),
-                }}
-              >
-                {schoolText.length}
-              </Text>
-              <Text style={styles.limitText2}>/600</Text>
-            </View>
           </View>
           <TextInput
             placeholder="학교에서 있었던 일을 작성해주세요"
             style={{
               ...styles.input,
               backgroundColor:
-                schoolText.length > 600
-                  ? theme.grey100
-                  : schoolText.length > 0
-                  ? theme.green50
-                  : theme.grey100,
-              borderColor:
-                schoolText.length > 600
-                  ? theme.red
-                  : schoolText.length > 0
-                  ? theme.green500
-                  : "white",
+                schoolText.length > 0 ? theme.green50 : theme.grey100,
+              borderColor: schoolText.length > 0 ? theme.green500 : "white",
             }}
             multiline
             numberOfLines={2}
@@ -466,34 +372,14 @@ export default function DetailRecordScreen({ navigation, route }) {
             >
               (선택)
             </Text>
-            <View style={styles.limit}>
-              <Text
-                style={{
-                  ...styles.limitText1,
-                  color: getColor(600, hospitalText.length),
-                }}
-              >
-                {hospitalText.length}
-              </Text>
-              <Text style={styles.limitText2}>/600</Text>
-            </View>
           </View>
           <TextInput
             placeholder="병원에서 있었던 일을 작성해주세요"
             style={{
               ...styles.input,
               backgroundColor:
-                hospitalText.length > 600
-                  ? theme.grey100
-                  : hospitalText.length > 0
-                  ? theme.green50
-                  : theme.grey100,
-              borderColor:
-                hospitalText.length > 600
-                  ? theme.red
-                  : hospitalText.length > 0
-                  ? theme.green500
-                  : "white",
+                hospitalText.length > 0 ? theme.green50 : theme.grey100,
+              borderColor: hospitalText.length > 0 ? theme.green500 : "white",
             }}
             multiline
             numberOfLines={2}
@@ -520,13 +406,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         >
           <TouchableOpacity
             activeOpacity={0.5}
-            disabled={
-              !totalText ||
-              homeText.length > 800 ||
-              schoolText.length > 600 ||
-              hospitalText.length > 600 ||
-              homeText.length <= 0
-            }
+            disabled={homeText.length <= 0}
             onPress={async () => {
               await handlePost();
               navigation.popToTop();
@@ -542,9 +422,6 @@ export default function DetailRecordScreen({ navigation, route }) {
                   bottomBtn.button,
                   { backgroundColor: theme.grey250 },
                   totalText &&
-                    homeText.length <= 800 &&
-                    schoolText.length <= 600 &&
-                    hospitalText.length <= 600 &&
                     homeText.length > 0 && {
                       backgroundColor: "transparent",
                     },

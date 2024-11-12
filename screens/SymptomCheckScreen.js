@@ -22,7 +22,7 @@ const symptoms = {
     "무기력",
     "빈둥거리기",
   ],
-  기타: ["고자질", "가족과다툼", "공격성", "거짓말"],
+  기타: ["고자질", "형제자매와 다툼", "공격성", "거짓말"],
 };
 
 const SymptomCheckScreen = ({ route, navigation }) => {

@@ -21,9 +21,7 @@ import Hospital from "../assets/stethoscope.svg";
 import Mic from "../assets/mic_green.svg";
 import VoiceButton from "../component/VoiceButton";
 import X from "../assets/close_small.svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import summary from "./SummaryAPI";
 import axios from "axios";
 import summarize from "./ChatgptAPI";
 
@@ -35,8 +33,6 @@ export default function DetailModifyScreen({ navigation, route }) {
   const [state, setState] = useState("");
   const [voiceList, setVoiceList] = useState([]); // 음성 기록
   const [totalText, setTotalText] = useState("");
-  const [serverImages, setServerImages] = useState(false); // 서버에 이미지 있나없나 확인
-  const [deleteTargetImages, setDeleteTargetImages] = useState([]); // 삭제 대상 이미지
   const { date, user_code, ipnumber } = route.params;
 
   // 갤러리 권한
@@ -62,7 +58,6 @@ export default function DetailModifyScreen({ navigation, route }) {
         if (response_image.data.length > 0) {
           console.log("이미지 로드: ", response_image.data);
           setImages(response_image.data);
-          setServerImages(true);
         }
       } catch (e) {
         console.log("기록 로드 에러");
@@ -164,17 +159,6 @@ export default function DetailModifyScreen({ navigation, route }) {
     }
   };
 
-  // TextInput 제한 글자 색
-  const getColor = (num, length) => {
-    if (length === 0) {
-      return theme.grey400;
-    } else if (length > num) {
-      return "#F86D6D";
-    } else {
-      return theme.grey600;
-    }
-  };
-
   // 음성 기록
   useFocusEffect(
     useCallback(() => {
@@ -196,11 +180,7 @@ export default function DetailModifyScreen({ navigation, route }) {
   const handlePost = async () => {
     try {
       // 전체 텍스트 요약
-      // 서머리
-      // const result = await summary(totalText);
-      // console.log(result.summary);
-
-      // 챗지피티 - 요금때문에 일단 주석처리하고 서머리로 진행(작동확인 완)
+      // 챗지피티 요약
       let summarizeText = "";
 
       if (totalText.length > 50) {
@@ -229,14 +209,6 @@ export default function DetailModifyScreen({ navigation, route }) {
         summary: summarizeText,
         state: state,
       });
-
-      // 이미지 삭제
-      // if (serverImages) {
-      //   await axios.delete(
-      //     `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
-      //   );
-      // }
-      // console.log("이미지 삭제 완료");
 
       // 이미지 다시 저장(서버 이미지들 제외)
       const formData = new FormData();
@@ -333,34 +305,14 @@ export default function DetailModifyScreen({ navigation, route }) {
           <View style={styles.subTextContainer}>
             <WithLocalSvg width={20} height={20} asset={Home} />
             <Text style={styles.inputGuideText}>가정에서 어땠나요?</Text>
-            <View style={styles.limit}>
-              <Text
-                style={{
-                  ...styles.limitText1,
-                  color: getColor(800, homeText.length),
-                }}
-              >
-                {homeText.length}
-              </Text>
-              <Text style={styles.limitText2}>/800</Text>
-            </View>
           </View>
           <TextInput
             placeholder="가정에서 있었던 일을 작성해주세요"
             style={{
               ...styles.input,
               backgroundColor:
-                homeText.length > 800
-                  ? theme.grey100
-                  : homeText.length > 0
-                  ? theme.green50
-                  : theme.grey100,
-              borderColor:
-                homeText.length > 800
-                  ? theme.red
-                  : homeText.length > 0
-                  ? theme.green500
-                  : "white",
+                homeText.length > 0 ? theme.green50 : theme.grey100,
+              borderColor: homeText.length > 0 ? theme.green500 : "white",
             }}
             placeholderTextColor={theme.grey400}
             multiline
@@ -382,34 +334,14 @@ export default function DetailModifyScreen({ navigation, route }) {
             >
               (선택)
             </Text>
-            <View style={styles.limit}>
-              <Text
-                style={{
-                  ...styles.limitText1,
-                  color: getColor(600, schoolText.length),
-                }}
-              >
-                {schoolText.length}
-              </Text>
-              <Text style={styles.limitText2}>/600</Text>
-            </View>
           </View>
           <TextInput
             placeholder="학교에서 있었던 일을 작성해주세요"
             style={{
               ...styles.input,
               backgroundColor:
-                schoolText.length > 600
-                  ? theme.grey100
-                  : schoolText.length > 0
-                  ? theme.green50
-                  : theme.grey100,
-              borderColor:
-                schoolText.length > 600
-                  ? theme.red
-                  : schoolText.length > 0
-                  ? theme.green500
-                  : "white",
+                schoolText.length > 0 ? theme.green50 : theme.grey100,
+              borderColor: schoolText.length > 0 ? theme.green500 : "white",
             }}
             multiline
             numberOfLines={2}
@@ -429,34 +361,14 @@ export default function DetailModifyScreen({ navigation, route }) {
             >
               (선택)
             </Text>
-            <View style={styles.limit}>
-              <Text
-                style={{
-                  ...styles.limitText1,
-                  color: getColor(600, hospitalText.length),
-                }}
-              >
-                {hospitalText.length}
-              </Text>
-              <Text style={styles.limitText2}>/600</Text>
-            </View>
           </View>
           <TextInput
             placeholder="병원에서 있었던 일을 작성해주세요"
             style={{
               ...styles.input,
               backgroundColor:
-                hospitalText.length > 600
-                  ? theme.grey100
-                  : hospitalText.length > 0
-                  ? theme.green50
-                  : theme.grey100,
-              borderColor:
-                hospitalText.length > 600
-                  ? theme.red
-                  : hospitalText.length > 0
-                  ? theme.green500
-                  : "white",
+                hospitalText.length > 0 ? theme.green50 : theme.grey100,
+              borderColor: hospitalText.length > 0 ? theme.green500 : "white",
             }}
             multiline
             numberOfLines={2}
@@ -567,17 +479,5 @@ const styles = StyleSheet.create({
     lineHeight: 19.6,
     borderWidth: 1,
     borderColor: "white",
-  },
-  limit: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  limitText1: { fontSize: 12, fontFamily: "Pretendard-Medium" },
-  limitText2: {
-    fontSize: 12,
-    fontFamily: "Pretendard-Medium",
-    color: theme.grey400,
   },
 });

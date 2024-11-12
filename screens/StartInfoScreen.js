@@ -185,7 +185,7 @@ export default function StartInfoScreen({ navigation, route }) {
               <View
                 style={[
                   styles.circle,
-                  page == 2 && { backgroundColor: theme.green300 },
+                  page == 2 && { backgroundColor: theme.green100 },
                   { marginRight: 16 },
                 ]}
               >

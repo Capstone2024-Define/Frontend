@@ -130,7 +130,7 @@ export default function StartInfoScreen3({ navigation, route }) {
             <View
               style={[
                 styles.circle,
-                { backgroundColor: theme.green300 },
+                { backgroundColor: theme.green100 },
                 { marginRight: 16 },
               ]}
             >
@@ -139,7 +139,7 @@ export default function StartInfoScreen3({ navigation, route }) {
             <View
               style={[
                 styles.circle,
-                { backgroundColor: theme.green300 },
+                { backgroundColor: theme.green100 },
                 { marginRight: 16 },
               ]}
             >

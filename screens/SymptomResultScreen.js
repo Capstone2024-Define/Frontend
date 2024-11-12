@@ -73,7 +73,7 @@ export default function SymptomResultScreen({ route, navigation }) {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         left="leftArrow"
-        title="되돌아보기 결과"
+        title="증상체크"
         onLeftPress={() => {
           navigation.pop();
         }}

@@ -41,7 +41,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
     "무기력",
     "빈둥거리기",
     "고자질",
-    "가족과다툼",
+    "형제자매와 다툼",
     "공격성",
     "거짓말",
   ];
@@ -889,7 +889,13 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* 바 그래프 */}
             {symptomList.map((symptom, index) => (
-              <View key={index} style={styles.barContainer}>
+              <View
+                key={index}
+                style={[
+                  styles.barContainer,
+                  symptom === "형제자매와 다툼" && { width: 100 },
+                ]}
+              >
                 <Text style={{ ...styles.barText, marginBottom: 4 }}>
                   {symptomCount[index]}회
                 </Text>
