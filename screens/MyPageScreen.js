@@ -27,6 +27,7 @@ export default function MyPageScreen({ navigation, route }) {
   const [reminderToggle, setReminderToggle] = useState(false);
   const [weeklyToggle, setWeeklyToggle] = useState(false);
   const [visible, setVisible] = useState(false); // 알림 모달
+  const [registeredData, setRegisteredData] = useState([true, false, true, false, true, true, false]); // 예시 데이터
 
   const openModal = () => {
     setVisible(true);
@@ -209,7 +210,10 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate("PreparingGuide")}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -270,7 +274,7 @@ export default function MyPageScreen({ navigation, route }) {
 >
   <Pressable style={styles.modalOverlay} onPress={closeModal}>
     <View style={styles.popupContainer}>
-      <PopupContent />
+      <PopupContent registeredData={registeredData} />
     </View>
   </Pressable>
 </Modal>
@@ -279,7 +283,7 @@ export default function MyPageScreen({ navigation, route }) {
 }
 
 // 팝업 내용 컴포넌트
-const PopupContent = () => (
+const PopupContent = ({ registeredData }) => (
   <View
     style={{
       backgroundColor: "#FFFFFF",
@@ -375,7 +379,7 @@ const PopupContent = () => (
               <Text
                 key={index}
                 style={{
-                  color: index < 5 ? "#78BA7D" : "#8B8B8B",
+                  color: registeredData[index] ? "#78BA7D" : "#8B8B8B",
                   fontSize: 14,
                   fontWeight: "bold",
                 }}
@@ -391,15 +395,18 @@ const PopupContent = () => (
               alignItems: "center",
             }}
           >
-            {Array(7)
-              .fill()
-              .map((_, index) => (
-                <Image
-                source={require("../assets/my_modal_circle.png")}
-                  resizeMode={"stretch"}
-                  style={{ width: 20, height: 20 }}
-                />
-              ))}
+            {registeredData.map((isRegistered, index) => (
+              <Image
+                key={index}
+                source={
+                  isRegistered
+                    ? require("../assets/my_modal_circle_green.png") // 있으면
+                    : require("../assets/my_modal_circle.png") // 없으면
+                }
+                resizeMode={"stretch"}
+                style={{ width: 20, height: 20 }}
+              />
+            ))}
           </View>
         </View>
       </View>
@@ -470,56 +477,6 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 48,
     paddingHorizontal: 20,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  greeting: {
-    color: "#6F6F6F",
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: "Pretendard-Regular",
-    marginBottom: 4,
-    marginLeft: 20,
-  },
-  nickNameContainer: {
-    marginBottom: 20,
-    marginHorizontal: 20,
-  },
-  nickName: {
-    color: "#333333",
-    fontSize: 20,
-    lineHeight: 30,
-    fontFamily: "Pretendard-Bold",
-    marginRight: 4,
-  },
-  streakBox: {
-    height: 94,
-    borderRadius: 8,
-    paddingBottom: 31,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    overflow: "hidden",
-  },
-  streakText: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    lineHeight: 30,
-    fontFamily: "Pretendard-Bold",
-  },
-  streakSubText: {
-    color: "#F2F8F2",
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: "Pretendard-Medium",
-  },
-  rabbitImage: {
-    position: "absolute",
-    top: 5,
-    right: 31,
-    width: 67,
-    height: 105,
   },
   notificationContainer: {
     flexDirection: "row",

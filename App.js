@@ -3,13 +3,17 @@ import { StyleSheet, KeyboardAvoidingView, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Toast from "react-native-toast-message";
+import { toastConfig } from "./component/Toast";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFonts } from "expo-font"; // 폰트 관련
+
+// Screens
 import DetailRecordScreen from "./screens/DetailRecordScreen";
 import MainScreen from "./screens/MainScreen";
 import DetailHistoryScreen from "./screens/DetailHistoryScreen";
 import DetailModifyScreen from "./screens/DetailModifyScreen";
-import Toast from "react-native-toast-message";
-import { toastConfig } from "./component/Toast";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MainVoiceScreen from "./screens/MainVoiceScreen";
 import VoiceDetailScreen from "./screens/VoiceDetailScreen";
 import VoiceModifyScreen from "./screens/VoiceModifyScreen";
@@ -18,7 +22,6 @@ import SymptomInfoScreen from "./screens/SymptomInfoScreen";
 import VoiceRecordScreen from "./screens/VoiceRecordScreen";
 import SymptomResultScreen from "./screens/SymptomResultScreen";
 import DetailNoneScreen from "./screens/DetailNoneScreen";
-import { useFonts } from "expo-font"; // 폰트 관련
 import SymptomCheckParent from "./screens/SymptomCheckParent";
 import StartInfoScreen from "./screens/StartInfoScreen";
 import ProfileModifyScreen from "./screens/ProfileModifyScreen";
@@ -36,15 +39,15 @@ import InfoSearchResult from "./screens/InfoSearchResult";
 import InfoScreenDetail from "./screens/InfoScreenDetail";
 import ChatbotScreen from "./screens/ChatBotScreen";
 import SplashScreen from "./screens/SplashScreen";
-import AlarmModal from "./component/AlarmModal";
 import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import PreparingGuide from "./screens/PreparingGuide";
+// import PreparingGuide from "./screens/PreparingInfo"; 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "3.38.93.11";
+  const ipnumber = "13.209.14.26";
   const [user_code, setUserCode] = useState(1000);
 
   // 폰트 로드 상태
@@ -130,6 +133,11 @@ export default function App() {
               name="Bookmark"
               component={BookmarkScreen}
               options={{ title: "북마크한 정보", headerShown: false }}
+            />
+            <Stack.Screen
+              name="PreparingGuide" // 새로운 스크린 추가
+              component={PreparingGuide}
+              options={{ title: "이용 가이드", headerShown: false }}
             />
             {/* 나머지 화면들 */}
             <Stack.Screen
