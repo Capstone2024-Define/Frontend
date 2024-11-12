@@ -9,6 +9,9 @@ import {
   ScrollView,
   Image,
   Switch,
+  Modal,
+  ImageBackground,
+  Pressable, 
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,39 +27,17 @@ export default function MyPageScreen({ navigation, route }) {
   const [reminderToggle, setReminderToggle] = useState(false);
   const [weeklyToggle, setWeeklyToggle] = useState(false);
   const [visible, setVisible] = useState(false); // 알림 모달
-
-  // 모달 위치를 위한 버튼 위치
-  const [buttonPosition, setButtonPosition] = useState({ top: 0 }); // 알림 버튼 위치
-  const buttonRef = useRef(null); // 버튼 참조
+  const [registeredData, setRegisteredData] = useState([true, false, true, false, true, true, false]); // 예시 데이터
 
   const openModal = () => {
-    // 버튼 위치 가져오기
-    buttonRef.current.measure((x, y, width, height, pageX, pageY) => {
-      setButtonPosition({ top: pageY + height });
-    });
     setVisible(true);
   };
 
-  // 알림 관련 시간 초기 설정(아싱크스토리지 저장 내용이 없을 때)
-  const now = new Date();
-  let currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const ampmValue = currentHour >= 12 ? "pm" : "am";
-
-  if (currentHour > 12) {
-    currentHour = currentHour - 12;
-  } else if (currentHour === 0) {
-    currentHour = 12;
-  }
-
-  const [selectedAmPm, setSelectedAmPm] = useState(ampmValue);
-  const [selectedHour, setSelectedHour] = useState(currentHour.toString());
-  const [selectedMinute, setSelectedMinute] = useState(
-    currentMinute.toString().padStart(2, "0")
-  );
+  const closeModal = () => {
+    setVisible(false);
+  };
 
   useEffect(() => {
-    // 유저 이름 가져오기
     async function load() {
       try {
         const response = await axios.get(
@@ -67,65 +48,8 @@ export default function MyPageScreen({ navigation, route }) {
         console.log("유저 GET 에러: ", error);
       }
     }
-    // 토글 상태 가져오기
-    const loadToggle = async () => {
-      try {
-        const savedToggle = await AsyncStorage.getItem("toggleState");
-        if (savedToggle !== null) {
-          setReminderToggle(JSON.parse(savedToggle));
-        }
-        console.log("토글 상태: ", savedToggle);
-      } catch (error) {
-        console.error("토글 상태 로드 에러:", error);
-      }
-    };
     load();
-    loadToggle();
-    loadTime();
   }, []);
-
-  useEffect(() => {
-    // 알림 시간 불러오기
-    if (reminderToggle) {
-      loadTime();
-    }
-  }, [visible]);
-
-  useEffect(() => {
-    // 토글 상태 저장
-    const saveToggle = async () => {
-      try {
-        await AsyncStorage.setItem(
-          "toggleState",
-          JSON.stringify(reminderToggle)
-        );
-        console.log("토글 상태 저장 완료");
-      } catch (error) {
-        console.log("토글 저장 에러: ", error);
-      }
-    };
-    saveToggle();
-  }, [reminderToggle]);
-
-  const modalClose = () => {
-    setVisible(false);
-  };
-
-  // 알림 시간 로드
-  const loadTime = async () => {
-    try {
-      const rawAlarm = await AsyncStorage.getItem("alarm");
-      if (rawAlarm) {
-        const alarm = JSON.parse(rawAlarm);
-        setSelectedAmPm(alarm.ampm);
-        setSelectedHour(alarm.hour);
-        setSelectedMinute(alarm.minute);
-      }
-      console.log("마이페이지 아싱크스토리지 알람: ", rawAlarm);
-    } catch (e) {
-      console.log("알람 기록 로드 에러");
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -152,7 +76,7 @@ export default function MyPageScreen({ navigation, route }) {
               style={styles.arrowIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.5}>
+          <TouchableOpacity activeOpacity={0.5} onPress={openModal}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
@@ -178,6 +102,7 @@ export default function MyPageScreen({ navigation, route }) {
             borderTopColor: "#ECECEC",
           }}
         />
+
         {/* 기록하기 리마인드 알림 */}
         <View style={[styles.notificationContainer, { paddingTop: 20 }]}>
           <Image
@@ -264,7 +189,7 @@ export default function MyPageScreen({ navigation, route }) {
         {/* 메뉴 항목 */}
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => navigation.navigate("Bookmark")} // Bookmark 화면으로 이동
+          onPress={() => navigation.navigate("Bookmark")}
         >
           <View
             style={{
@@ -280,12 +205,15 @@ export default function MyPageScreen({ navigation, route }) {
             <Text style={styles.notificationText}>북마크한 정보</Text>
           </View>
           <Image
-            source={require("../assets/right_arrow.png")} // 오른쪽 화살표 아이콘 추가
+            source={require("../assets/right_arrow.png")}
             style={styles.arrowIcon}
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate("PreparingGuide")}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -325,7 +253,6 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </TouchableOpacity>
 
-        {/* 앱 정보 밑에 구분선 추가 */}
         <View style={styles.divider} />
 
         {/* 로그아웃 */}
@@ -338,31 +265,154 @@ export default function MyPageScreen({ navigation, route }) {
             로그아웃
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => {
-            console.log("test");
-            navigation.push("Test", {
-              ipnumber: ipnumber,
-              user_code: user_code,
-            });
-          }}
-          style={styles.logoutItem}
-        >
-          <Text style={[styles.notificationText, { color: theme.grey400 }]}>
-            테스트 페이지
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
-      <AlarmModal
-        visible={visible}
-        onClose={modalClose}
-        onToggle={reminderToggle}
-        buttonPosition={buttonPosition}
-      />
+      <Modal
+  transparent={true}
+  visible={visible}  
+  onRequestClose={closeModal}
+  animationType="slide"
+>
+  <Pressable style={styles.modalOverlay} onPress={closeModal}>
+    <View style={styles.popupContainer}>
+      <PopupContent registeredData={registeredData} />
+    </View>
+  </Pressable>
+</Modal>
     </SafeAreaView>
   );
 }
+
+// 팝업 내용 컴포넌트
+const PopupContent = ({ registeredData }) => (
+  <View
+    style={{
+      backgroundColor: "#FFFFFF",
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      paddingTop: 24,
+      paddingBottom: 48,
+      paddingHorizontal: 20,
+    }}
+  >
+    <Image
+   source={require("../assets/inarow_close.png")}
+      resizeMode={"stretch"}
+      style={{
+        width: 24,
+        height: 24,
+        marginBottom: 22,
+      }}
+    />
+    <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+      <View style={{ flex: 1, marginTop: 8, marginRight: 4 }}>
+        <Text
+          style={{
+            color: "#78BA7D",
+            fontSize: 36,
+           fontFamily:"Pretendard-Bold",
+            marginBottom: 14,
+            marginLeft: 1,
+          }}
+        >
+          {"7일"}
+        </Text>
+        <Text
+          style={{
+            color: "#555555",
+            fontSize: 22,
+          fontFamily:"Pretendard-Bold",
+            marginBottom: 15,
+          }}
+        >
+          {"연속 기록중!"}
+        </Text>
+        <Text
+          style={{
+            color: "#8B8B8B",
+            fontSize: 16,
+    fontFamily:"Pretendard-Medium",
+            marginBottom: 36,
+            width: 168,
+          }}
+        >
+          {"매일 기록하시는 모습이 \n정말 멋져요!"}
+        </Text>
+        <Text style={{ color: "#555555", fontSize: 16, fontFamily:"Pretendard-Bold" }}>
+          {"이번주 연속기록"}
+        </Text>
+      </View>
+      <View style={{ width: 148 }}>
+        <Image
+      source={require("../assets/my_rabbit.png")}
+          resizeMode={"stretch"}
+          style={{ height: 230,
+            width:120
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            bottom: -30,
+            right: 1,
+            width: 320,
+            height: 70,
+            backgroundColor: "#FFFFFF",
+            borderRadius: 8,
+            paddingHorizontal: 19,
+            shadowColor: "#0000001A",
+            shadowOpacity: 0.1,
+            shadowOffset: { width: 0, height: 0 },
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 16,
+              marginBottom: 6,
+            }}
+          >
+            {["일", "월", "화", "수", "목", "금", "토"].map((day, index) => (
+              <Text
+                key={index}
+                style={{
+                  color: registeredData[index] ? "#78BA7D" : "#8B8B8B",
+                  fontSize: 14,
+                  fontWeight: "bold",
+                }}
+              >
+                {day}
+              </Text>
+            ))}
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {registeredData.map((isRegistered, index) => (
+              <Image
+                key={index}
+                source={
+                  isRegistered
+                    ? require("../assets/my_modal_circle_green.png") // 있으면
+                    : require("../assets/my_modal_circle.png") // 없으면
+                }
+                resizeMode={"stretch"}
+                style={{ width: 20, height: 20 }}
+              />
+            ))}
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -414,6 +464,19 @@ const styles = StyleSheet.create({
     right: 31,
     width: 67,
     height: 105,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  popupContainer: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 24,
+    paddingBottom: 48,
+    paddingHorizontal: 20,
   },
   notificationContainer: {
     flexDirection: "row",
