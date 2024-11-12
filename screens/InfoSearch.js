@@ -10,28 +10,68 @@ import {
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../colors/color";
+import axios from "axios";
 
-function InfoSearch() {
+function InfoSearch({ route }) {
   const [searchText, setSearchText] = useState("");
-  const navigation = useNavigation(); // 네비게이션 훅 사용
-  const inputRef = useRef(null); // 키보드 바로 뜨게
+  const [recommendedKeywords, setRecommendedKeywords] = useState([]);
+  const navigation = useNavigation();
+  const inputRef = useRef(null);
+  const { user_code, ipnumber } = route.params;
 
   useFocusEffect(
     useCallback(() => {
-      // 컴포넌트가 렌더링될 때 TextInput에 포커스
       if (inputRef.current) {
         inputRef.current.focus();
       }
     }, [])
   );
 
+  useEffect(() => {
+    fetchRecommendedKeywords();
+  }, []);
+
+  const fetchRecommendedKeywords = async () => {
+    try {
+  
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 일요일이 0, 월요일이 1, ..., 토요일이 6 이 되도록
+      const startDate = new Date(today); 
+      startDate.setDate(today.getDate() - dayOfWeek); // 그 주의 일요일 시작
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + (6 - dayOfWeek)); // 그 주의 토요일로 시작
+
+      const response = await axios.get(`http://${ipnumber}:8080/sx/week/${user_code}`, {
+        headers: {
+          "Content-Type": "application/json",
+          start: startDate.toISOString().split("T")[0],
+          end: endDate.toISOString().split("T")[0],
+        },
+      });
+
+      const keywords = response.data
+        .flatMap(item => item.checklist) // 각 날짜의 checklist 배열을 합침
+        .reduce((acc, keyword) => {
+          acc[keyword] = (acc[keyword] || 0) + 1; // 키워드 빈도수 카운트
+          return acc;
+        }, {});
+
+      const sortedKeywords = Object.entries(keywords)
+        .sort((a, b) => b[1] - a[1]) // 빈도수로 정렬
+        .slice(0, 5) // 상위 5개 선택
+        .map(item => item[0]); // 키워드만 추출
+
+      setRecommendedKeywords(sortedKeywords);
+    } catch (error) {
+      console.error("추천 검색어 불러오기 오류:", error);
+    }
+  };
+
   const handleSearch = () => {
-    // 검색 버튼 클릭 시 InfoSearchResult로 이동하면서 검색어를 전달
     navigation.navigate("InfoSearchResult", { searchText });
   };
 
   const handleKeywordClick = (keyword) => {
-    // 추천 검색어 클릭 시 해당 키워드로 검색
     setSearchText(keyword);
     navigation.navigate("InfoSearchResult", { searchText: keyword });
   };
@@ -57,7 +97,6 @@ function InfoSearch() {
             marginBottom: 20,
           }}
         >
-          {/* 뒤로가기 버튼 */}
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons
               name="chevron-back-outline"
@@ -66,7 +105,6 @@ function InfoSearch() {
               style={{ marginLeft: -6 }}
             />
           </TouchableOpacity>
-          {/* 검색 입력창 */}
           <TextInput
             ref={inputRef}
             style={{
@@ -80,7 +118,7 @@ function InfoSearch() {
             placeholderTextColor="#8B8B8B"
             value={searchText}
             onChangeText={(text) => setSearchText(text)}
-            onSubmitEditing={handleSearch} // 엔터 키로 검색
+            onSubmitEditing={handleSearch}
           />
         </View>
 
@@ -99,114 +137,37 @@ function InfoSearch() {
         <View
           style={{
             flexDirection: "row",
+            flexWrap: "wrap",
             alignItems: "center",
-            marginBottom: 10,
           }}
         >
-          <TouchableOpacity
-            onPress={() => handleKeywordClick("불순응")}
-            style={{
-              width: 56,
-              alignItems: "center",
-              backgroundColor: "#D5EAD7",
-              borderRadius: 24,
-              paddingVertical: 8,
-              marginRight: 10,
-            }}
-          >
-            <Text
+          {recommendedKeywords.map((keyword, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleKeywordClick(keyword)}
               style={{
-                color: "#436645",
-                fontSize: 12,
-                fontFamily: "Pretendard-Medium",
+                minWidth: 45,
+                alignItems: "center",
+                backgroundColor: "#D5EAD7",
+                borderRadius: 24,
+                paddingVertical: 8,
+                paddingHorizontal: 10,
+                marginRight: 10,
+                marginBottom: 10,
               }}
             >
-              {"불순응"}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleKeywordClick("반항")}
-            style={{
-              width: 45,
-              alignItems: "center",
-              backgroundColor: "#D5EAD7",
-              borderRadius: 24,
-              paddingVertical: 8,
-              marginRight: 10,
-            }}
-          >
-            <Text
-              style={{
-                color: "#436645",
-                fontSize: 12,
-                fontFamily: "Pretendard-Medium",
-              }}
-            >
-              {"반항"}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleKeywordClick("ADHD 증상")}
-            style={{
-              width: 81,
-              alignItems: "center",
-              backgroundColor: "#D5EAD7",
-              borderRadius: 24,
-              paddingVertical: 8,
-              marginRight: 10,
-            }}
-          >
-            <Text
-              style={{
-                color: "#436645",
-                fontSize: 12,
-                fontFamily: "Pretendard-Medium",
-              }}
-            >
-              {"ADHD 증상"}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleKeywordClick("대처방법")}
-            style={{
-              width: 66,
-              alignItems: "center",
-              backgroundColor: "#D5EAD7",
-              borderRadius: 24,
-              paddingVertical: 8,
-            }}
-          >
-            <Text
-              style={{
-                color: "#436645",
-                fontSize: 12,
-                fontFamily: "Pretendard-Medium",
-              }}
-            >
-              {"대처방법"}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  color: "#436645",
+                  fontSize: 12,
+                  fontFamily: "Pretendard-Medium",
+                }}
+              >
+                {keyword}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-        <TouchableOpacity
-          onPress={() => handleKeywordClick("갈등")}
-          style={{
-            width: 45,
-            alignItems: "center",
-            backgroundColor: "#D5EAD7",
-            borderRadius: 24,
-            paddingVertical: 8,
-          }}
-        >
-          <Text
-            style={{
-              color: "#436645",
-              fontSize: 12,
-              fontFamily: "Pretendard-Medium",
-            }}
-          >
-            {"갈등"}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
