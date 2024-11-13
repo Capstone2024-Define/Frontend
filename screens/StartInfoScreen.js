@@ -18,6 +18,7 @@ import { WithLocalSvg } from "react-native-svg/css";
 import Check from "../assets/start_check.svg";
 
 export default function StartInfoScreen({ navigation, route }) {
+  const { ipnumber, user_code } = route.params;
   const [isKeyboardVisible, setKeyboardVisible] = useState(false); // 키보드 활성화 감지
   const [page, setPage] = useState(1);
   const [nickName, setNickName] = useState("");
@@ -156,7 +157,7 @@ export default function StartInfoScreen({ navigation, route }) {
       const newBirth = birth.replace(/\s\/\s/g, "-");
 
       await axios.post(`http://${ipnumber}:8080/userinfo/post`, {
-        user_code: route.params.user_code,
+        user_code: user_code,
         user_name: nickName,
         child_name: name,
         birth: newBirth,
@@ -500,7 +501,10 @@ export default function StartInfoScreen({ navigation, route }) {
                   }
                   onPress={async () => {
                     await handlePost();
-                    navigation.navigate("StartInfo3");
+                    navigation.navigate("StartInfo3", {
+                      ipnumber: ipnumber,
+                      user_code: user_code,
+                    });
                   }}
                 >
                   <LinearGradient

@@ -22,10 +22,13 @@ import axios from "axios";
 import CalendarModal from "../component/CalendarModal";
 import Svg, { Circle } from "react-native-svg";
 import PlusBtn from "../component/PlusBtn";
+import DaysModal from "../component/DaysModal";
 
 // 홈 스크린
 export default function HomeScreen({ navigation, route }) {
+  const { ipnumber, user_code } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
+  const [dayModalvisible, setDayModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [weeks, setWeeks] = useState([]);
   const [images, setImages] = useState([]);
@@ -33,7 +36,6 @@ export default function HomeScreen({ navigation, route }) {
   const [emoji, setEmoji] = useState([]);
   const [summaryText, setSummaryText] = useState("");
   // const [totalDay, setTotalDay] = useState(0);
-  const { ipnumber, user_code } = route.params;
   const today = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Seoul",
   });
@@ -71,7 +73,7 @@ export default function HomeScreen({ navigation, route }) {
     `느끼는 것을 솔직하게${"\n"}표현해봐요!`,
     `화가 났을땐${"\n"}다른 장소에서 진정해봐요!`,
     `자신이 한 일을 인정하고${"\n"}오해를 풀어봐요!`,
-    `누구도 완벽하진 못해요{'\n'}사소한 일은 넘어가주세요!`,
+    `누구도 완벽하진 못해요${"\n"}사소한 일은 넘어가주세요!`,
   ];
 
   // 상태바 변경(안드로이드)
@@ -107,14 +109,14 @@ export default function HomeScreen({ navigation, route }) {
           const response_consecutiveDays = await axios.get(
             `http://${ipnumber}:8080/daily/consecutive/${user_code}`
           );
-          console.log("연속 일자: ", response_consecutiveDays.data);
+          // console.log("연속 일자: ", response_consecutiveDays.data);
           setConsecutiveDay(response_consecutiveDays.data);
 
           // 가장 최근 체크리스트 로드
           const response_resentChecklist = await axios.get(
             `http://${ipnumber}:8080/prnt/recent/${user_code}`
           );
-          console.log("최근 체크리스트: ", response_resentChecklist.data);
+          // console.log("최근 체크리스트: ", response_resentChecklist.data);
 
           // 체크된 항목 중 랜덤으로 한개를 뽑음
           if (response_resentChecklist.data.length > 0) {
@@ -155,11 +157,6 @@ export default function HomeScreen({ navigation, route }) {
               `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
             );
             setSummaryText(response.data.summary);
-            // 몇일째 기록하는중인지 가져옴
-            // const response_total = await axios.get(
-            //   `http://${ipnumber}:8080/daily/records/${user_code}`
-            // );
-            // setTotalDay(response_total.data.length);
 
             // 이미지 가져옴
             const response_image = await axios.get(
@@ -167,8 +164,6 @@ export default function HomeScreen({ navigation, route }) {
             );
             setImages(response_image.data);
           } catch (error) {
-            // 기록 없는거니까 텍스트랑 이미지 비움
-            // setTotalText("");
             console.log("GET 오류: ", error);
             setImages([]);
           }
@@ -225,7 +220,11 @@ export default function HomeScreen({ navigation, route }) {
 
   const isPastDate = (date) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // 오늘 날짜를 자정으로 설정하여 시각 제거
+
     const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+
     return today < compareDate;
   };
 
@@ -283,6 +282,7 @@ export default function HomeScreen({ navigation, route }) {
             >
               <TouchableOpacity
                 activeOpacity={0.5}
+                onPress={() => setDayModalVisible(true)}
                 style={{ flexDirection: "row" }}
               >
                 <View
@@ -632,6 +632,12 @@ export default function HomeScreen({ navigation, route }) {
         setHomeSelectedDate={setSelectedDate}
         user_code={user_code}
         ipnumber={ipnumber}
+      />
+      <DaysModal
+        ipnumber={ipnumber}
+        user_code={user_code}
+        visible={dayModalvisible}
+        closeModal={() => setDayModalVisible(false)}
       />
     </SafeAreaView>
   );

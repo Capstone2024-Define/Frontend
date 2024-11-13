@@ -47,7 +47,7 @@ import PreparingGuide from "./screens/PreparingGuide";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "103.209.14.26";
+  const ipnumber = "43.202.67.25";
   const user_code = 1000; // 나중에 삭제 예정
 
   // 폰트 로드 상태
@@ -91,11 +91,6 @@ export default function App() {
               name="Main"
               component={MainScreen}
               options={{ headerShown: false }}
-              initialParams={{
-                // 나중에 Main 초기 파라미터 없앨 예정
-                ipnumber: ipnumber,
-                user_code: user_code,
-              }}
             />
             <Stack.Screen
               name="InfoScreen"
@@ -217,9 +212,6 @@ export default function App() {
               name="KakaoLogin"
               component={KakaoLoginScreen}
               options={{ headerShown: false }}
-              initialParams={{
-                ipnumber: ipnumber,
-              }}
             />
             <Stack.Screen
               name="KakaoLoginWeb"

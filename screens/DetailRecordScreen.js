@@ -179,17 +179,17 @@ export default function DetailRecordScreen({ navigation, route }) {
         summarizeText = totalText;
       }
 
-      console.log("전송 데이터:", {
-        user_code: user_code,
-        date: date,
-        home: homeText,
-        school: schoolText,
-        hospital: hospitalText,
-        summary: summarizeText,
-        state: route.params.state,
-        checklist: route.params.symptomList,
-        parentlist: route.params.checkList,
-      });
+      // console.log("전송 데이터:", {
+      //   user_code: user_code,
+      //   date: date,
+      //   home: homeText,
+      //   school: schoolText,
+      //   hospital: hospitalText,
+      //   summary: summarizeText,
+      //   state: route.params.state,
+      //   checklist: route.params.symptomList,
+      //   parentlist: route.params.checkList,
+      // });
 
       // 줄글 저장
       await axios.post(`http://${ipnumber}:8080/daily/post`, {
@@ -203,24 +203,40 @@ export default function DetailRecordScreen({ navigation, route }) {
       });
 
       // 병렬로 요청 실행
-      await Promise.all([
-        // 증상 체크리스트 저장
-        axios.post(`http://${ipnumber}:8080/sx/post`, {
-          user_code: user_code,
-          date: date,
-          checklist: route.params.symptomList,
-        }),
+      // await Promise.all([
+      //   // 증상 체크리스트 저장
+      //   axios.post(`http://${ipnumber}:8080/sx/post`, {
+      //     user_code: user_code,
+      //     date: date,
+      //     checklist: route.params.symptomList,
+      //   }),
 
-        // 부모 체크리스트 저장
-        axios.post(`http://${ipnumber}:8080/prnt/post`, {
-          user_code: user_code,
-          date: date,
-          checklist: route.params.checkList,
-        }),
-      ]);
+      //   // 부모 체크리스트 저장
+      //   axios.post(`http://${ipnumber}:8080/prnt/post`, {
+      //     user_code: user_code,
+      //     date: date,
+      //     checklist: route.params.checkList,
+      //   }),
+      // ]);
 
+      const postSymptomCheck = route.params.symptomList?.length
+        ? axios.post(`http://${ipnumber}:8080/sx/post`, {
+            user_code: user_code,
+            date: date,
+            checklist: route.params.symptomList,
+          })
+        : Promise.resolve(); // 빈 체크리스트인 경우 요청 생략
+
+      const postParentCheck = route.params.checkList?.length
+        ? axios.post(`http://${ipnumber}:8080/prnt/post`, {
+            user_code: user_code,
+            date: date,
+            checklist: route.params.checkList,
+          })
+        : Promise.resolve();
+
+      // 이미지
       const formData = new FormData();
-
       images.forEach((image, index) => {
         formData.append("multipartFiles", {
           uri: image.uri,
@@ -228,11 +244,10 @@ export default function DetailRecordScreen({ navigation, route }) {
           type: "image/jpeg",
         });
       });
-
       formData.append("user_code", user_code);
       formData.append("date", date);
 
-      const response = await fetch(`http://${ipnumber}:8080/image/post`, {
+      const uploadImages = await fetch(`http://${ipnumber}:8080/image/post`, {
         method: "POST",
         body: formData,
         headers: {
@@ -240,11 +255,8 @@ export default function DetailRecordScreen({ navigation, route }) {
         },
       });
 
-      if (response.ok) {
-        console.log("이미지 POST 성공");
-      } else {
-        console.log("이미지 POST 실패: ", response.status);
-      }
+      // 모든 요청을 병렬로 처리
+      await Promise.all([postSymptomCheck, postParentCheck, uploadImages]);
     } catch (error) {
       console.log("POST 에러: ", error);
     }
@@ -409,7 +421,11 @@ export default function DetailRecordScreen({ navigation, route }) {
             disabled={homeText.length <= 0}
             onPress={async () => {
               await handlePost();
-              navigation.popToTop();
+              navigation.navigate("Main", {
+                ipnumber: ipnumber,
+                user_code: user_code,
+                showTutorial: false,
+              });
               showToast("기록이 완료되었어요");
             }}
           >

@@ -135,40 +135,42 @@ export default function VoiceHistoryScreen({ navigation, route }) {
         <View
           style={{ width: "100%", height: 1, backgroundColor: "#EBEBEB" }}
         />
-        <ScrollView
-          contentContainerStyle={{
-            width: "100%",
-            paddingHorizontal: 20,
-            backgroundColor: theme.grey100,
-            paddingTop: 16,
-          }}
-        >
-          {filteredContents &&
-            filteredContents.length > 0 &&
-            filteredContents
-              .slice()
-              .reverse()
-              .map((content, index) =>
-                content.location === filter || filter === "all" ? (
-                  <View key={index}>
-                    <VoiceDateButton
-                      place={content.location}
-                      date={getDate(content.timestamp)}
-                      time={getTime(content.timestamp)}
-                      text={content.contents}
-                      onPress={() =>
-                        navigation.push("DetailVoice", {
-                          detail: true,
-                          user_code: user_code,
-                          ipnumber: ipnumber,
-                          timestamp: content.timestamp,
-                        })
-                      }
-                    />
-                  </View>
-                ) : null
-              )}
-        </ScrollView>
+        <View style={{ flex: 1, backgroundColor: theme.grey100 }}>
+          <ScrollView
+            contentContainerStyle={{
+              width: "100%",
+              paddingHorizontal: 20,
+              backgroundColor: theme.grey100,
+              paddingTop: 16,
+            }}
+          >
+            {filteredContents &&
+              filteredContents.length > 0 &&
+              filteredContents
+                .slice()
+                .reverse()
+                .map((content, index) =>
+                  content.location === filter || filter === "all" ? (
+                    <View key={index}>
+                      <VoiceDateButton
+                        place={content.location}
+                        date={getDate(content.timestamp)}
+                        time={getTime(content.timestamp)}
+                        text={content.contents}
+                        onPress={() =>
+                          navigation.push("DetailVoice", {
+                            detail: true,
+                            user_code: user_code,
+                            ipnumber: ipnumber,
+                            timestamp: content.timestamp,
+                          })
+                        }
+                      />
+                    </View>
+                  ) : null
+                )}
+          </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );

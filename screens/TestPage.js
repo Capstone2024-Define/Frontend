@@ -26,7 +26,7 @@ export default function TestPage({ route }) {
         method: "POST",
         url: "https://kapi.kakao.com/v1/user/unlink",
         headers: {
-          Authorization: `Bearer JJL_SAwnGRt-IS2RsDz_FRURR14Ve0OEAAAAAQo9dGgAAAGS4SAv1aew61y3DOUZ`, // 본인 토큰
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAzIiwiaWF0IjoxNzMxNDkwMDM5LCJleHAiOjE3MzE0OTM2Mzl9.7ioBgJ6aFH7wbyGJzF-uGbec2Y5vsiNbr5i7pjSQ3R0`, // 본인 토큰
         },
       });
       console.log("로그아웃 성공: ", response.data);
@@ -37,13 +37,6 @@ export default function TestPage({ route }) {
         error.response ? error.response.data : error
       );
     }
-  };
-
-  const getSummary = async () => {
-    const response = await summarize(
-      "어제 저녁, 아들과 함께 저녁 식사를 하면서 그는 학교에서의 하루를 나누었어요. 친구들과의 시간을 즐겁게 보냈다며 웃으면서 이야기를 했습니다. 하지만 수업 시간에는 집중이 잘 되지 않았다고 솔직히 언급했어요. 집에 돌아와서는 숙제를 시작했을 때, 아들은 집중력을 높이기 위해 시간을 조정하는 데 애를 썼지만, 중간에는 간혹 짜증을 내기도 했습니다. 저녁 식사 중에 아들은 미안하다며 사과를 하면서 저와 대화를 나누었고, 함께 그날의 일을 돌아보며 더 나은 방법을 찾기로 했습니다."
-    );
-    console.log(response); // 응답 내용 출력
   };
 
   const onClose = () => {
@@ -92,13 +85,6 @@ export default function TestPage({ route }) {
             style={styles.button}
           >
             <Text style={styles.buttonText}>카카오 로그아웃</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={getSummary}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>챗지피티 요약</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}

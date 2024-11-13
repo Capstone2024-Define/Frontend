@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SplashScreen({ route }) {
   const navigation = useNavigation();
@@ -54,6 +55,7 @@ export default function SplashScreen({ route }) {
             navigation.replace("Main", {
               user_code: Number(savedUserCode),
               ipnumber: ipnumber,
+              showTutorial: false,
             });
           } else {
             // logout 상태 => 재로그인
@@ -90,9 +92,13 @@ export default function SplashScreen({ route }) {
     //   withTiming(130, { duration: 500, easing: Easing.out(Easing.ease) }) // 0%에서 100%로 점진적으로 증가
     // );
 
-    const timer = setTimeout(() => {
-      // await CheckUserState()
-      navigation.replace("Main"); // 유저코드 연결 시 삭제 예정
+    const timer = setTimeout(async () => {
+      await CheckUserState();
+      // navigation.replace("Main", {
+      //   user_code: Number(savedUserCode),
+      //   ipnumber: ipnumber,
+      //   showTutorial: false,
+      // });
     }, 2200);
 
     return () => clearTimeout(timer);

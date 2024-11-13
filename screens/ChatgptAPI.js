@@ -33,7 +33,7 @@ const summarize = async (text) => {
         messages: [
           {
             role: "user",
-            content: `${text}를 100자 이내로 요약해줘.`,
+            content: `${text}를 80자 이내로 요약해줘.`,
           },
         ],
         max_tokens: 200, // 요약 결과의 길이를 제한

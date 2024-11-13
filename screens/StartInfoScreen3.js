@@ -21,6 +21,7 @@ import AlarmModal from "../component/AlarmModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function StartInfoScreen3({ navigation, route }) {
+  const { ipnumber, user_code } = route.params;
   const [reminderToggle, setReminderToggle] = useState(false);
   const [weeklyToggle, setWeeklyToggle] = useState(false);
   const [visible, setVisible] = useState(false); // 알림 모달
@@ -112,6 +113,14 @@ export default function StartInfoScreen3({ navigation, route }) {
       console.log("마이페이지 아싱크스토리지 알람: ", rawAlarm);
     } catch (e) {
       console.log("알람 기록 로드 에러");
+    }
+  };
+
+  const changeStateLogin = async () => {
+    try {
+      await AsyncStorage.setItem("state", "login");
+    } catch (error) {
+      console.log("state 변경 에러: ", error);
     }
   };
 
@@ -251,7 +260,13 @@ export default function StartInfoScreen3({ navigation, route }) {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={async () => {
-              navigation.navigate("Main");
+              await changeStateLogin();
+              navigation.pop();
+              navigation.replace("Main", {
+                ipnumber: ipnumber,
+                user_code: user_code,
+                showTutorial: true,
+              });
             }}
           >
             <LinearGradient

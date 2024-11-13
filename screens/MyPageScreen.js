@@ -100,11 +100,10 @@ export default function MyPageScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    // 알림 시간 불러오기
     if (reminderToggle) {
       loadTime();
     }
-  }, [visible]);
+  }, [alarmModalVisible]);
 
   useEffect(() => {
     // 토글 상태 저장
@@ -139,21 +138,24 @@ export default function MyPageScreen({ navigation, route }) {
   };
 
   // 카카오 로그아웃
-  const logoutKakao = async () => {
+  const logoutUser = async () => {
     try {
-      const response_token = await axios.get(`http://${ipnumber}:8080`);
+      const response = await axios.post(
+        `http://${ipnumber}:8080/Logout`,
+        null,
+        {
+          withCredentials: true,
+        }
+      );
 
-      const response = await axios({
-        method: "POST",
-        url: "https://kapi.kakao.com/v1/user/unlink",
-        headers: {
-          Authorization: `Bearer ${response_token.data.kakao_token}`,
-        },
-      });
-      console.log("로그아웃 성공: ", response.data);
-      await AsyncStorage.setItem("state", "logout"); // 상태 갱신
+      if (response.status === 200) {
+        console.log("로그아웃 성공");
+        navigation.replace("KakaoLogin", { ipnumber: ipnumber });
+      } else {
+        console.log("로그아웃 실패", response.data);
+      }
     } catch (error) {
-      console.log("로그아웃 실패: ", error);
+      console.error("로그아웃 오류:", error);
     }
   };
 
@@ -362,7 +364,10 @@ export default function MyPageScreen({ navigation, route }) {
         <View style={styles.divider} />
 
         {/* 로그아웃 */}
-        <TouchableOpacity style={styles.logoutItem}>
+        <TouchableOpacity
+          onPress={() => logoutUser()}
+          style={styles.logoutItem}
+        >
           <Image
             source={require("../assets/my_logout.png")}
             style={styles.menuIcon}

@@ -6,6 +6,7 @@ import {
   Image,
   Modal,
   Pressable,
+  Animated,
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
@@ -18,6 +19,7 @@ export default function DaysModal({
   visible,
   closeModal,
 }) {
+  const [consecutiveDay, setConsecutiveDay] = useState(0);
   const [registeredData, setRegisteredData] = useState([
     true,
     false,
@@ -27,6 +29,40 @@ export default function DaysModal({
     true,
     false,
   ]); // 예시 데이터
+
+  const slideAnim = useState(new Animated.Value(350))[0]; // 애니메이션 초기값
+
+  useEffect(() => {
+    async function load() {
+      try {
+        // 연속 날짜 로드
+        const response_consecutiveDays = await axios.get(
+          `http://${ipnumber}:8080/daily/consecutive/${user_code}`
+        );
+        setConsecutiveDay(response_consecutiveDays.data);
+      } catch (error) {
+        console.log("연속 날짜 로드 에러: ", error);
+      }
+    }
+    load();
+  });
+
+  // 모달이 열릴 때 애니메이션 실행
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: 350,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
 
   // 팝업 내용 컴포넌트
   const PopupContent = ({ registeredData, onRequestClose }) => (
@@ -40,8 +76,9 @@ export default function DaysModal({
           source={require("../assets/inarow_close.png")}
           resizeMode={"contain"}
           style={{
-            width: 14,
-            height: 14,
+            width: 13,
+            height: 13,
+            marginLeft: 5,
           }}
         />
       </TouchableOpacity>
@@ -49,6 +86,7 @@ export default function DaysModal({
         style={{
           flexDirection: "row",
           alignItems: "flex-start",
+          marginTop: 5,
         }}
       >
         <View style={{}}>
@@ -61,7 +99,7 @@ export default function DaysModal({
               marginTop: 2,
             }}
           >
-            {"7일"}
+            {`${consecutiveDay}일`}
           </Text>
           <Text
             style={{
@@ -100,7 +138,7 @@ export default function DaysModal({
         <Image
           source={require("../assets/my_rabbit.png")}
           resizeMode={"contain"}
-          style={{ height: 230, width: 148 }}
+          style={{ height: 236, width: 154 }}
         />
       </View>
       <View
@@ -164,24 +202,21 @@ export default function DaysModal({
   );
 
   return (
-    <Modal
-      transparent={true}
-      visible={visible}
-      onRequestClose={closeModal}
-      animationType="slide"
-    >
+    <Modal transparent={true} visible={visible} onRequestClose={closeModal}>
       <Pressable style={styles.modalOverlay} onPress={closeModal}>
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          colors={["#79BA7E", "#AFCA85"]}
-          style={styles.popupContainer}
-        >
-          <PopupContent
-            registeredData={registeredData}
-            onRequestClose={closeModal}
-          />
-        </LinearGradient>
+        <Animated.View style={[{ transform: [{ translateY: slideAnim }] }]}>
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            colors={["#79BA7E", "#AFCA85"]}
+            style={styles.popupContainer}
+          >
+            <PopupContent
+              registeredData={registeredData}
+              onRequestClose={closeModal}
+            />
+          </LinearGradient>
+        </Animated.View>
       </Pressable>
     </Modal>
   );

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { theme } from "../colors/color";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { WithLocalSvg } from "react-native-svg/css";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
@@ -20,6 +20,7 @@ import Svg, { Line, Polyline, Circle } from "react-native-svg";
 import axios from "axios";
 // import { BlurView } from "expo-blur";
 import { VictoryPie } from "victory-native";
+import { useFocusEffect } from "@react-navigation/native";
 // import { PieChart } from "react-native-svg-charts";
 
 export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
@@ -59,12 +60,14 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
   const previousWeek = useRef(week); // 변경 전 주
   const [weekStateNull, setWeekStateNull] = useState(false); // 주간 기록이 없을때 확인
 
-  useEffect(() => {
-    const start = async () => {
-      await monthLoad();
-    };
-    start();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const start = async () => {
+        await monthLoad();
+      };
+      start();
+    }, [])
+  );
 
   useEffect(() => {
     // 선택 날짜로 주차 초기화

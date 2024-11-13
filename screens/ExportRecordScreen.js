@@ -24,6 +24,7 @@ import { useLayoutEffect } from "react";
 import { Calendar } from "react-native-calendars";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
+import Check from "../assets/start_check.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import * as Print from "expo-print";
@@ -658,16 +659,12 @@ export default function ExportRecordScreen({ navigation, route }) {
             <View
               style={[
                 styles.circle,
-                page == 2 && { backgroundColor: theme.green300 },
+                page == 2 && { backgroundColor: theme.green100 },
                 { marginRight: 16 },
               ]}
             >
               <Text style={styles.number}>
-                {page == 1 ? (
-                  1
-                ) : (
-                  <Feather name="check" size={18} color="white" />
-                )}
+                {page == 1 ? 1 : <WithLocalSvg asset={Check} />}
               </Text>
             </View>
             <View
