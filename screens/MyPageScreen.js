@@ -19,7 +19,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DaysModal from "../component/DaysModal";
 
 export default function MyPageScreen({ navigation, route }) {
-  // 알림 관련 시간 초기 설정(아싱크스토리지 저장 내용이 없을 때)
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -288,7 +287,7 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </View>
         <Text style={[styles.notificationDescription, { marginLeft: 56 }]}>
-          {"매주 일요일 주간분석결과 알림을 보내드려요"}
+          {"매주 일요일 저녁 9시 주간분석결과 알림을 보내드려요"}
         </Text>
 
         {/* 주간 분석 결과 밑에 구분선 추가 */}

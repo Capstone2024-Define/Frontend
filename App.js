@@ -7,7 +7,7 @@ import Toast from "react-native-toast-message";
 import { toastConfig } from "./component/Toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFonts } from "expo-font"; // 폰트 관련
+import { useFonts } from "expo-font";
 
 // Screens
 import DetailRecordScreen from "./screens/DetailRecordScreen";
@@ -42,7 +42,7 @@ import SplashScreen from "./screens/SplashScreen";
 import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import PreparingGuide from "./screens/PreparingGuide";
-// import PreparingGuide from "./screens/PreparingInfo";
+import PreparingInfo from "./screens/PreparingInfo"; // PreparingInfo 추가
 
 const Stack = createNativeStackNavigator();
 
@@ -50,7 +50,6 @@ export default function App() {
   const ipnumber = "43.202.67.25";
   const user_code = 1000; // 나중에 삭제 예정
 
-  // 폰트 로드 상태
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
     "Pretendard-Bold": require("./assets/fonts/Pretendard-Bold.ttf"),
@@ -58,11 +57,6 @@ export default function App() {
     "Pretendard-Regular": require("./assets/fonts/Pretendard-Regular.ttf"),
   });
   if (!fontsLoaded) return null;
-
-  // 폰트 로드가 완료되지 않았을 때는 빈 화면 반환
-  // if (!fontsLoaded) {
-  //   return <View style={{ flex: 1, backgroundColor: "white" }} />;
-  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -78,7 +72,6 @@ export default function App() {
               animation: "fade",
             }}
           >
-            {/* 기존 내비게이터에 있는 화면들 */}
             <Stack.Screen
               name="Splash"
               component={SplashScreen}
@@ -122,9 +115,14 @@ export default function App() {
               options={{ title: "북마크한 정보", headerShown: false }}
             />
             <Stack.Screen
-              name="PreparingGuide" // 새로운 스크린 추가
+              name="PreparingGuide"
               component={PreparingGuide}
               options={{ title: "이용 가이드", headerShown: false }}
+            />
+            <Stack.Screen
+              name="PreparingInfo" // 새로운 스크린 추가
+              component={PreparingInfo}
+              options={{ title: "앱 정보", headerShown: false }}
             />
             {/* 나머지 화면들 */}
             <Stack.Screen
@@ -270,7 +268,7 @@ export default function App() {
               initialParams={{
                 ipnumber: "your_ipnumber",
                 user_code: "your_user_code",
-              }} // 기본 파라미터 전달
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>

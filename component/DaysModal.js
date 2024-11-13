@@ -19,52 +19,45 @@ export default function DaysModal({
   visible,
   closeModal,
 }) {
-  const [consecutiveDay, setConsecutiveDay] = useState(0);
-  const [registeredData, setRegisteredData] = useState([
-    true,
-    false,
-    true,
-    false,
-    true,
-    true,
-    false,
-  ]); // 예시 데이터
+  const [registeredData, setRegisteredData] = useState(
+    new Array(7).fill(false)
+  );
 
-  const slideAnim = useState(new Animated.Value(350))[0]; // 애니메이션 초기값
-
-  useEffect(() => {
-    async function load() {
-      try {
-        // 연속 날짜 로드
-        const response_consecutiveDays = await axios.get(
-          `http://${ipnumber}:8080/daily/consecutive/${user_code}`
-        );
-        setConsecutiveDay(response_consecutiveDays.data);
-      } catch (error) {
-        console.log("연속 날짜 로드 에러: ", error);
-      }
-    }
-    load();
-  });
-
-  // 모달이 열릴 때 애니메이션 실행
   useEffect(() => {
     if (visible) {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: 350,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      fetchWeeklyData();
     }
   }, [visible]);
 
-  // 팝업 내용 컴포넌트
+  const fetchWeeklyData = async () => {
+    const today = new Date();
+    const currentDay = today.getDay();
+
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - currentDay);
+    const saturday = new Date(sunday);
+    saturday.setDate(sunday.getDate() + 6);
+
+    const start = sunday.toISOString().split("T")[0];
+    const end = saturday.toISOString().split("T")[0];
+
+    try {
+      const response = await axios.get(
+        `http://${ipnumber}:8080/daily/period/${user_code}/${start}/${end}`
+      );
+
+      const newRegisteredData = new Array(7).fill(false);
+      response.data.forEach((record) => {
+        const recordDate = new Date(record.date).getDay();
+        newRegisteredData[recordDate] = true;
+      });
+
+      setRegisteredData(newRegisteredData);
+    } catch (error) {
+      console.log("Failed to fetch weekly data: ", error);
+    }
+  };
+
   const PopupContent = ({ registeredData, onRequestClose }) => (
     <View style={{ flex: 1 }}>
       <TouchableOpacity
@@ -189,8 +182,8 @@ export default function DaysModal({
               key={index}
               source={
                 isRegistered
-                  ? require("../assets/my_modal_circle_green.png") // 있으면
-                  : require("../assets/my_modal_circle.png") // 없으면
+                  ? require("../assets/my_modal_circle_green.png")
+                  : require("../assets/my_modal_circle.png")
               }
               resizeMode={"stretch"}
               style={{ width: 20, height: 20 }}
