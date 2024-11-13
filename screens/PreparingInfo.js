@@ -7,7 +7,7 @@ export default function ComingSoonPage({ navigation }) {
     <ScrollView style={styles.scrollView}>
       <Header
         left="leftArrow"
-        title="이용가이드"
+        title="앱 정보"
         onLeftPress={() => {
           navigation.goBack(); 
         }}

@@ -19,22 +19,39 @@ const API_KEY =
   "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";
 const MODEL = "gpt-3.5-turbo";
 
-const ChatbotScreen = ({ navigaion }) => {
+const ChatbotScreen = ({ navigation, route }) => {
+  const { ipnumber, user_code } = route.params; // user_code와 ipnumber 가져오기
+  const [nickName, setNickName] = useState("");
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ChatGPT API 요청 함수
+  // 닉네임 가져오기
+  useEffect(() => {
+    async function loadNickName() {
+      try {
+        const response = await axios.get(
+          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+        );
+        setNickName(response.data.user_name);
+      } catch (error) {
+        console.log("유저 닉네임 불러오기 에러: ", error);
+      }
+    }
+    loadNickName();
+  }, [ipnumber, user_code]);
+
+  // 초기 메시지 설정
   useEffect(() => {
     const initialMessages = [
-      { sender: "bot", text: "안녕하세요 디파님!" },
+      { sender: "bot", text: `안녕하세요 ${nickName}님!` },
       {
         sender: "bot",
         text: "저는 AI 로빗입니다! ADHD 아이를 키우는데 필요한 정보와 지식으로 도와드릴게요!",
       },
     ];
     setMessages(initialMessages);
-  }, []);
+  }, [nickName]);
 
   const getChatbotResponse = async (text) => {
     try {
@@ -60,7 +77,7 @@ const ChatbotScreen = ({ navigaion }) => {
       );
       return response.data.choices[0].message.content.trim();
     } catch (error) {
-      console.error("Error fetching summary:", error);
+      console.error("Error fetching response:", error);
       return "죄송해요, 응답을 생성하는 데 문제가 생겼어요.";
     }
   };
