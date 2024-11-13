@@ -82,7 +82,7 @@ export default function KakaoLoginWeb({ navigation, route }) {
     <View style={styles.container}>
       {isWebViewVisible ? (
         <WebView
-          style={{ flex: 1, opacity: 0 }} // 초기에는 보이지 않게 설정
+          style={{ flex: 1 }} // 초기에는 보이지 않게 설정
           originWhitelist={["*"]}
           source={{
             uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}`,

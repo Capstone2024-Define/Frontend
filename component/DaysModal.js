@@ -18,28 +18,29 @@ export default function DaysModal({
   user_code,
   visible,
   closeModal,
+  consecutiveDay,
 }) {
-  const [consecutiveDay, setConsecutiveDay] = useState(0);
+  // const [consecutiveDay, setConsecutiveDay] = useState(0);
   const [registeredData, setRegisteredData] = useState(
     new Array(7).fill(false)
   );
 
   const slideAnim = useState(new Animated.Value(350))[0];
 
-  useEffect(() => {
-    async function load() {
-      try {
-        // 연속 날짜 로드
-        const response_consecutiveDays = await axios.get(
-          `http://${ipnumber}:8080/daily/consecutive/${user_code}`
-        );
-        setConsecutiveDay(response_consecutiveDays.data);
-      } catch (error) {
-        console.log("연속 날짜 로드 에러: ", error);
-      }
-    }
-    load();
-  }, []);
+  // useEffect(() => {
+  //   async function load() {
+  //     try {
+  //       // 연속 날짜 로드
+  //       const response_consecutiveDays = await axios.get(
+  //         `http://${ipnumber}:8080/daily/consecutive/${user_code}`
+  //       );
+  //       setConsecutiveDay(response_consecutiveDays.data);
+  //     } catch (error) {
+  //       console.log("연속 날짜 로드 에러: ", error);
+  //     }
+  //   }
+  //   load();
+  // }, []);
 
   // 애니메이션
   useEffect(() => {

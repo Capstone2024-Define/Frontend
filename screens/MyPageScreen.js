@@ -17,8 +17,10 @@ import SwitchToggle from "react-native-switch-toggle";
 import AlarmModal from "../component/AlarmModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DaysModal from "../component/DaysModal";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function MyPageScreen({ navigation, route }) {
+  // 알림 관련 시간 초기 설정(아싱크스토리지 저장 내용이 없을 때)
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -35,15 +37,6 @@ export default function MyPageScreen({ navigation, route }) {
   const [weeklyToggle, setWeeklyToggle] = useState(false);
   const [alarmModalVisible, setAlarmModalVisible] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [registeredData, setRegisteredData] = useState([
-    true,
-    false,
-    true,
-    false,
-    true,
-    true,
-    false,
-  ]); // 예시 데이터
   const [selectedAmPm, setSelectedAmPm] = useState(ampmValue);
   const [selectedHour, setSelectedHour] = useState(currentHour.toString());
   const [selectedMinute, setSelectedMinute] = useState(
@@ -51,6 +44,7 @@ export default function MyPageScreen({ navigation, route }) {
   );
   const [buttonPosition, setButtonPosition] = useState({ top: 0 }); // 알림 버튼 위치
   const buttonRef = useRef(null); // 버튼 참조
+  const [consecutiveDay, setConsecutiveDay] = useState(0); // 연속 일자
 
   // 알림 모달 열기
   const openAlarmModal = () => {
@@ -68,6 +62,23 @@ export default function MyPageScreen({ navigation, route }) {
   const closeModal = () => {
     setVisible(false);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      async function load() {
+        try {
+          // 연속 날짜 로드
+          const response_consecutiveDays = await axios.get(
+            `http://${ipnumber}:8080/daily/consecutive/${user_code}`
+          );
+          setConsecutiveDay(response_consecutiveDays.data);
+        } catch (error) {
+          console.log("연속 날짜 로드 에러: ", error);
+        }
+      }
+      load();
+    }, [])
+  );
 
   useEffect(() => {
     // 유저 이름 가져오기
@@ -190,7 +201,7 @@ export default function MyPageScreen({ navigation, route }) {
               colors={["#79BA7E", "#AFCA85"]}
               style={styles.streakBox}
             >
-              <Text style={styles.streakText}>{"7일"}</Text>
+              <Text style={styles.streakText}>{`${consecutiveDay}일`}</Text>
               <Text style={styles.streakSubText}>{"연속기록 중!"}</Text>
               <Image
                 source={require("../assets/my_rabbit.png")}
@@ -287,7 +298,7 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </View>
         <Text style={[styles.notificationDescription, { marginLeft: 56 }]}>
-          {"매주 일요일 저녁 9시 주간분석결과 알림을 보내드려요"}
+          {"매주 일요일 주간분석결과 알림을 보내드려요"}
         </Text>
 
         {/* 주간 분석 결과 밑에 구분선 추가 */}
@@ -396,6 +407,7 @@ export default function MyPageScreen({ navigation, route }) {
         user_code={user_code}
         visible={visible}
         closeModal={closeModal}
+        consecutiveDay={consecutiveDay}
       />
       <AlarmModal
         visible={alarmModalVisible}
