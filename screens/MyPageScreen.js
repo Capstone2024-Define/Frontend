@@ -18,7 +18,6 @@ import AlarmModal from "../component/AlarmModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MyPageScreen({ navigation, route }) {
-  // 알림 관련 시간 초기 설정(아싱크스토리지 저장 내용이 없을 때)
   const now = new Date();
   let currentHour = now.getHours();
   const currentMinute = now.getMinutes();
