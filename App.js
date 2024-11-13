@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, KeyboardAvoidingView, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "./component/Toast";
@@ -47,9 +47,8 @@ import PreparingGuide from "./screens/PreparingGuide";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "13.209.14.26";
-  const [user_code, setUserCode] = useState(1000);
-  const [adviseTitle, setAdviseTitle] = useState("");
+  const ipnumber = "103.209.14.26";
+  const user_code = 1000; // 나중에 삭제 예정
 
   // 폰트 로드 상태
   const [fontsLoaded] = useFonts({
@@ -58,28 +57,12 @@ export default function App() {
     "Pretendard-Medium": require("./assets/fonts/Pretendard-Medium.ttf"),
     "Pretendard-Regular": require("./assets/fonts/Pretendard-Regular.ttf"),
   });
-
-  useEffect(() => {
-    // user_code 가져오기
-    const loadUserCode = async () => {
-      try {
-        const savedUserCode = await AsyncStorage.getItem("user_code");
-        if (savedUserCode !== null) {
-          setUserCode(Number(savedUserCode));
-        } else {
-          console.log("user_code가 null입니다.");
-        }
-      } catch (error) {
-        console.log("유저id 불러오기 실패:", error);
-      }
-    };
-    loadUserCode();
-  }, []);
+  if (!fontsLoaded) return null;
 
   // 폰트 로드가 완료되지 않았을 때는 빈 화면 반환
-  if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: "white" }} />;
-  }
+  // if (!fontsLoaded) {
+  //   return <View style={{ flex: 1, backgroundColor: "white" }} />;
+  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -100,12 +83,16 @@ export default function App() {
               name="Splash"
               component={SplashScreen}
               options={{ headerShown: false }}
+              initialParams={{
+                ipnumber: ipnumber,
+              }}
             />
             <Stack.Screen
               name="Main"
               component={MainScreen}
               options={{ headerShown: false }}
               initialParams={{
+                // 나중에 Main 초기 파라미터 없앨 예정
                 ipnumber: ipnumber,
                 user_code: user_code,
               }}

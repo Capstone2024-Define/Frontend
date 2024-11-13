@@ -11,14 +11,15 @@ import Animated, {
 import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-export default function SplashScreen() {
+export default function SplashScreen({ route }) {
   const navigation = useNavigation();
+  const ipnumber = route.params.ipnumber;
 
   // 초기 크기, 위치, 너비
   const scale = useSharedValue(0.0);
   const translateX = useSharedValue(0);
   const textTranslateX = useSharedValue(-400);
-  const textWidth = useSharedValue(0);
+  // const textWidth = useSharedValue(0);
 
   // 애니메이션 스타일 정의
   const logoAnimatedStyle = useAnimatedStyle(() => {
@@ -39,6 +40,36 @@ export default function SplashScreen() {
   // });
 
   useEffect(() => {
+    // 유저 상태 확인
+    const CheckUserState = async () => {
+      try {
+        const savedUserCode = await AsyncStorage.getItem("user_code");
+        const currentState = await AsyncStorage.getItem("state");
+
+        if (savedUserCode !== null) {
+          console.log("user_code: ", Number(savedUserCode));
+          console.log("현재 state: ", currentState);
+          if (currentState === "login") {
+            // login 상태 => 바로 메인
+            navigation.replace("Main", {
+              user_code: Number(savedUserCode),
+              ipnumber: ipnumber,
+            });
+          } else {
+            // logout 상태 => 재로그인
+            navigation.replace("KakaoLogin", { ipnumber: ipnumber });
+          }
+        } else {
+          console.log("첫가입");
+          await AsyncStorage.setItem("state", "first");
+          navigation.replace("KakaoLogin", { ipnumber: ipnumber });
+        }
+      } catch (error) {
+        console.log("유저 상태 확인 중 에러:", error);
+      }
+    };
+
+    // 애니메이션
     scale.value = withSequence(
       withTiming(0.4, { duration: 350, easing: Easing.out(Easing.ease) }), // 커지게
       withTiming(0.24, { duration: 200, easing: Easing.inOut(Easing.ease) }) // 다시 작아지게
@@ -59,11 +90,9 @@ export default function SplashScreen() {
     //   withTiming(130, { duration: 500, easing: Easing.out(Easing.ease) }) // 0%에서 100%로 점진적으로 증가
     // );
 
-    // @@@ 나중에 user_code 유무 확인
-    // 없으면 -> 로그인으로 이동
-    // 있으면 -> Main으로 이동
     const timer = setTimeout(() => {
-      navigation.replace("Main"); // MainScreen으로 이동
+      // await CheckUserState()
+      navigation.replace("Main"); // 유저코드 연결 시 삭제 예정
     }, 2200);
 
     return () => clearTimeout(timer);

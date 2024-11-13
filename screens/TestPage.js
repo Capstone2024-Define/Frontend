@@ -12,52 +12,12 @@ import Header from "../component/Header";
 import { theme } from "../colors/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import summarize from "./ChatgptAPI";
-import * as Print from "expo-print";
-import { shareAsync } from "expo-sharing";
 import AlarmModal from "../component/AlarmModal";
 
 export default function TestPage({ route }) {
   const { ipnumber, user_code } = route.params;
   const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
-
-  // GET 요청 형식
-  // const response = await axios.get(
-  //   `http://192.168.123.159:8080/daily/records/${user_id}/${date}`
-  // );
-  useEffect(() => {
-    // GET 요청
-
-    console.log("GET 요청 시작");
-    axios
-      .get(`http://${ipnumber}:8080/daily/records/${user_code}/2024-09-30`)
-      .then((response) => {
-        console.log("GET : ", response.data);
-      })
-      .catch((error) => {
-        console.log("Get 에러: ", error);
-      });
-  }, []);
-
-  // POST 요청 핸들러
-  const handlePost = () => {
-    axios
-      .post(`http://${ipnumber}:8080/daily/post`, {
-        user_code: 1000,
-        date: "2024-08-20",
-        home: "9월 24일 home 테스트",
-        school: "9월 24일 school 테스트",
-        hospital: "9월 24일 hospital 테스트",
-        summary: "으아아아아",
-        state: 2,
-      })
-      .then((response) => {
-        console.log("Post 응답:", response.data);
-      })
-      .catch((error) => {
-        console.error("Post error:", error);
-      });
-  };
 
   // 카카오 연결끊기
   const logoutKakao = async () => {
@@ -85,28 +45,6 @@ export default function TestPage({ route }) {
     );
     console.log(response); // 응답 내용 출력
   };
-
-  // const textToPdf = async (text) => {
-  //   const html = `
-  //     <html>
-  //       <head>
-  //         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-  //       </head>
-  //       <body style="text-align: center;">
-  //         <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
-  //           ${text}
-  //         </h1>
-  //         <img
-  //           src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
-  //           style="width: 90vw;" />
-  //       </body>
-  //     </html>
-  //     `;
-  //   const { uri } = await Print.printToFileAsync({ html });
-  //   console.log("File has been saved to:", uri);
-  //   // 이 아래 코드를 이메일에 전송하는걸로 갈아채야댐
-  //   await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
-  // };
 
   const onClose = () => {
     setVisible(false);
@@ -175,13 +113,6 @@ export default function TestPage({ route }) {
             style={styles.button}
           >
             <Text style={styles.buttonText}>알림 모달</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={handlePost}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>POST 요청 테스트</Text>
           </TouchableOpacity>
         </View>
       </View>

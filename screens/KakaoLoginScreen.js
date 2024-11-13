@@ -18,7 +18,8 @@ import Carousel from "react-native-reanimated-carousel";
 
 const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 
-export default function KakaoLoginScreen({ navigation }) {
+export default function KakaoLoginScreen({ navigation, route }) {
+  const ipnumber = route.params.ipnumber;
   const [activePage, setActivePage] = useState(0); // 현재 페이지 상태
   const scrollViewRef = useRef(null);
   const title = ["기록하기", "상담녹음", "내보내기", "정보"];
@@ -150,7 +151,9 @@ export default function KakaoLoginScreen({ navigation }) {
       </View>
       <TouchableOpacity
         activeOpacity={0.5}
-        onPress={() => navigation.navigate("KakaoLoginWeb")}
+        onPress={() =>
+          navigation.replace("KakaoLoginWeb", { ipnumber: ipnumber })
+        }
         style={{ ...styles.button, marginBottom: 20 }}
       >
         <WithLocalSvg asset={Kakao} />
