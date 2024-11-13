@@ -47,7 +47,7 @@ import PreparingGuide from "./screens/PreparingGuide";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "103.209.14.26";
+  const ipnumber = "43.203.215.185";
   const user_code = 1000; // 나중에 삭제 예정
 
   // 폰트 로드 상태
