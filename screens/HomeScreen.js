@@ -638,6 +638,7 @@ export default function HomeScreen({ navigation, route }) {
         user_code={user_code}
         visible={dayModalvisible}
         closeModal={() => setDayModalVisible(false)}
+        consecutiveDay={consecutiveDay}
       />
     </SafeAreaView>
   );
