@@ -97,7 +97,7 @@ export default function AlarmModal({
   const loadTime = async () => {
     try {
       const rawAlarm = await AsyncStorage.getItem("alarm");
-      if (rawAlarm) {
+      if (rawAlarm<0) {
         const alarm = JSON.parse(rawAlarm);
 
         setSelectedAmPm(alarm.ampm);
@@ -151,6 +151,7 @@ export default function AlarmModal({
     try {
       await Notifications.cancelAllScheduledNotificationsAsync(); // 기존 알림 삭제
 
+      console.log("ampm: ",ampm, "hour: ",hour, "minute: ",minute)
       const triggerHour =
         ampm === "pm" && parseInt(hour) !== 12
           ? parseInt(hour) + 12
@@ -161,6 +162,7 @@ export default function AlarmModal({
 
       // NaN 체크
       if (isNaN(triggerHour) || isNaN(triggerMinute)) {
+        
         console.error("알림 설정 오류: 유효하지 않은 시간 값입니다.");
         return;
       }

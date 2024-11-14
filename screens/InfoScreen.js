@@ -23,7 +23,7 @@ function InfoScreen({ route }) {
   const navigation = useNavigation();
 
   const handleSearchNavigate = () => {
-    navigation.navigate("InfoSearch");
+    navigation.navigate("InfoSearch",{ipnumber:ipnumber,user_code:user_code});
   };
 
   const handleDetailNavigate = (key) => {
@@ -32,7 +32,7 @@ function InfoScreen({ route }) {
 
   // 플로팅 버튼 클릭 시 챗봇 연결
   const handleChatbotOpen = () => {
-    navigation.navigate("Chatbot", { nickName: nickName });
+    navigation.navigate("Chatbot", { nickName: nickName ,user_code:user_code, ipnumber:ipnumber});
   };
 
   // 닉네임(유저 이름) 가져오기

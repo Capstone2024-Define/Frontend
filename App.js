@@ -47,8 +47,8 @@ import PreparingInfo from "./screens/PreparingInfo"; // PreparingInfo 추가
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "43.202.67.25";
-  const user_code = 1000; // 나중에 삭제 예정
+  const ipnumber = "43.202.46.125";
+  // const user_code = 1000; // 나중에 삭제 예정
 
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
@@ -94,10 +94,7 @@ export default function App() {
               name="InfoSearch"
               component={InfoSearch}
               options={{ title: "검색 화면", headerShown: false }}
-              initialParams={{
-                ipnumber: ipnumber,
-                user_code: user_code,
-              }}
+           
             />
             <Stack.Screen
               name="InfoSearchResult"
@@ -265,10 +262,6 @@ export default function App() {
               name="Chatbot"
               component={ChatbotScreen}
               options={{ headerShown: false }}
-              initialParams={{
-                ipnumber: "your_ipnumber",
-                user_code: "your_user_code",
-              }}
             />
           </Stack.Navigator>
         </NavigationContainer>
