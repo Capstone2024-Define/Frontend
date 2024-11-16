@@ -43,12 +43,12 @@ import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import PreparingGuide from "./screens/PreparingGuide";
 import PreparingInfo from "./screens/PreparingInfo"; // PreparingInfo 추가
+import { IPNUMBER } from "@env";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "43.202.67.25";
-  const user_code = 1000; // 나중에 삭제 예정
+  const ipnumber = IPNUMBER;
 
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
