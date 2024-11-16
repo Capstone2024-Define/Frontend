@@ -37,8 +37,8 @@ function InfoScreen({ route }) {
   const handleChatbotOpen = () => {
     navigation.navigate("Chatbot", {
       nickName: nickName,
-      ipnumber: ipnumber,
       user_code: user_code,
+      ipnumber: ipnumber,
     });
   };
 
