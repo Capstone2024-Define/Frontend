@@ -221,7 +221,7 @@ export default function DaysModal({
                   ? require("../assets/my_modal_circle_green.png")
                   : require("../assets/my_modal_circle.png")
               }
-              resizeMode={"stretch"}
+              resizeMode={"contain"}
               style={{ width: 20, height: 20 }}
             />
           ))}

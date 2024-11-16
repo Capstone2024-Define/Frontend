@@ -14,9 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
 import axios from "axios";
+import { CHATGPT_API_KEY } from "@env";
 
-const API_KEY =
-  "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";
 const MODEL = "gpt-3.5-turbo";
 
 const ChatbotScreen = ({ navigation, route }) => {
@@ -71,7 +70,7 @@ const ChatbotScreen = ({ navigation, route }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
+            Authorization: `Bearer ${CHATGPT_API_KEY}`,
           },
         }
       );

@@ -396,7 +396,7 @@ export const infos = [
       ],
     ],
     tag: ["학교", "부모"],
-    symptom_check: [],
+    symptom_check: ["불순응"],
     origin: "서울아산병원 - 소아청소년 질환정보",
   },
   {

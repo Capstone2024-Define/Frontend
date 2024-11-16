@@ -3,8 +3,8 @@ import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KAKAOLOGIN_API_KEY } from "@env";
 
-const REST_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
 const INJECTED_JAVASCRIPT = `
   (function() {
     if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
@@ -40,17 +40,31 @@ export default function KakaoLoginWeb({ navigation, route }) {
         console.log("로그인 성공", serverResponse.userId);
         setIsWebViewVisible(false);
 
+        const response_exist_user_code = await axios.get(
+          `http://${ipnumber}:8080/exist?user_code=${serverResponse.userId}`
+        );
+        console.log(response_exist_user_code.data);
         if (currentState === "first") {
-          console.log("첫 로그인");
           try {
             await AsyncStorage.setItem("user_code", serverResponse.userId);
+            if (response_exist_user_code.data == 0) {
+              console.log("첫 로그인");
+              navigation.replace("StartInfo", {
+                ipnumber: ipnumber,
+                user_code: serverResponse.userId,
+              });
+            } else {
+              console.log("재로그인");
+              await AsyncStorage.setItem("state", "login");
+              navigation.replace("Main", {
+                ipnumber: ipnumber,
+                user_code: serverResponse.userId,
+                showTutorial: false,
+              });
+            }
           } catch (error) {
             console.log("유저코드 저장 에러: ", error);
           }
-          navigation.replace("StartInfo", {
-            ipnumber: ipnumber,
-            user_code: serverResponse.userId,
-          });
         } else {
           console.log("재로그인");
           try {
@@ -82,10 +96,10 @@ export default function KakaoLoginWeb({ navigation, route }) {
     <View style={styles.container}>
       {isWebViewVisible ? (
         <WebView
-          style={{ flex: 1 }} // 초기에는 보이지 않게 설정
+          style={{ flex: 1 }}
           originWhitelist={["*"]}
           source={{
-            uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}`,
+            uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAOLOGIN_API_KEY}&redirect_uri=${REDIRECT_URI}`,
           }}
           cacheEnabled={false}
           injectedJavaScript={INJECTED_JAVASCRIPT}

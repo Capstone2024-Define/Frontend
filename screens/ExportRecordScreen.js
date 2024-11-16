@@ -432,9 +432,11 @@ export default function ExportRecordScreen({ navigation, route }) {
     console.log("체크리스트 데이터 ", data);
 
     let checklist = "";
-    data.checklist.forEach((symptom) => {
-      checklist += `${symptom} `;
-    });
+    if (data.checklist) {
+      data.checklist.forEach((symptom) => {
+        checklist += `${symptom} `;
+      });
+    }
 
     return checklist;
   };
@@ -494,7 +496,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                 padding: 10px;
               }
               caption {
-                margin-top: 30px;
+                margin-top: 10px;
                 margin-bottom: 30px;
               }
               th.info {
@@ -567,7 +569,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                         ? matchedImage.url
                             .map(
                               (imgUrl) =>
-                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" />`
+                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" style="border-radius:8px; margin-right: 4px" />`
                             )
                             .join("")
                         : "이미지 없음";
@@ -638,7 +640,7 @@ export default function ExportRecordScreen({ navigation, route }) {
         console.error("파일 공유 실패 :", error);
         setPage(1);
       }
-    }, 400);
+    }, 300);
   };
 
   return (

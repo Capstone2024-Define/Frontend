@@ -135,7 +135,7 @@ export default function MyPageScreen({ navigation, route }) {
   const loadTime = async () => {
     try {
       const rawAlarm = await AsyncStorage.getItem("alarm");
-      if (rawAlarm) {
+      if (rawAlarm && rawAlarm !== "{}") {
         const alarm = JSON.parse(rawAlarm);
         setSelectedAmPm(alarm.ampm);
         setSelectedHour(alarm.hour);
@@ -298,7 +298,7 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </View>
         <Text style={[styles.notificationDescription, { marginLeft: 56 }]}>
-          {"매주 일요일 주간분석결과 알림을 보내드려요"}
+          {"매주 일요일 오후 9시 주간분석결과 알림을 보내드려요"}
         </Text>
 
         {/* 주간 분석 결과 밑에 구분선 추가 */}
@@ -351,7 +351,10 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.menuItem, { marginBottom: 0 }]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("PreparingInfo")}
+          style={[styles.menuItem, { marginBottom: 0 }]}
+        >
           <View
             style={{
               flexDirection: "row",

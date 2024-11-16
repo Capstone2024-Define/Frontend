@@ -97,7 +97,7 @@ export default function AlarmModal({
   const loadTime = async () => {
     try {
       const rawAlarm = await AsyncStorage.getItem("alarm");
-      if (rawAlarm) {
+      if (rawAlarm && rawAlarm !== "{}") {
         const alarm = JSON.parse(rawAlarm);
 
         setSelectedAmPm(alarm.ampm);
@@ -109,6 +109,7 @@ export default function AlarmModal({
         if (alarmExist.length <= 0) {
           await scheduleAlarm(alarm.hour, alarm.minute, alarm.ampm);
         }
+        console.log();
       } else {
         console.log("아싱크스토리지 결과 없음");
         save();
@@ -140,6 +141,7 @@ export default function AlarmModal({
         hour: selectedHour,
         minute: selectedMinute,
       };
+      console.log("alarm: ", alarm);
       await AsyncStorage.setItem("alarm", JSON.stringify(alarm));
       console.log("알림 저장 완료");
     } catch (error) {
