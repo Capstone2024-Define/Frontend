@@ -310,7 +310,10 @@ export default function HomeScreen({ navigation, route }) {
                     color: "white",
                   }}
                 >
-                  {`${consecutiveDay}일`}
+                  {`${consecutiveDay}일 `}
+                  <Text style={{ fontFamily: "Pretendard-Medium" }}>
+                    연속기록중!
+                  </Text>
                 </Text>
               </TouchableOpacity>
               <Text style={[styles.title, { marginVertical: 8 }]}>
@@ -571,7 +574,12 @@ export default function HomeScreen({ navigation, route }) {
                   <Text style={[styles.boldTitle, { marginBottom: 4 }]}>
                     상담녹음
                   </Text>
-                  <Text style={styles.subText}>
+                  <Text
+                    style={[
+                      styles.subText,
+                      { lineHeight: 17, color: theme.grey500 },
+                    ]}
+                  >
                     상담내용을 빠르게{"\n"}음성으로 기록해요
                   </Text>
                 </View>
@@ -604,7 +612,12 @@ export default function HomeScreen({ navigation, route }) {
                   <Text style={[styles.boldTitle, { marginBottom: 4 }]}>
                     내보내기
                   </Text>
-                  <Text style={styles.subText}>
+                  <Text
+                    style={[
+                      styles.subText,
+                      { lineHeight: 17, color: theme.grey500 },
+                    ]}
+                  >
                     기록을 문서파일로{"\n"}정리해드려요
                   </Text>
                 </View>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,6 +25,8 @@ const ChatbotScreen = ({ navigation, route }) => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const scrollViewRef = useRef(null); // 스크롤 따라가기 위한 참조변수
 
   // 닉네임 가져오기
   useEffect(() => {
@@ -107,6 +110,13 @@ const ChatbotScreen = ({ navigation, route }) => {
     }
   };
 
+  // 메시지가 변경될 때마다 마지막 메시지로 스크롤
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <KeyboardAvoidingView
@@ -120,7 +130,10 @@ const ChatbotScreen = ({ navigation, route }) => {
             navigation.pop();
           }}
         />
-        <ScrollView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={{ flex: 1, backgroundColor: "#F6F6F6" }}
+        >
           <View
             style={{
               width: "100%",
@@ -147,7 +160,7 @@ const ChatbotScreen = ({ navigation, route }) => {
             </Text>
           </View>
           {/* 메시지 출력 영역 */}
-          <ScrollView
+          <View
             style={{
               flex: 1,
               paddingHorizontal: 20,
@@ -261,7 +274,7 @@ const ChatbotScreen = ({ navigation, route }) => {
                 </View>
               </View>
             )}
-          </ScrollView>
+          </View>
         </ScrollView>
 
         {/* 자주 찾는 질문 */}
@@ -368,7 +381,12 @@ const ChatbotScreen = ({ navigation, route }) => {
               onChangeText={setInputText}
               multiline={true}
             />
-            <TouchableOpacity onPress={() => sendMessage()}>
+            <TouchableOpacity
+              onPress={() => {
+                Keyboard.dismiss();
+                sendMessage();
+              }}
+            >
               <Image
                 source={
                   inputText.trim()

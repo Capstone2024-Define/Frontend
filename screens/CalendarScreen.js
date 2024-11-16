@@ -23,15 +23,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import PlusBtn from "../component/PlusBtn";
 
 export default function CalendarScreen({ navigation, route }) {
-  const daysOfWeek = [
-    "일요일",
-    "월요일",
-    "화요일",
-    "수요일",
-    "목요일",
-    "금요일",
-    "토요일",
-  ];
+  // const daysOfWeek = [
+  //   "일요일",
+  //   "월요일",
+  //   "화요일",
+  //   "수요일",
+  //   "목요일",
+  //   "금요일",
+  //   "토요일",
+  // ];
   const today = new Date().toLocaleDateString("sv-SE"); // 오늘 날짜
   const [selectedDate, setSelectedDate] = useState(today); // 달력 시작날짜 -> today
   const [isCalendar, setIsCalendar] = useState(true); // true : 캘린더, false : 통계
@@ -442,7 +442,7 @@ export default function CalendarScreen({ navigation, route }) {
                   </ScrollView>
                   <Text
                     style={{
-                      ...styles.norecordText,
+                      ...styles.recordText,
                       color: theme.grey800,
                     }}
                     numberOfLines={2}
@@ -555,13 +555,13 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: theme.grey250,
   },
-  norecordText: {
+  recordText: {
     alignItems: "center",
     justifyContent: "center",
-    color: theme.grey500,
+    color: theme.grey800,
     fontSize: 14,
-    lineHeight: 19.6,
-    fontFamily: "Human-beomseok",
+    lineHeight: 20,
+    fontFamily: "Pretendard-Regular",
   },
   photo: {
     width: 75,
