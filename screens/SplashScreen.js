@@ -55,7 +55,6 @@ export default function SplashScreen({ route }) {
             navigation.replace("Main", {
               user_code: Number(savedUserCode),
               ipnumber: ipnumber,
-              showTutorial: false,
             });
           } else {
             // logout 상태 => 재로그인

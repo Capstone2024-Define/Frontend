@@ -35,15 +35,8 @@ const SvgIcon = ({ asset }) => (
 );
 
 export default function MainScreen({ route }) {
-  const { user_code, ipnumber, showTutorial } = route.params;
-  console.log(
-    "메인 유저코드: ",
-    user_code,
-    "ip: ",
-    ipnumber,
-    "튜토리얼? ",
-    showTutorial
-  );
+  const { user_code, ipnumber } = route.params;
+  console.log("메인 유저코드:", user_code, " ip:", ipnumber);
 
   return (
     <Tab.Navigator

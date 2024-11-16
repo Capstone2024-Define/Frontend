@@ -59,7 +59,6 @@ export default function KakaoLoginWeb({ navigation, route }) {
               navigation.replace("Main", {
                 ipnumber: ipnumber,
                 user_code: serverResponse.userId,
-                showTutorial: false,
               });
             }
           } catch (error) {
@@ -75,7 +74,6 @@ export default function KakaoLoginWeb({ navigation, route }) {
           navigation.replace("Main", {
             ipnumber: ipnumber,
             user_code: serverResponse.userId,
-            showTutorial: false,
           });
         }
       }

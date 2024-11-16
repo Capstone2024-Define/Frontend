@@ -96,7 +96,7 @@ function InfoSearch({ route }) {
             borderRadius: 24,
             paddingVertical: 6,
             paddingHorizontal: 16,
-            marginBottom: 20,
+            marginBottom: 16,
           }}
         >
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -128,7 +128,7 @@ function InfoSearch({ route }) {
           style={{
             color: "#555555",
             fontSize: 12,
-            marginBottom: 16,
+            marginBottom: 12,
             lineHeight: 20,
             fontFamily: "Pretendard-Bold",
           }}

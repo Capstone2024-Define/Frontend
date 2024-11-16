@@ -43,12 +43,20 @@ import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import PreparingGuide from "./screens/PreparingGuide";
 import PreparingInfo from "./screens/PreparingInfo"; // PreparingInfo 추가
-import { IPNUMBER } from "@env";
-
+import { CHATGPT_API_KEY, GOOGLE_API_KEY, KAKAOLOGIN_API_KEY } from "@env";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = IPNUMBER;
+  const ipnumber = "13.125.108.157";
+  // 확인
+  console.log(
+    "CHATGPT_API_KEY:",
+    CHATGPT_API_KEY,
+    " GOOGLE_API_KEY:",
+    GOOGLE_API_KEY,
+    " KAKAOLOGIN_API_KEY:",
+    KAKAOLOGIN_API_KEY
+  );
 
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),

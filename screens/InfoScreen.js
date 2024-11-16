@@ -20,6 +20,7 @@ function InfoScreen({ route }) {
   const { ipnumber, user_code } = route.params;
   const [nickName, setNickName] = useState("");
   const [selectedInfos, setSelectedInfos] = useState([]); // 북마크 상태
+  const [recommendedinfos, setRecommendedInfos] = useState([]);
   const navigation = useNavigation();
 
   const handleSearchNavigate = () => {
@@ -50,6 +51,7 @@ function InfoScreen({ route }) {
           `http://${ipnumber}:8080/userinfo/get/${user_code}`
         );
         setNickName(response.data.user_name);
+        await fetchRecommendedKeywords();
       } catch (error) {
         console.log("유저 GET 에러: ", error);
       }
@@ -99,6 +101,64 @@ function InfoScreen({ route }) {
       saveBookmarks(updated); // AsyncStorage에 저장
       return updated;
     });
+  };
+
+  const fetchRecommendedKeywords = async () => {
+    try {
+      const today = new Date(); // 오늘 날짜
+      const startDate = new Date();
+      startDate.setDate(today.getDate() - 7); // 오늘로부터 7일 전
+
+      const response = await axios.get(
+        `http://${ipnumber}:8080/sx/week/${user_code}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            start: startDate.toLocaleDateString("sv-SE"),
+            end: today.toLocaleDateString("sv-SE"),
+          },
+        }
+      );
+
+      const keywords = response.data
+        .flatMap((item) => item.checklist)
+        .reduce((acc, keyword) => {
+          acc[keyword] = (acc[keyword] || 0) + 1;
+          return acc;
+        }, {});
+
+      const sortedKeywords = Object.entries(keywords)
+        .sort((a, b) => b[1] - a[1]) // 빈도수로 정렬
+        .map((item) => item[0]); // 키워드만 추출
+      console.log("정렬 키워드: ", sortedKeywords);
+
+      // 추천할 정보를 찾음
+      const keywordInfosSet = new Set();
+      sortedKeywords.forEach((keyword) => {
+        for (let i = 0; i < infos.length; i++) {
+          if (keywordInfosSet.has(i)) continue;
+          if (infos[i].symptom_check.some((symptom) => symptom === keyword)) {
+            keywordInfosSet.add(i);
+            break;
+          }
+        }
+      });
+      const keywordInfos = Array.from(keywordInfosSet);
+      console.log("추천 정보: ", keywordInfos);
+
+      // 추천 정보 길이가 3보다 짧으면 랜덤한 인덱스 추가(일주일간 증상체크가 없을 시)
+      while (keywordInfos.length < 3) {
+        const randomIndex = Math.floor(Math.random() * 13); // 0~12 랜덤 인덱스
+        if (!keywordInfos.includes(randomIndex)) {
+          keywordInfos.push(randomIndex);
+        }
+      }
+
+      // 0 ~ 5까지만 잘라서 넣었음
+      setRecommendedInfos(keywordInfos.slice(0, 5));
+    } catch (error) {
+      console.error("추천 검색어 불러오기 오류:", error);
+    }
   };
 
   return (
@@ -183,63 +243,59 @@ function InfoScreen({ route }) {
         {/* 추천 정보에 대해 가로 슬라이드 구현 */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={{ flexDirection: "row" }}>
-            {/* 추천 정보 4개 => index 0 ~ 3 */}
-            {infos.map(
-              (info, index) =>
-                index < 4 && (
-                  <TouchableOpacity
-                    key={index}
-                    activeOpacity={0.5}
-                    onPress={() => {
-                      handleDetailNavigate(index);
-                    }}
+            {recommendedinfos.map((infoIndex, index) => (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.5}
+                onPress={() => {
+                  handleDetailNavigate(infoIndex);
+                }}
+                style={{
+                  height: 172,
+                  justifyContent: "space-between",
+                  marginRight: 12,
+                }}
+              >
+                <View>
+                  {/* 이미지 */}
+                  <ImageBackground
+                    source={infos[infoIndex].imageName}
+                    resizeMode={"cover"}
+                    imageStyle={{ borderRadius: 8 }}
                     style={{
-                      height: 172,
-                      justifyContent: "space-between",
-                      marginRight: 12,
+                      flexDirection: "row",
+                      width: 144,
+                      height: 104,
+                      justifyContent: "flex-end",
+                      paddingRight: 8,
                     }}
                   >
-                    <View>
-                      {/* 이미지 */}
-                      <ImageBackground
-                        source={info.imageName}
-                        resizeMode={"cover"}
-                        imageStyle={{ borderRadius: 8 }}
-                        style={{
-                          flexDirection: "row",
-                          width: 144,
-                          height: 104,
-                          justifyContent: "flex-end",
-                          paddingRight: 8,
-                        }}
-                      >
-                        <TouchableOpacity
-                          activeOpacity={0.5}
-                          onPress={() => toggleBookmark(index)}
-                          style={styles.bookmarkContainer}
-                        >
-                          <Image
-                            source={
-                              selectedInfos.includes(index)
-                                ? require("../assets/bookmark_green.png")
-                                : require("../assets/bookmark.png")
-                            }
-                            resizeMode={"contain"}
-                            style={{ height: 14 }}
-                          />
-                        </TouchableOpacity>
-                      </ImageBackground>
-                      {/* 타이틀 */}
-                      <Text style={styles.title}>{info.mainTitle}</Text>
-                    </View>
-                    <View style={{ flexDirection: "row" }}>
-                      {info.tag.map((tag, index) => (
-                        <TagChip key={index} text={tag} />
-                      ))}
-                    </View>
-                  </TouchableOpacity>
-                )
-            )}
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      onPress={() => toggleBookmark(index)}
+                      style={styles.bookmarkContainer}
+                    >
+                      <Image
+                        source={
+                          selectedInfos.includes(index)
+                            ? require("../assets/bookmark_green.png")
+                            : require("../assets/bookmark.png")
+                        }
+                        resizeMode={"contain"}
+                        style={{ height: 14 }}
+                      />
+                    </TouchableOpacity>
+                  </ImageBackground>
+                  {/* 타이틀 */}
+                  <Text style={styles.title}>{infos[infoIndex].mainTitle}</Text>
+                </View>
+                <View style={{ flexDirection: "row" }}>
+                  {infos[infoIndex].tag.map((tag, index) => (
+                    <TagChip key={index} text={tag} />
+                  ))}
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
         <View
@@ -365,7 +421,7 @@ function InfoScreen({ route }) {
 
         {infos.map(
           (info, index) =>
-            index > 7 && (
+            !recommendedinfos.includes(index) && (
               <TouchableOpacity
                 key={index}
                 activeOpacity={0.5}

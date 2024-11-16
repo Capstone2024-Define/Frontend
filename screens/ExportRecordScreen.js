@@ -361,33 +361,9 @@ export default function ExportRecordScreen({ navigation, route }) {
   const [page, setPage] = useState(1);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [email, setEmail] = useState("");
-  const [isValidEmail, setIsValidEmail] = useState(false);
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [visible, setVisible] = useState(false); // 모달 상태
   const [calendarNum, setCalendarNum] = useState(null);
   const { ipnumber, user_code } = route.params;
-
-  // 키보드 활성화 시 감지
-  useLayoutEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
 
   // 휴대폰 뒤로가기 버튼 커스터마이징
   useEffect(() => {
@@ -413,18 +389,6 @@ export default function ExportRecordScreen({ navigation, route }) {
     console.log("종료 날짜: ", endDate);
   }, [startDate, endDate]);
 
-  // // 이메일 유효성 체크
-  // useEffect(() => {
-  //   setIsValidEmail(validateEmail(email));
-  //   console.log("이메일: ", email);
-  // }, [email]);
-
-  // // 이메일 유효성 체크
-  // const validateEmail = (email) => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
-  // };
-
   const getCheckList = async (date) => {
     const { data } = await axios.get(
       `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
@@ -441,7 +405,7 @@ export default function ExportRecordScreen({ navigation, route }) {
     return checklist;
   };
 
-  const textToPdf = async (text) => {
+  const textToPdf = async () => {
     const [response_user, response_record, response_image] = await Promise.all([
       axios.get(`http://${ipnumber}:8080/userinfo/get/${user_code}`),
       axios.get(
@@ -499,9 +463,11 @@ export default function ExportRecordScreen({ navigation, route }) {
                 margin-top: 10px;
                 margin-bottom: 30px;
               }
-              th.info {
+              td.info {
                 color: rgb(0, 0, 0);
                 background-color: rgb(243, 243, 243);
+                text-align: center; 
+                vertical-align: middle;
               }
               th.date {
                 background-color: rgb(243, 243, 243);
@@ -630,17 +596,16 @@ export default function ExportRecordScreen({ navigation, route }) {
       });
 
       try {
-        const result = await shareAsync(pdfName, {
+        await shareAsync(pdfName, {
           UTI: ".pdf",
           mimeType: "application/pdf",
         });
-        // console.log(result);
         setPage(3);
       } catch (error) {
         console.error("파일 공유 실패 :", error);
         setPage(1);
       }
-    }, 300);
+    }, 100);
   };
 
   return (
@@ -800,20 +765,13 @@ export default function ExportRecordScreen({ navigation, route }) {
           width: "100%",
         }}
       >
-        {!isKeyboardVisible && page !== 2 && (
+        {page !== 2 && (
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              page == 1
-                ? setPage(2)
-                : // : page == 2
-                  // ? setPage(3)
-                  navigation.pop();
+              page == 1 ? setPage(2) : navigation.pop();
             }}
-            disabled={
-              (page == 1 && !(startDate && endDate)) ||
-              (page == 2 && !isValidEmail)
-            }
+            disabled={page == 1 && !(startDate && endDate)}
             style={{ marginBottom: 20 }}
           >
             <LinearGradient
@@ -830,18 +788,10 @@ export default function ExportRecordScreen({ navigation, route }) {
                   page == 1 &&
                     startDate &&
                     endDate && { backgroundColor: "transparent" },
-                  page == 2 &&
-                    isValidEmail && { backgroundColor: "transparent" },
                 ]}
               >
                 <Text style={styles.buttonText}>
-                  {page == 0
-                    ? "시작하기"
-                    : page == 1
-                    ? "다음"
-                    : page == 2
-                    ? "내보내기"
-                    : "완료"}
+                  {page == 1 ? "다음" : "완료"}
                 </Text>
               </View>
             </LinearGradient>
