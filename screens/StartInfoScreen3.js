@@ -104,13 +104,13 @@ export default function StartInfoScreen3({ navigation, route }) {
   const loadTime = async () => {
     try {
       const rawAlarm = await AsyncStorage.getItem("alarm");
-      if (rawAlarm) {
+      if (rawAlarm && rawAlarm !== "{}") {
         const alarm = JSON.parse(rawAlarm);
         setSelectedAmPm(alarm.ampm);
         setSelectedHour(alarm.hour);
         setSelectedMinute(alarm.minute);
       }
-      console.log("마이페이지 아싱크스토리지 알람: ", rawAlarm);
+      console.log("아싱크스토리지 알람: ", rawAlarm);
     } catch (e) {
       console.log("알람 기록 로드 에러");
     }

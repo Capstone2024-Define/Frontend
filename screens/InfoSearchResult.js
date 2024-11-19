@@ -13,6 +13,7 @@ import { theme } from "../colors/color";
 import { infos } from "../component/Info";
 import { Entypo } from "@expo/vector-icons";
 import SortModal from "../component/SortModal";
+import axios from "axios";
 
 function InfoSearchResult() {
   const [searchResults_recent, setSearchResults_recent] = useState(null); // 최신순 검색결과
@@ -22,7 +23,7 @@ function InfoSearchResult() {
   const [sortState, setSortState] = useState("viewCount"); // 디폴트 조회순
   const route = useRoute();
   const navigation = useNavigation(); // 네비게이션 훅 사용
-  const { searchText } = route.params; // 전달된 검색어를 가져옴
+  const { searchText, ipnumber, user_code } = route.params; // 전달된 검색어를 가져옴
 
   // 원하는 위치에 모달 띄우기
   const [buttonPosition, setButtonPosition] = useState({ top: 0 });
@@ -40,7 +41,7 @@ function InfoSearchResult() {
   }, [sortState]);
 
   useEffect(() => {
-    const searchData = () => {
+    const searchData = async () => {
       let searchResult = [];
 
       infos.forEach((info, index) => {
@@ -57,10 +58,30 @@ function InfoSearchResult() {
         }
       });
 
-      const reverseSearchResult = searchResult.reverse(); // 역순(최신순)
+      console.log("검색결과: ", searchResult);
+
+      // 최신순
+      const reverseSearchResult = searchResult.reverse();
       setSearchResults_recent(reverseSearchResult);
 
-      console.log(searchResult);
+      // 조회순
+      try {
+        const { data } = await axios.get(
+          `http://${ipnumber}:8080/info/show/view`
+        );
+        console.log(data);
+
+        const searchResultSet = new Set(searchResult);
+
+        let viewCountSearchResult = data
+          .filter((item) => searchResultSet.has(item.info_index - 1))
+          .sort((a, b) => b.views - a.views)
+          .map((item) => item.info_index - 1);
+        console.log("조회순: ", viewCountSearchResult);
+        setSearchResults_viewcount(viewCountSearchResult);
+      } catch (error) {
+        console.log("조회순 GET 에러: ", error);
+      }
       setIsLoading(false);
     };
     searchData();
@@ -107,6 +128,66 @@ function InfoSearchResult() {
       </SafeAreaView>
     );
   }
+
+  const renderResults = (results) => {
+    if (results && results.length > 0) {
+      return results.map((result, index) => {
+        const [start, middle, end] = getTotalText(result, searchText);
+        return (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.5}
+            onPress={() =>
+              navigation.navigate("InfoScreenDetail", {
+                key: result,
+                ipnumber,
+                user_code,
+              })
+            }
+          >
+            <View
+              style={{
+                width: "100%",
+                paddingVertical: 14,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#242424",
+                  fontSize: 14,
+                  lineHeight: 20,
+                  fontFamily: "Pretendard-Bold",
+                  marginBottom: 8,
+                }}
+              >
+                {infos[result].title}
+              </Text>
+              <View style={{ height: 60 }}>
+                <Text
+                  style={styles.contentText}
+                  numberOfLines={3}
+                  ellipsizeMode="tail"
+                >
+                  <Text style={{ color: theme.grey600 }}>{start}</Text>
+                  <Text style={{ color: theme.green500 }}>{middle}</Text>
+                  <Text style={{ color: theme.grey600 }}>{end}</Text>
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+          </TouchableOpacity>
+        );
+      });
+    } else {
+      return (
+        <View>
+          <Text style={{ marginTop: 12, color: "#242424", fontSize: 14 }}>
+            검색 결과가 없습니다.
+          </Text>
+        </View>
+      );
+    }
+  };
 
   return (
     <SafeAreaView
@@ -238,61 +319,9 @@ function InfoSearchResult() {
         <View style={styles.line} />
 
         {/* 검색결과가 있을 경우 */}
-        {searchResults_recent && searchResults_recent.length > 0 ? (
-          <>
-            {searchResults_recent.map((result, index) => {
-              const [start, middle, end] = getTotalText(result, searchText);
-              return (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.5}
-                  onPress={() =>
-                    navigation.navigate("InfoScreenDetail", { key: result })
-                  }
-                >
-                  <View
-                    style={{
-                      width: "100%",
-                      paddingVertical: 14,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#242424",
-                        fontSize: 14,
-                        lineHeight: 20,
-                        fontFamily: "Pretendard-Bold",
-                        marginBottom: 8,
-                      }}
-                    >
-                      {infos[result].title}
-                    </Text>
-                    <View style={{ height: 60 }}>
-                      <Text
-                        style={styles.contentText}
-                        numberOfLines={3}
-                        ellipsizeMode="tail"
-                      >
-                        <Text style={{ color: theme.grey600 }}>{start}</Text>
-                        <Text style={{ color: theme.green500 }}>{middle}</Text>
-                        <Text style={{ color: theme.grey600 }}>{end}</Text>
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.line} />
-                </TouchableOpacity>
-              );
-            })}
-          </>
-        ) : (
-          <>
-            <View>
-              <Text style={{ marginTop: 12, color: "#242424", fontSize: 14 }}>
-                검색 결과가 없습니다.
-              </Text>
-            </View>
-          </>
-        )}
+        {sortState === "viewCount"
+          ? renderResults(searchResults_viewcount)
+          : renderResults(searchResults_recent)}
       </ScrollView>
       <SortModal
         visible={modalVisible}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, View, Image, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { ScrollView, View, Image, Text, StyleSheet } from "react-native";
 import Header from "../component/Header";
 
 export default function ComingSoonPage({ navigation }) {
@@ -9,7 +9,7 @@ export default function ComingSoonPage({ navigation }) {
         left="leftArrow"
         title="이용가이드"
         onLeftPress={() => {
-          navigation.goBack(); 
+          navigation.goBack();
         }}
       />
 
@@ -36,8 +36,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 50,
-    marginBottom: 50,
+    paddingBottom: 30,
   },
   mainImage: {
     height: 198,
@@ -46,11 +45,11 @@ const styles = StyleSheet.create({
     marginTop: 140,
   },
   comingSoonText: {
-    color: '#6F6F6F',
+    color: "#6F6F6F",
     fontSize: 16,
-    fontFamily: 'Pretendard-Bold',
+    fontFamily: "Pretendard-Bold",
   },
   highlightedText: {
-    color: '#79BA7E',
+    color: "#79BA7E",
   },
 });

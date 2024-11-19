@@ -74,8 +74,9 @@ export default function DaysModal({
     const saturday = new Date(sunday);
     saturday.setDate(sunday.getDate() + 6);
 
-    const start = sunday.toISOString().split("T")[0];
-    const end = saturday.toISOString().split("T")[0];
+    // 요부분 자정쯤엔 UTC 시간으로 동작하길래 수정했어요
+    const start = sunday.toLocaleDateString("sv-SE");
+    const end = saturday.toLocaleDateString("sv-SE");
 
     try {
       const response = await axios.get(
@@ -221,7 +222,7 @@ export default function DaysModal({
                   ? require("../assets/my_modal_circle_green.png")
                   : require("../assets/my_modal_circle.png")
               }
-              resizeMode={"stretch"}
+              resizeMode={"contain"}
               style={{ width: 20, height: 20 }}
             />
           ))}

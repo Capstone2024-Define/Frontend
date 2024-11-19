@@ -63,17 +63,23 @@ export default function MyPageScreen({ navigation, route }) {
     setVisible(false);
   };
 
+  // 유저 이름 가져오기 여기로 옮겼어요
   useFocusEffect(
     useCallback(() => {
       async function load() {
         try {
+          // 유저이름 가져오기
+          const response = await axios.get(
+            `http://${ipnumber}:8080/userinfo/get/${user_code}`
+          );
+          setNickName(response.data.user_name);
           // 연속 날짜 로드
           const response_consecutiveDays = await axios.get(
             `http://${ipnumber}:8080/daily/consecutive/${user_code}`
           );
           setConsecutiveDay(response_consecutiveDays.data);
         } catch (error) {
-          console.log("연속 날짜 로드 에러: ", error);
+          console.log("로드 에러: ", error);
         }
       }
       load();
@@ -81,17 +87,17 @@ export default function MyPageScreen({ navigation, route }) {
   );
 
   useEffect(() => {
-    // 유저 이름 가져오기
-    async function load() {
-      try {
-        const response = await axios.get(
-          `http://${ipnumber}:8080/userinfo/get/${user_code}`
-        );
-        setNickName(response.data.user_name);
-      } catch (error) {
-        console.log("유저 GET 에러: ", error);
-      }
-    }
+    // // 유저 이름 가져오기
+    // async function load() {
+    //   try {
+    //     const response = await axios.get(
+    //       `http://${ipnumber}:8080/userinfo/get/${user_code}`
+    //     );
+    //     setNickName(response.data.user_name);
+    //   } catch (error) {
+    //     console.log("유저 GET 에러: ", error);
+    //   }
+    // }
     // 토글 상태 가져오기
     const loadToggle = async () => {
       try {
@@ -104,7 +110,7 @@ export default function MyPageScreen({ navigation, route }) {
         console.error("토글 상태 로드 에러:", error);
       }
     };
-    load();
+    // load();
     loadToggle();
     loadTime();
   }, []);
@@ -307,7 +313,9 @@ export default function MyPageScreen({ navigation, route }) {
         {/* 메뉴 항목 */}
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => navigation.navigate("Bookmark")}
+          onPress={() =>
+            navigation.navigate("Bookmark", { ipnumber, user_code })
+          }
         >
           <View
             style={{
@@ -351,7 +359,10 @@ export default function MyPageScreen({ navigation, route }) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.menuItem, { marginBottom: 0 }]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("PreparingInfo")}
+          style={[styles.menuItem, { marginBottom: 0 }]}
+        >
           <View
             style={{
               flexDirection: "row",

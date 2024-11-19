@@ -109,6 +109,7 @@ export default function AlarmModal({
         if (alarmExist.length <= 0) {
           await scheduleAlarm(alarm.hour, alarm.minute, alarm.ampm);
         }
+        console.log();
       } else {
         console.log("아싱크스토리지 결과 없음");
         save();
@@ -140,6 +141,7 @@ export default function AlarmModal({
         hour: selectedHour,
         minute: selectedMinute,
       };
+      console.log("alarm: ", alarm);
       await AsyncStorage.setItem("alarm", JSON.stringify(alarm));
       console.log("알림 저장 완료");
     } catch (error) {
@@ -151,7 +153,7 @@ export default function AlarmModal({
     try {
       await Notifications.cancelAllScheduledNotificationsAsync(); // 기존 알림 삭제
 
-      console.log("ampm: ",ampm, "hour: ",hour, "minute: ",minute)
+      console.log("ampm: ", ampm, "hour: ", hour, "minute: ", minute);
       const triggerHour =
         ampm === "pm" && parseInt(hour) !== 12
           ? parseInt(hour) + 12
@@ -162,7 +164,6 @@ export default function AlarmModal({
 
       // NaN 체크
       if (isNaN(triggerHour) || isNaN(triggerMinute)) {
-        
         console.error("알림 설정 오류: 유효하지 않은 시간 값입니다.");
         return;
       }
@@ -172,7 +173,7 @@ export default function AlarmModal({
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Clobit",
-          body: "클로빗과 함께 기록하실 시간이에요! 오늘도 고생 많으셨어요🍀",
+          body: `클로빗과 함께 기록하실 시간이에요!${"\n"}오늘도 고생 많으셨어요🍀`,
         },
         trigger: {
           hour: triggerHour,

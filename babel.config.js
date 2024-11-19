@@ -3,6 +3,17 @@ module.exports = function (api) {
   return {
     presets: ["babel-preset-expo"],
     // reanimated 사용하려면 추가하라는듯?
-    plugins: ["react-native-reanimated/plugin"],
+    plugins: [
+      ["react-native-reanimated/plugin"],
+      [
+        "module:react-native-dotenv",
+        {
+          moduleName: "@env",
+          path: ".env",
+          safe: false,
+          allowUndefined: true,
+        },
+      ],
+    ],
   };
 };

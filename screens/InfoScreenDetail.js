@@ -18,19 +18,38 @@ import ViewCount from "../assets/viewcount.svg";
 import { WithLocalSvg } from "react-native-svg/css";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 function InfoScreenDetail({ route }) {
   const navigation = useNavigation();
-  const { key } = route.params;
+  const { key, ipnumber, user_code } = route.params;
   const [selectedInfos, setSelectedInfos] = useState([]); // 북마크
   const [viewCount, setViewCount] = useState(0);
 
   // 테스트
   useEffect(() => {
-    console.log(selectedInfos);
+    async function load() {
+      try {
+        const { data } = await axios.get(`http://${ipnumber}:8080/info/show`);
+        setViewCount(data[key].views);
+      } catch (error) {
+        console.log("조회수 GET: ", error);
+      }
+    }
+    load();
   }, [selectedInfos]);
 
   useEffect(() => {
+    async function viewCountUp() {
+      try {
+        await axios.put(
+          `http://${ipnumber}:8080/info/increase?info_index=${key + 1}`
+        );
+      } catch (error) {
+        console.log("조회수 PUT 에러 ", error);
+      }
+    }
+    viewCountUp();
     loadBookmarks();
   }, []);
 

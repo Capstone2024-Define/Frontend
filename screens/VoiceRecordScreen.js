@@ -19,6 +19,7 @@ import { WithLocalSvg } from "react-native-svg/css";
 import Pause from "../assets/pause.svg";
 import Mic from "../assets/mic_white.svg";
 import Check from "../assets/check.svg";
+import { GOOGLE_API_KEY } from "@env";
 
 const VoiceRecordScreen = ({ navigation, route }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -159,7 +160,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
 
       // API 요청 보내기
       const response = await axios.post(
-        "https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDpZWLbf5duRAjcGtgC6DKz4BolApSGfPo",
+        `https://speech.googleapis.com/v1/speech:recognize?key=${GOOGLE_API_KEY}`,
         requestBody,
         {
           headers: {

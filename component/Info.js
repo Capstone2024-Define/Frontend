@@ -138,7 +138,7 @@ export const infos = [
       "꾀병",
       "끼어들기",
       "공격성",
-      "가족과다툼",
+      "형제자매와 다툼",
       "거짓말",
     ],
     origin: "정신의학신문 - 황현찬 전문의",
@@ -221,7 +221,7 @@ export const infos = [
     ],
     tag: ["부모교육", "양육지침"],
     symptom_check: [
-      "가족과다툼",
+      "형제자매와 다툼",
       "조르기",
       "끼어들기",
       "반항",
@@ -396,7 +396,7 @@ export const infos = [
       ],
     ],
     tag: ["학교", "부모"],
-    symptom_check: [],
+    symptom_check: ["불순응"],
     origin: "서울아산병원 - 소아청소년 질환정보",
   },
   {

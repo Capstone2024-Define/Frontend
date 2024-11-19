@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  BackHandler,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -14,9 +15,38 @@ import { infos } from "../component/Info"; // infos 배열을 가져옵니다
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 
-function Bookmark() {
+function Bookmark({ route }) {
   const [bookmarkedInfos, setBookmarkedInfos] = useState([]);
+  const [updatedBookMarkInfos, setUpdatedBookMarkInfos] = useState([]);
+  const updatedBookMarkInfosRef = useRef([]);
   const navigation = useNavigation();
+  const { ipnumber, user_code } = route.params;
+
+  // 북마크 로드, 백핸들러 등록
+  useEffect(() => {
+    loadBookmarks();
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress
+    );
+
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
+
+  const handleBackPress = () => {
+    saveBookmark().then(() => {
+      navigation.pop();
+    });
+    return true; // 기본 뒤로 가기 동작 방지
+  };
+
+  // 상세 화면으로 이동
+  const handleDetailNavigate = (key) => {
+    navigation.navigate("InfoScreenDetail", { key, ipnumber, user_code });
+  };
 
   // AsyncStorage에서 북마크된 데이터 불러오기
   const loadBookmarks = async () => {
@@ -24,7 +54,10 @@ function Bookmark() {
       const savedBookmarks = await AsyncStorage.getItem("bookmarkedInfos");
       if (savedBookmarks) {
         const bookmarks = JSON.parse(savedBookmarks);
-        setBookmarkedInfos(bookmarks);
+        const sortBookmarks = [...bookmarks].sort();
+        setBookmarkedInfos(sortBookmarks);
+        setUpdatedBookMarkInfos(sortBookmarks);
+        updatedBookMarkInfosRef.current = sortBookmarks;
       }
     } catch (error) {
       console.log("북마크 로딩 오류:", error);
@@ -32,26 +65,26 @@ function Bookmark() {
   };
 
   // 북마크 추가/삭제 및 저장
-  const toggleBookmark = async (index) => {
-    try {
-      const updatedBookmarks = bookmarkedInfos.filter((item) => item !== index);
-      setBookmarkedInfos(updatedBookmarks);
-      await AsyncStorage.setItem(
-        "bookmarkedInfos",
-        JSON.stringify(updatedBookmarks)
-      );
-    } catch (error) {
-      console.log("북마크 업데이트 오류:", error);
-    }
+  const toggleBookmark = (index) => {
+    setUpdatedBookMarkInfos((prevSelected) => {
+      const updated = prevSelected.includes(index)
+        ? prevSelected.filter((s) => s !== index)
+        : [...prevSelected, index];
+      updatedBookMarkInfosRef.current = updated;
+      return updated;
+    });
   };
 
-  useEffect(() => {
-    loadBookmarks();
-  }, []);
-
-  // 상세 화면으로 이동
-  const handleDetailNavigate = (key) => {
-    navigation.navigate("InfoScreenDetail", { key });
+  const saveBookmark = async () => {
+    try {
+      console.log("저장할 북마크: ", updatedBookMarkInfosRef.current);
+      await AsyncStorage.setItem(
+        "bookmarkedInfos",
+        JSON.stringify(updatedBookMarkInfosRef.current)
+      );
+    } catch (error) {
+      console.log("북마크 저장 에러: ", error);
+    }
   };
 
   return (
@@ -59,7 +92,8 @@ function Bookmark() {
       <Header
         left="leftArrow"
         title="북마크한 정보"
-        onLeftPress={() => {
+        onLeftPress={async () => {
+          await saveBookmark();
           navigation.pop();
         }}
       />
@@ -93,7 +127,11 @@ function Bookmark() {
               </View>
               <TouchableOpacity onPress={() => toggleBookmark(index)}>
                 <Image
-                  source={require("../assets/bookmark_green.png")}
+                  source={
+                    updatedBookMarkInfos.includes(index)
+                      ? require("../assets/bookmark_green.png")
+                      : require("../assets/bookmark_gray.png")
+                  }
                   style={styles.bookmarkIcon}
                 />
               </TouchableOpacity>

@@ -33,24 +33,26 @@ function InfoSearch({ route }) {
 
   const fetchRecommendedKeywords = async () => {
     try {
-  
       const today = new Date();
       const dayOfWeek = today.getDay(); // 일요일이 0, 월요일이 1, ..., 토요일이 6 이 되도록
-      const startDate = new Date(today); 
+      const startDate = new Date(today);
       startDate.setDate(today.getDate() - dayOfWeek); // 그 주의 일요일 시작
       const endDate = new Date(today);
       endDate.setDate(today.getDate() + (6 - dayOfWeek)); // 그 주의 토요일로 시작
 
-      const response = await axios.get(`http://${ipnumber}:8080/sx/week/${user_code}`, {
-        headers: {
-          "Content-Type": "application/json",
-          start: startDate.toISOString().split("T")[0],
-          end: endDate.toISOString().split("T")[0],
-        },
-      });
+      const response = await axios.get(
+        `http://${ipnumber}:8080/sx/week/${user_code}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            start: startDate.toISOString().split("T")[0],
+            end: endDate.toISOString().split("T")[0],
+          },
+        }
+      );
 
       const keywords = response.data
-        .flatMap(item => item.checklist) // 각 날짜의 checklist 배열을 합침
+        .flatMap((item) => item.checklist) // 각 날짜의 checklist 배열을 합침
         .reduce((acc, keyword) => {
           acc[keyword] = (acc[keyword] || 0) + 1; // 키워드 빈도수 카운트
           return acc;
@@ -59,7 +61,7 @@ function InfoSearch({ route }) {
       const sortedKeywords = Object.entries(keywords)
         .sort((a, b) => b[1] - a[1]) // 빈도수로 정렬
         .slice(0, 5) // 상위 5개 선택
-        .map(item => item[0]); // 키워드만 추출
+        .map((item) => item[0]); // 키워드만 추출
 
       setRecommendedKeywords(sortedKeywords);
     } catch (error) {
@@ -68,12 +70,20 @@ function InfoSearch({ route }) {
   };
 
   const handleSearch = () => {
-    navigation.navigate("InfoSearchResult", { searchText });
+    navigation.navigate("InfoSearchResult", {
+      ipnumber,
+      user_code,
+      searchText,
+    });
   };
 
   const handleKeywordClick = (keyword) => {
     setSearchText(keyword);
-    navigation.navigate("InfoSearchResult", { searchText: keyword });
+    navigation.navigate("InfoSearchResult", {
+      ipnumber,
+      user_code,
+      searchText: keyword,
+    });
   };
 
   return (
@@ -94,7 +104,7 @@ function InfoSearch({ route }) {
             borderRadius: 24,
             paddingVertical: 6,
             paddingHorizontal: 16,
-            marginBottom: 20,
+            marginBottom: 16,
           }}
         >
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -126,7 +136,7 @@ function InfoSearch({ route }) {
           style={{
             color: "#555555",
             fontSize: 12,
-            marginBottom: 16,
+            marginBottom: 12,
             lineHeight: 20,
             fontFamily: "Pretendard-Bold",
           }}
@@ -146,12 +156,11 @@ function InfoSearch({ route }) {
               key={index}
               onPress={() => handleKeywordClick(keyword)}
               style={{
-                minWidth: 45,
                 alignItems: "center",
                 backgroundColor: "#D5EAD7",
                 borderRadius: 24,
-                paddingVertical: 8,
-                paddingHorizontal: 10,
+                paddingVertical: 4,
+                paddingHorizontal: 12,
                 marginRight: 10,
                 marginBottom: 10,
               }}
@@ -160,6 +169,7 @@ function InfoSearch({ route }) {
                 style={{
                   color: "#436645",
                   fontSize: 12,
+                  lineHeight: 20,
                   fontFamily: "Pretendard-Medium",
                 }}
               >

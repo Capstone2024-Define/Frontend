@@ -40,6 +40,7 @@
     "react-native": "0.74.1",
     "react-native-animated-carousel": "^1.0.3",
     "react-native-calendars": "^1.1305.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-global-props": "^1.1.5",
     "react-native-image-crop-picker": "^0.41.1",

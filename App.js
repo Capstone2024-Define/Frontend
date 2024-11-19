@@ -43,12 +43,20 @@ import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import PreparingGuide from "./screens/PreparingGuide";
 import PreparingInfo from "./screens/PreparingInfo"; // PreparingInfo 추가
-
+import { CHATGPT_API_KEY, GOOGLE_API_KEY, KAKAOLOGIN_API_KEY } from "@env";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "43.202.46.125";
-  // const user_code = 1000; // 나중에 삭제 예정
+  const ipnumber = "13.125.231.220";
+  // 확인
+  console.log(
+    "CHATGPT_API_KEY:",
+    CHATGPT_API_KEY,
+    " GOOGLE_API_KEY:",
+    GOOGLE_API_KEY,
+    " KAKAOLOGIN_API_KEY:",
+    KAKAOLOGIN_API_KEY
+  );
 
   const [fontsLoaded] = useFonts({
     "Human-beomseok": require("./assets/fonts/Human-beomseok.ttf"),
@@ -94,7 +102,6 @@ export default function App() {
               name="InfoSearch"
               component={InfoSearch}
               options={{ title: "검색 화면", headerShown: false }}
-           
             />
             <Stack.Screen
               name="InfoSearchResult"

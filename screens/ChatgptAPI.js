@@ -1,7 +1,6 @@
 import axios from "axios";
+import { CHATGPT_API_KEY } from "@env";
 
-const API_KEY =
-  "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";
 const MODEL = "gpt-3.5-turbo";
 
 const summarize = async (text) => {
@@ -42,7 +41,7 @@ const summarize = async (text) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_KEY}`,
+          Authorization: `Bearer ${CHATGPT_API_KEY}`,
         },
       }
     );

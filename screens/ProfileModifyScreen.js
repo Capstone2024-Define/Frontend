@@ -33,14 +33,6 @@ export default function ProfileModifyScreen({ navigation, route }) {
   const [birthFocus, setBirthFocus] = useState(false);
   const [birthKeyboard, setBirthKeyboard] = useState(false);
 
-  // 잘되나 test, 나중에 DB에 넣을거
-  useEffect(() => {
-    console.log("닉네임: ", nickName);
-    console.log("이름: ", name);
-    console.log("생일: ", birth);
-    console.log("성별: ", gender);
-  }, [nickName, name, birth, gender]);
-
   useEffect(() => {
     async function load() {
       try {

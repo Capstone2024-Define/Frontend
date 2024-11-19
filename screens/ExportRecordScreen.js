@@ -361,33 +361,9 @@ export default function ExportRecordScreen({ navigation, route }) {
   const [page, setPage] = useState(1);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [email, setEmail] = useState("");
-  const [isValidEmail, setIsValidEmail] = useState(false);
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [visible, setVisible] = useState(false); // 모달 상태
   const [calendarNum, setCalendarNum] = useState(null);
   const { ipnumber, user_code } = route.params;
-
-  // 키보드 활성화 시 감지
-  useLayoutEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
 
   // 휴대폰 뒤로가기 버튼 커스터마이징
   useEffect(() => {
@@ -413,18 +389,6 @@ export default function ExportRecordScreen({ navigation, route }) {
     console.log("종료 날짜: ", endDate);
   }, [startDate, endDate]);
 
-  // // 이메일 유효성 체크
-  // useEffect(() => {
-  //   setIsValidEmail(validateEmail(email));
-  //   console.log("이메일: ", email);
-  // }, [email]);
-
-  // // 이메일 유효성 체크
-  // const validateEmail = (email) => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
-  // };
-
   const getCheckList = async (date) => {
     const { data } = await axios.get(
       `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
@@ -432,15 +396,16 @@ export default function ExportRecordScreen({ navigation, route }) {
     console.log("체크리스트 데이터 ", data);
 
     let checklist = "";
-    if (data.checklist){
+    if (data.checklist) {
       data.checklist.forEach((symptom) => {
-      checklist += `${symptom} `;
-    });
-  }
+        checklist += `${symptom} `;
+      });
+    }
+
     return checklist;
   };
 
-  const textToPdf = async (text) => {
+  const textToPdf = async () => {
     const [response_user, response_record, response_image] = await Promise.all([
       axios.get(`http://${ipnumber}:8080/userinfo/get/${user_code}`),
       axios.get(
@@ -452,9 +417,9 @@ export default function ExportRecordScreen({ navigation, route }) {
     ]);
     console.log(response_image.data);
 
-    const newBirth = response_user.data.birth.replace(/-/g, " / ");
-    const newStartDate = startDate.replace(/-/g, " / ");
-    const newEndDate = endDate.replace(/-/g, " / ");
+    const newBirth = response_user.data.birth.replace(/-/g, "/");
+    const newStartDate = startDate.replace(/-/g, "/");
+    const newEndDate = endDate.replace(/-/g, "/");
 
     const checkLists = await Promise.all(
       response_record.data.map(async (data) => {
@@ -495,12 +460,14 @@ export default function ExportRecordScreen({ navigation, route }) {
                 padding: 10px;
               }
               caption {
-                margin-top: 30px;
+                margin-top: 10px;
                 margin-bottom: 30px;
               }
-              th.info {
-                color: rgb(140, 140, 140);
+              td.info {
+                color: rgb(0, 0, 0);
                 background-color: rgb(243, 243, 243);
+                text-align: center; 
+                vertical-align: middle;
               }
               th.date {
                 background-color: rgb(243, 243, 243);
@@ -524,18 +491,18 @@ export default function ExportRecordScreen({ navigation, route }) {
           <body>
             <table>
               <caption>
-                Clobit 하루 기록 일지
+                Clobit 기록하기
               </caption>
               <tr>
-                <th class="info">이름</th>
+                <td class="info">이름</td>
                 <td>${response_user.data.child_name}</td>
-                <th class="info">생년월일</th>
+                <td class="info">생년월일</td>
                 <td>${newBirth}</td>
               </tr>
               <tr>
-                <th class="info">성별</th>
-                <td>${response_user.data.sex}</td>
-                <th class="info">기록 기간</th>
+                <td class="info">성별</td>
+                <td>${response_user.data.sex === "M" ? "남" : "여"}</td>
+                <td class="info">기록 기간</td>
                 <td>${newStartDate} ~ ${newEndDate}</td>
               </tr>
             </table>
@@ -552,7 +519,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                   <td colspan="2" class="title">
                     증상체크
                   </td>
-                  <td>${checkLists[index]}</td>
+                  <td>${checkLists[index] ? checkLists[index] : "증상없음"}</td>
                 </tr>
                 <tr>
                   <td colspan="2" class="title">
@@ -568,10 +535,10 @@ export default function ExportRecordScreen({ navigation, route }) {
                         ? matchedImage.url
                             .map(
                               (imgUrl) =>
-                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" />`
+                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" style="border-radius: 8px; margin-right: 4px; object-fit: cover;"/>`
                             )
                             .join("")
-                        : "이미지 없음";
+                        : "이미지없음";
                     })()}
                 </td>
                 </tr>
@@ -591,19 +558,19 @@ export default function ExportRecordScreen({ navigation, route }) {
                   </td>
                   <td class="place">가정</td>
                   <td>
-                    ${data.home}
+                    ${data.home ? data.home : "내용없음"}
                   </td>
                 </tr>
                 <tr>
                   <td class="place">학교</td>
                   <td>
-                    ${data.school}
+                    ${data.school ? data.school : "내용없음"}
                   </td>
                 </tr>
                 <tr>
                   <td class="place">병원</td>
                   <td>
-                    ${data.hospital}
+                    ${data.hospital ? data.hospital : "내용없음"}
                   </td>
                 </tr>
               </table>
@@ -629,17 +596,16 @@ export default function ExportRecordScreen({ navigation, route }) {
       });
 
       try {
-        const result = await shareAsync(pdfName, {
+        await shareAsync(pdfName, {
           UTI: ".pdf",
           mimeType: "application/pdf",
         });
-        // console.log(result);
         setPage(3);
       } catch (error) {
         console.error("파일 공유 실패 :", error);
         setPage(1);
       }
-    }, 400);
+    }, 100);
   };
 
   return (
@@ -686,85 +652,85 @@ export default function ExportRecordScreen({ navigation, route }) {
           {page == 1 ? (
             <View>
               <Text style={styles.subTitle}>시작날짜</Text>
-              <View
-                style={[
-                  styles.input,
-                  {
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  },
-                  startDate && {
-                    backgroundColor: theme.green50,
-                    borderColor: theme.green500,
-                  },
-                ]}
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
+                  setCalendarNum(1);
+                  setVisible(true);
+                }}
               >
-                <Text
+                <View
                   style={[
-                    styles.inputText,
-                    startDate
-                      ? { color: theme.grey900 }
-                      : { color: theme.grey400 },
+                    styles.input,
+                    {
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                    startDate && {
+                      backgroundColor: theme.green50,
+                      borderColor: theme.green500,
+                    },
                   ]}
                 >
-                  {startDate
-                    ? `${new Date(startDate).getFullYear()} / ${
-                        new Date(startDate).getMonth() + 1
-                      } / ${new Date(startDate).getDate()}`
-                    : "YYYY / MM / DD"}
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  onPress={() => {
-                    setCalendarNum(1);
-                    setVisible(true);
-                  }}
-                >
+                  <Text
+                    style={[
+                      styles.inputText,
+                      startDate
+                        ? { color: theme.grey900 }
+                        : { color: theme.grey400 },
+                    ]}
+                  >
+                    {startDate
+                      ? `${new Date(startDate).getFullYear()} / ${
+                          new Date(startDate).getMonth() + 1
+                        } / ${new Date(startDate).getDate()}`
+                      : "YYYY / MM / DD"}
+                  </Text>
                   <WithLocalSvg asset={CalendarImg} />
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
               <Text style={{ ...styles.subTitle, marginTop: 12 }}>
                 종료날짜
               </Text>
-              <View
-                style={[
-                  styles.input,
-                  {
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  },
-                  endDate && {
-                    backgroundColor: theme.green50,
-                    borderColor: theme.green500,
-                  },
-                ]}
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
+                  setCalendarNum(2);
+                  setVisible(true);
+                }}
               >
-                <Text
+                <View
                   style={[
-                    styles.inputText,
-                    endDate
-                      ? { color: theme.grey900 }
-                      : { color: theme.grey400 },
+                    styles.input,
+                    {
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    },
+                    endDate && {
+                      backgroundColor: theme.green50,
+                      borderColor: theme.green500,
+                    },
                   ]}
                 >
-                  {endDate
-                    ? `${new Date(endDate).getFullYear()} / ${
-                        new Date(endDate).getMonth() + 1
-                      } / ${new Date(endDate).getDate()}`
-                    : "YYYY / MM / DD"}
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  onPress={() => {
-                    setCalendarNum(2);
-                    setVisible(true);
-                  }}
-                >
+                  <Text
+                    style={[
+                      styles.inputText,
+                      endDate
+                        ? { color: theme.grey900 }
+                        : { color: theme.grey400 },
+                    ]}
+                  >
+                    {endDate
+                      ? `${new Date(endDate).getFullYear()} / ${
+                          new Date(endDate).getMonth() + 1
+                        } / ${new Date(endDate).getDate()}`
+                      : "YYYY / MM / DD"}
+                  </Text>
                   <WithLocalSvg asset={CalendarImg} />
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             </View>
           ) : (
             textToPdf()
@@ -799,20 +765,13 @@ export default function ExportRecordScreen({ navigation, route }) {
           width: "100%",
         }}
       >
-        {!isKeyboardVisible && page !== 2 && (
+        {page !== 2 && (
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              page == 1
-                ? setPage(2)
-                : // : page == 2
-                  // ? setPage(3)
-                  navigation.pop();
+              page == 1 ? setPage(2) : navigation.pop();
             }}
-            disabled={
-              (page == 1 && !(startDate && endDate)) ||
-              (page == 2 && !isValidEmail)
-            }
+            disabled={page == 1 && !(startDate && endDate)}
             style={{ marginBottom: 20 }}
           >
             <LinearGradient
@@ -829,18 +788,10 @@ export default function ExportRecordScreen({ navigation, route }) {
                   page == 1 &&
                     startDate &&
                     endDate && { backgroundColor: "transparent" },
-                  page == 2 &&
-                    isValidEmail && { backgroundColor: "transparent" },
                 ]}
               >
                 <Text style={styles.buttonText}>
-                  {page == 0
-                    ? "시작하기"
-                    : page == 1
-                    ? "다음"
-                    : page == 2
-                    ? "내보내기"
-                    : "완료"}
+                  {page == 1 ? "다음" : "완료"}
                 </Text>
               </View>
             </LinearGradient>

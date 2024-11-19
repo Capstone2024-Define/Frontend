@@ -206,8 +206,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.green500,
   },
   checkmark: {
-    width: 11,
-    height: 8,
+    width: 18,
+    height: 18,
+    resizeMode: "contain",
     tintColor: "#fff",
   },
   checklistText: {
