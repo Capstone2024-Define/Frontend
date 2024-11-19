@@ -313,7 +313,9 @@ export default function MyPageScreen({ navigation, route }) {
         {/* 메뉴 항목 */}
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => navigation.navigate("Bookmark")}
+          onPress={() =>
+            navigation.navigate("Bookmark", { ipnumber, user_code })
+          }
         >
           <View
             style={{

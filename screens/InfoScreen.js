@@ -31,7 +31,7 @@ function InfoScreen({ route }) {
   };
 
   const handleDetailNavigate = (key) => {
-    navigation.navigate("InfoScreenDetail", { key });
+    navigation.navigate("InfoScreenDetail", { ipnumber, user_code, key });
   };
 
   // 플로팅 버튼 클릭 시 챗봇 연결

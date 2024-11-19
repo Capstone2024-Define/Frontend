@@ -15,11 +15,12 @@ import { infos } from "../component/Info"; // infos 배열을 가져옵니다
 import Header from "../component/Header";
 import { theme } from "../colors/color";
 
-function Bookmark() {
+function Bookmark({ route }) {
   const [bookmarkedInfos, setBookmarkedInfos] = useState([]);
   const [updatedBookMarkInfos, setUpdatedBookMarkInfos] = useState([]);
   const updatedBookMarkInfosRef = useRef([]);
   const navigation = useNavigation();
+  const { ipnumber, user_code } = route.params;
 
   // 북마크 로드, 백핸들러 등록
   useEffect(() => {
@@ -44,7 +45,7 @@ function Bookmark() {
 
   // 상세 화면으로 이동
   const handleDetailNavigate = (key) => {
-    navigation.navigate("InfoScreenDetail", { key });
+    navigation.navigate("InfoScreenDetail", { key, ipnumber, user_code });
   };
 
   // AsyncStorage에서 북마크된 데이터 불러오기

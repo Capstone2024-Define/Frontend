@@ -70,12 +70,20 @@ function InfoSearch({ route }) {
   };
 
   const handleSearch = () => {
-    navigation.navigate("InfoSearchResult", { searchText });
+    navigation.navigate("InfoSearchResult", {
+      ipnumber,
+      user_code,
+      searchText,
+    });
   };
 
   const handleKeywordClick = (keyword) => {
     setSearchText(keyword);
-    navigation.navigate("InfoSearchResult", { searchText: keyword });
+    navigation.navigate("InfoSearchResult", {
+      ipnumber,
+      user_code,
+      searchText: keyword,
+    });
   };
 
   return (

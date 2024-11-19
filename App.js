@@ -47,7 +47,7 @@ import { CHATGPT_API_KEY, GOOGLE_API_KEY, KAKAOLOGIN_API_KEY } from "@env";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "13.125.108.157";
+  const ipnumber = "54.180.1.240";
   // 확인
   console.log(
     "CHATGPT_API_KEY:",
