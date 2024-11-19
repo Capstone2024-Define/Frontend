@@ -83,32 +83,49 @@ const ChatbotScreen = ({ navigation, route }) => {
       return "죄송해요, 응답을 생성하는 데 문제가 생겼어요.";
     }
   };
+// 미리 정의된 질문과 답변
+const predefinedAnswers = {
+  "현재 아이의 증상 상태가 궁금해": "아이의 현재 상태는 '~~~~~~~~여기 수정하기'입니다. 이번 주는 아이의 주의 집중력, 과잉행동, 충동성을 체크해보는게 어떨까요?",
+  "아이와 대화하는 방법을 알려줘": "아이와 대화할 때는 차분한 톤으로 이야기하고, 아이의 말을 잘 들어주는 것이 중요해요! ",
+  "ADHD 기록은 어떻게 하는게 좋을까?": "ADHD 기록은 매일 아이의 행동을 간단히 기록하고, 특이한 점이 있으면 상세히 기록하는 것이 좋아요.",
+};
 
-  // 사용자가 메시지를 보냈을 때 호출되는 함수
-  const sendMessage = async (text = inputText) => {
-    if (text.trim()) {
-      // 사용자의 메시지를 추가하기
+// 사용자가 메시지를 보냈을 때 호출되는 함수
+const sendMessage = async (text = inputText) => {
+  if (text.trim()) {
+    // 사용자의 메시지를 추가하기
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { sender: "user", text },
+    ]);
+
+    setInputText("");
+
+    // 미리 정의된 답변 확인
+    if (predefinedAnswers[text.trim()]) {
+      // 미리 정의된 답변을 추가
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: "user", text },
+        { sender: "bot", text: predefinedAnswers[text.trim()] },
       ]);
-
-      setInputText("");
-
-      setLoading(true);
-
-      // ChatGPT에게 질문을 보내고 응답 받기
-      const chatbotResponse = await getChatbotResponse(text);
-
-      // 챗봇 응답 추가
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "bot", text: chatbotResponse },
-      ]);
-
-      setLoading(false);
+      return;
     }
-  };
+
+    setLoading(true);
+
+    // ChatGPT에게 질문을 보내고 응답 받기
+    const chatbotResponse = await getChatbotResponse(text);
+
+    // 챗봇 응답 추가
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { sender: "bot", text: chatbotResponse },
+    ]);
+
+    setLoading(false);
+  }
+};
+
 
   // 메시지가 변경될 때마다 마지막 메시지로 스크롤
   useEffect(() => {
