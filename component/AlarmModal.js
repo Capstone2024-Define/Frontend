@@ -97,7 +97,7 @@ export default function AlarmModal({
   const loadTime = async () => {
     try {
       const rawAlarm = await AsyncStorage.getItem("alarm");
-      if (rawAlarm<0) {
+      if (rawAlarm && rawAlarm !== "{}") {
         const alarm = JSON.parse(rawAlarm);
 
         setSelectedAmPm(alarm.ampm);

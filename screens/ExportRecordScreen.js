@@ -432,10 +432,11 @@ export default function ExportRecordScreen({ navigation, route }) {
     console.log("체크리스트 데이터 ", data);
 
     let checklist = "";
-    data.checklist.forEach((symptom) => {
+    if (data.checklist){
+      data.checklist.forEach((symptom) => {
       checklist += `${symptom} `;
     });
-
+  }
     return checklist;
   };
 
