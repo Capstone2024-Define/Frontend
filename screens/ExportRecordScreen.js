@@ -535,7 +535,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                         ? matchedImage.url
                             .map(
                               (imgUrl) =>
-                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" style="border-radius: 8px; margin-right: 4px; object-fit: cover;"/>`
+                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" style="border-radius: 8px; margin-right: 4px;"/>`
                             )
                             .join("")
                         : "이미지없음";

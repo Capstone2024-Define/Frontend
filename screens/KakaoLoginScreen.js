@@ -21,7 +21,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width; // 화면 가로 크기
 export default function KakaoLoginScreen({ navigation, route }) {
   const ipnumber = route.params.ipnumber;
   const [activePage, setActivePage] = useState(0); // 현재 페이지 상태
-  const scrollViewRef = useRef(null);
+  // const scrollViewRef = useRef(null);
   const title = ["기록하기", "상담녹음", "내보내기", "정보"];
   const contentTop = [
     "증상체크부터",
@@ -47,12 +47,12 @@ export default function KakaoLoginScreen({ navigation, route }) {
   const extendedImages = [...images, ...images, ...images, ...images];
 
   // 스크롤 시 페이지 감지
-  const handleScroll = (e) => {
-    const offsetX = e.nativeEvent.contentOffset.x;
-    const currentIndex =
-      Math.round(offsetX / SCREEN_WIDTH) % extendedImages.length;
-    setActivePage(currentIndex); // 페이지 업데이트
-  };
+  // const handleScroll = (e) => {
+  //   const offsetX = e.nativeEvent.contentOffset.x;
+  //   const currentIndex =
+  //     Math.round(offsetX / SCREEN_WIDTH) % extendedImages.length;
+  //   setActivePage(currentIndex); // 페이지 업데이트
+  // };
 
   // 5초마다 자동으로 스크롤
   // useEffect(() => {

@@ -191,11 +191,17 @@ function InfoScreen({ route }) {
           >
             {"정보"}
           </Text>
-          <Image
-            source={require("../assets/bookmarkGreen.png")}
-            resizeMode={"stretch"}
-            style={{ width: 16, height: 19 }}
-          />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Bookmark", { ipnumber, user_code })
+            }
+          >
+            <Image
+              source={require("../assets/bookmarkGreen.png")}
+              resizeMode={"stretch"}
+              style={{ width: 16, height: 19 }}
+            />
+          </TouchableOpacity>
         </View>
         {/* 검색창 */}
         <TouchableOpacity
@@ -272,12 +278,12 @@ function InfoScreen({ route }) {
                   >
                     <TouchableOpacity
                       activeOpacity={0.5}
-                      onPress={() => toggleBookmark(index)}
+                      onPress={() => toggleBookmark(infoIndex)}
                       style={styles.bookmarkContainer}
                     >
                       <Image
                         source={
-                          selectedInfos.includes(index)
+                          selectedInfos.includes(infoIndex)
                             ? require("../assets/bookmark_green.png")
                             : require("../assets/bookmark.png")
                         }

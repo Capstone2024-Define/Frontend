@@ -71,7 +71,7 @@ export default function KakaoLoginWeb({ navigation, route }) {
           } catch (error) {
             console.log("state 갱신 에러: ", error);
           }
-          navigation.replace("Main", {
+          navigation.replace("StartInfo", {
             ipnumber: ipnumber,
             user_code: serverResponse.userId,
           });

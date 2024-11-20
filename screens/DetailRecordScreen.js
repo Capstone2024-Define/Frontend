@@ -29,7 +29,6 @@ import { bottomBtn } from "../component/BottomButton";
 export default function DetailRecordScreen({ navigation, route }) {
   const { ipnumber, date, user_code } = route.params;
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [name, setName] = useState("");
 
   // 상세 기록 state
   const [homeText, setHomeText] = useState("");
@@ -64,21 +63,6 @@ export default function DetailRecordScreen({ navigation, route }) {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, []);
-
-  // 아이 이름 로드
-  useEffect(() => {
-    async function load() {
-      try {
-        const response = await axios.get(
-          `http://${ipnumber}:8080/userinfo/get/${user_code}`
-        );
-        setName(response.data.child_name);
-      } catch (error) {
-        console.log("유저 GET 에러: ", error);
-      }
-    }
-    load();
   }, []);
 
   useEffect(() => {
@@ -281,9 +265,9 @@ export default function DetailRecordScreen({ navigation, route }) {
       </LinearGradient>
       <ScrollView style={styles.scroll}>
         <View style={styles.subContainer}>
-          <Text style={styles.guideText}>{`오늘 ${name}${
-            nameCheck(name) ? "이" : ""
-          }의 하루를 ${"\n"}자세히 기록해주세요!`}</Text>
+          <Text
+            style={styles.guideText}
+          >{`오늘 우리아이와의 하루를${"\n"}자세히 기록해주세요!`}</Text>
         </View>
         <ScrollView
           horizontal

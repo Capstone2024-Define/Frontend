@@ -154,17 +154,16 @@ export default function StartInfoScreen({ navigation, route }) {
 
   const handlePost = async () => {
     try {
-      const newBirth = birth.replace(/\s\/\s/g, "-");
-
-      await axios.post(`http://${ipnumber}:8080/userinfo/post`, {
-        user_code: user_code,
-        user_name: nickName,
-        child_name: name,
-        birth: newBirth,
-        sex: gender,
-      });
-
-      console.log("저장 성공");
+      // 시연을 위한 내용 주석
+      // const newBirth = birth.replace(/\s\/\s/g, "-");
+      // await axios.post(`http://${ipnumber}:8080/userinfo/post`, {
+      //   user_code: user_code,
+      //   user_name: nickName,
+      //   child_name: name,
+      //   birth: newBirth,
+      //   sex: gender,
+      // });
+      // console.log("저장 성공");
     } catch (error) {
       console.log("POST 에러 : ", error);
     }

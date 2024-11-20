@@ -1,9 +1,10 @@
 import axios from "axios";
 import { CHATGPT_API_KEY } from "@env";
 
-const MODEL = "gpt-3.5-turbo";
+const MODEL = "gpt-4o-mini";
 
 const summarize = async (text) => {
+  console.log(CHATGPT_API_KEY);
   try {
     // fetch 방법
     // const response = await fetch("https://api.openai.com/v1/chat/completions", {
