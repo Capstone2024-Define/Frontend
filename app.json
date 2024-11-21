@@ -23,30 +23,23 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "RECORD_AUDIO"
-      ]
+      "permissions": ["RECORD_AUDIO"],
+      "config": {
+        "usesCleartextTraffic": true
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "plugins": [
-      "expo-font"
-    ],
+    "platforms": ["ios", "android", "web"],
+    "plugins": ["expo-font"],
     "extra": {
       "eas": {
         "projectId": "fd9d78f2-cf86-4238-87f8-fbcba18bbadb"
       }
     },
     "linking": {
-      "prefixes": [
-        "clobit://"
-      ]
+      "prefixes": ["clobit://"]
     },
     "owner": "eun4995"
   }

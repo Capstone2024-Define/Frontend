@@ -42,7 +42,7 @@ const summarize = async (text) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${CHATGPT_API_KEY}`,
+          Authorization: `Bearer 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`,
         },
       }
     );

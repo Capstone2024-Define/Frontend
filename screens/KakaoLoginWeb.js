@@ -3,7 +3,7 @@ import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { KAKAOLOGIN_API_KEY } from "@env";
+//import { KAKAOLOGIN_API_KEY } from "@env";
 
 const INJECTED_JAVASCRIPT = `
   (function() {
@@ -13,6 +13,7 @@ const INJECTED_JAVASCRIPT = `
   })();
   true;
 `;
+const KAKAOLOGIN_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
 
 export default function KakaoLoginWeb({ navigation, route }) {
   const [currentState, setCurrentState] = useState(null);

@@ -160,7 +160,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
 
       // API 요청 보내기
       const response = await axios.post(
-        `https://speech.googleapis.com/v1/speech:recognize?key=${GOOGLE_API_KEY}`,
+        `https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDpZWLbf5duRAjcGtgC6DKz4BolApSGfPo`,
         requestBody,
         {
           headers: {

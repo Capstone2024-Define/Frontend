@@ -15,9 +15,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
 import axios from "axios";
-import { CHATGPT_API_KEY } from "@env";
+// import { CHATGPT_API_KEY } from "@env";
 
 const MODEL = "gpt-4o";
+const CHATGPT_API_KEY =
+  "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";
 
 const ChatbotScreen = ({ navigation, route }) => {
   const { ipnumber, user_code } = route.params; // user_code와 ipnumber 가져오기
