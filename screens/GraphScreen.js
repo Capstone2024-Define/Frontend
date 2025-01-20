@@ -99,7 +99,7 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
   const weekLoad = async () => {
     try {
       const requests = week.map((wek) =>
-        axios.get(`http://${ipnumber}:8080/daily/records/${user_code}/${wek}`)
+        axios.get(`${ipnumber}:8080/daily/records/${user_code}/${wek}`)
       );
 
       // 모든 요청이 완료될 때까지 대기
@@ -137,10 +137,10 @@ export default function GraphScreen({ ipnumber, user_code, setIsCalendar }) {
       // 월간 state, 증상 로드(병렬)
       const [response_state, response_symptomCheck] = await Promise.all([
         await axios.get(
-          `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+          `${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
         ),
         await axios.get(
-          `http://${ipnumber}:8080/sx/frequency/${user_code}/${yearMonth}`
+          `${ipnumber}:8080/sx/frequency/${user_code}/${yearMonth}`
         ),
       ]);
 

@@ -154,9 +154,9 @@ export default function StartInfoScreen({ navigation, route }) {
 
   const handlePost = async () => {
     try {
-      // 시연을 위한 내용 주석
+      // 발표 시연을 위한 내용 주석!!!!!!!!!!
       // const newBirth = birth.replace(/\s\/\s/g, "-");
-      // await axios.post(`http://${ipnumber}:8080/userinfo/post`, {
+      // await axios.post(`${ipnumber}:8080/userinfo/post`, {
       //   user_code: user_code,
       //   user_name: nickName,
       //   child_name: name,

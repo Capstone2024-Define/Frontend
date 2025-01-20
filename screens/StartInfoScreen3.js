@@ -265,7 +265,6 @@ export default function StartInfoScreen3({ navigation, route }) {
               navigation.replace("Main", {
                 ipnumber: ipnumber,
                 user_code: user_code,
-                showTutorial: true,
               });
             }}
           >

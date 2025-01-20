@@ -33,7 +33,7 @@ export default function VoiceHistoryScreen({ navigation, route }) {
       async function load() {
         try {
           const voice = await axios.get(
-            `http://${ipnumber}:8080/record/list-up/${user_code}`
+            `${ipnumber}:8080/record/list-up/${user_code}`
           );
           setContents(voice.data);
         } catch (error) {

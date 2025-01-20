@@ -21,6 +21,8 @@ import Mic from "../assets/mic_white.svg";
 import Check from "../assets/check.svg";
 import { GOOGLE_API_KEY } from "@env";
 
+const GOOGLE_API_KEY = GOOGLE_API_KEY;
+
 const VoiceRecordScreen = ({ navigation, route }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -160,7 +162,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
 
       // API 요청 보내기
       const response = await axios.post(
-        `https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDpZWLbf5duRAjcGtgC6DKz4BolApSGfPo`,
+        `https://speech.googleapis.com/v1/speech:recognize?key=${GOOGLE_API_KEY}`,
         requestBody,
         {
           headers: {
@@ -214,7 +216,7 @@ const VoiceRecordScreen = ({ navigation, route }) => {
         contents: finalTranscript,
       });
 
-      await axios.post(`http://${ipnumber}:8080/record/post`, {
+      await axios.post(`${ipnumber}:8080/record/post`, {
         user_code: user_code,
         timestamp: time,
         location: mode,

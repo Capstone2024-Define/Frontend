@@ -55,14 +55,14 @@ export default function CalendarScreen({ navigation, route }) {
       const load = async () => {
         try {
           const response = await axios.get(
-            `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
+            `${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
           );
           // console.log(response.data);
           setRecord(response.data);
 
           // 이미지 가져옴
           const response_image = await axios.get(
-            `http://${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
+            `${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
           );
           console.log("이미지 로드: ", response_image.data);
           if (response_image) {
@@ -103,17 +103,17 @@ export default function CalendarScreen({ navigation, route }) {
       const responseDates = [];
 
       const beforeResponse = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${beforeYearMonth}`
+        `${ipnumber}:8080/daily/state/${user_code}/${beforeYearMonth}`
       );
       responseDates.push(...beforeResponse.data);
 
       const response = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+        `${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
       );
       responseDates.push(...response.data);
 
       const afterResponse = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${afterYearMonth}`
+        `${ipnumber}:8080/daily/state/${user_code}/${afterYearMonth}`
       );
       responseDates.push(...afterResponse.data);
 

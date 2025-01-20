@@ -2,9 +2,8 @@ import axios from "axios";
 import { CHATGPT_API_KEY } from "@env";
 
 const MODEL = "gpt-4o-mini";
-
+const CHATGPT_API_KEY = CHATGPT_API_KEY;
 const summarize = async (text) => {
-  console.log(CHATGPT_API_KEY);
   try {
     // fetch 방법
     // const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -42,7 +41,7 @@ const summarize = async (text) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer ${CHATGPT_API_KEY}`,
         },
       }
     );

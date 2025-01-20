@@ -47,7 +47,7 @@ export default function SymptomResultScreen({ route, navigation }) {
     async function load() {
       try {
         const response = await axios.get(
-          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+          `${ipnumber}:8080/userinfo/get/${user_code}`
         );
         setName(response.data.child_name);
       } catch (error) {

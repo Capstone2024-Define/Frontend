@@ -138,7 +138,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
         try {
           // 하루 기록 로드
           const response = await axios.get(
-            `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
+            `${ipnumber}:8080/daily/records/${user_code}/${date}`
           );
           setHomeText(response.data.home);
           setSchoolText(response.data.school);
@@ -148,7 +148,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
 
           // 이미지 로드
           const response_image = await axios.get(
-            `http://${ipnumber}:8080/image/show/${user_code}/${date}`
+            `${ipnumber}:8080/image/show/${user_code}/${date}`
           );
           console.log("이미지 로드: ", response_image.data);
           setImages(response_image.data);
@@ -166,8 +166,8 @@ export default function DetailHistoryScreen({ navigation, route }) {
         // 체크리스트 로드 병렬로 수정
         const [response_symptomCheck, response_parentCheck] = await Promise.all(
           [
-            axios.get(`http://${ipnumber}:8080/sx/list/${user_code}/${date}`),
-            axios.get(`http://${ipnumber}:8080/prnt/list/${user_code}/${date}`),
+            axios.get(`${ipnumber}:8080/sx/list/${user_code}/${date}`),
+            axios.get(`${ipnumber}:8080/prnt/list/${user_code}/${date}`),
           ]
         );
         setSymptomList(response_symptomCheck.data.checklist);
@@ -196,7 +196,7 @@ export default function DetailHistoryScreen({ navigation, route }) {
       async function load() {
         try {
           const response = await axios.get(
-            `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+            `${ipnumber}:8080/record/list-up/${user_code}/${date}`
           );
           setVoiceList(response.data);
         } catch (error) {
@@ -211,21 +211,15 @@ export default function DetailHistoryScreen({ navigation, route }) {
       // 이미지 삭제
       if (images.length > 0) {
         response = await axios.delete(
-          `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
+          `${ipnumber}:8080/image/delete/${user_code}/${date}`
         );
       }
       // 증상 체크리스트 삭제
-      await axios.delete(
-        `http://${ipnumber}:8080/sx/delete/${user_code}/${date}`
-      );
+      await axios.delete(`${ipnumber}:8080/sx/delete/${user_code}/${date}`);
       // 부모 체크리스트 삭제
-      await axios.delete(
-        `http://${ipnumber}:8080/prnt/delete/${user_code}/${date}`
-      );
+      await axios.delete(`${ipnumber}:8080/prnt/delete/${user_code}/${date}`);
       // 줄글 기록 삭제
-      await axios.delete(
-        `http://${ipnumber}:8080/daily/delete/${user_code}/${date}`
-      );
+      await axios.delete(`${ipnumber}:8080/daily/delete/${user_code}/${date}`);
 
       console.log("삭제 완료");
     } catch (error) {

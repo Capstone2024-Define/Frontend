@@ -23,6 +23,7 @@ import CalendarModal from "../component/CalendarModal";
 import Svg, { Circle } from "react-native-svg";
 import PlusBtn from "../component/PlusBtn";
 import DaysModal from "../component/DaysModal";
+import Camera from "../assets/photo_camera.svg";
 
 // 홈 스크린
 export default function HomeScreen({ navigation, route }) {
@@ -107,14 +108,14 @@ export default function HomeScreen({ navigation, route }) {
         try {
           // 연속 날짜 로드
           const response_consecutiveDays = await axios.get(
-            `http://${ipnumber}:8080/daily/consecutive/${user_code}`
+            `${ipnumber}:8080/daily/consecutive/${user_code}`
           );
           // console.log("연속 일자: ", response_consecutiveDays.data);
           setConsecutiveDay(response_consecutiveDays.data);
 
           // 가장 최근 체크리스트 로드
           const response_resentChecklist = await axios.get(
-            `http://${ipnumber}:8080/prnt/recent/${user_code}`
+            `${ipnumber}:8080/prnt/recent/${user_code}`
           );
           // console.log("최근 체크리스트: ", response_resentChecklist.data);
 
@@ -154,13 +155,13 @@ export default function HomeScreen({ navigation, route }) {
           try {
             // 요약, 상태 가져옴
             const response = await axios.get(
-              `http://${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
+              `${ipnumber}:8080/daily/records/${user_code}/${selectedDate}`
             );
             setSummaryText(response.data.summary);
 
             // 이미지 가져옴
             const response_image = await axios.get(
-              `http://${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
+              `${ipnumber}:8080/image/show/${user_code}/${selectedDate}`
             );
             setImages(response_image.data);
           } catch (error) {
@@ -234,7 +235,7 @@ export default function HomeScreen({ navigation, route }) {
 
     try {
       const response = await axios.get(
-        `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
+        `${ipnumber}:8080/daily/records/${user_code}/${date}`
       );
       const dayState = response.data.state;
 
@@ -477,34 +478,37 @@ export default function HomeScreen({ navigation, route }) {
                 width: "100%",
                 height: 151,
                 alignItems: summaryText ? "flex-start" : "center",
-                justifyContent: "center",
+                justifyContent: !summaryText ? "center" : "flex-start",
                 backgroundColor: "white",
                 borderRadius: 8,
                 paddingHorizontal: 16,
+                paddingVertical: 14,
               }}
             >
               {summaryText ? (
                 // 기록 O
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  onPress={() =>
-                    navigation.push("DetailHistory", {
-                      date: selectedDate,
-                      user_code: user_code,
-                      ipnumber: ipnumber,
-                    })
-                  }
-                  style={{ width: "100%" }}
-                >
+                <View style={{ width: "100%" }}>
                   <ScrollView
+                    horizontal={true}
                     contentContainerStyle={{
                       flexDirection: "row",
                       marginBottom: 12,
                     }}
+                    showsHorizontalScrollIndicator={false}
                   >
-                    {images.length > 0 ? (
+                    {images.length > 0 &&
                       images.map((image, index) => (
-                        <View key={index}>
+                        <TouchableOpacity
+                          activeOpacity={0.5}
+                          onPress={() =>
+                            navigation.push("DetailHistory", {
+                              date: selectedDate,
+                              user_code: user_code,
+                              ipnumber: ipnumber,
+                            })
+                          }
+                          key={index}
+                        >
                           <Image
                             source={{
                               uri: `${image}`,
@@ -512,25 +516,51 @@ export default function HomeScreen({ navigation, route }) {
                             style={styles.photo}
                             resizeMode="cover"
                           />
-                        </View>
-                      ))
-                    ) : (
-                      <View
+                        </TouchableOpacity>
+                      ))}
+                    {images.length < 10 && (
+                      <TouchableOpacity
+                        activeOpacity={0.5}
+                        onPress={() =>
+                          navigation.push("DetailModify", {
+                            date: selectedDate,
+                            user_code: user_code,
+                            ipnumber: ipnumber,
+                          })
+                        }
                         style={[
                           styles.photo,
-                          { backgroundColor: theme.grey150 },
+                          {
+                            backgroundColor: theme.grey150,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          },
                         ]}
-                      />
+                      >
+                        <WithLocalSvg width={24} height={24} asset={Camera} />
+                      </TouchableOpacity>
                     )}
                   </ScrollView>
-                  <Text
-                    style={styles.recordText}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() =>
+                      navigation.push("DetailHistory", {
+                        date: selectedDate,
+                        user_code: user_code,
+                        ipnumber: ipnumber,
+                      })
+                    }
+                    style={{ width: "100%" }}
                   >
-                    {summaryText.replace(/\n/g, " ")}
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={styles.recordText}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {summaryText.replace(/\n/g, " ")}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               ) : (
                 // 기록 X
                 <PlusBtn

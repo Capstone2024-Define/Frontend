@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ScrollView, View, Image, Text, StyleSheet } from "react-native";
 import Header from "../component/Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ComingSoonPage({ navigation }) {
+  useEffect(() => {
+    async function clearAsync() {
+      await AsyncStorage.clear();
+    }
+    clearAsync();
+  }, []);
+
   return (
     <ScrollView style={styles.scrollView}>
       <Header

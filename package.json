@@ -59,7 +59,8 @@
     "react-native-wheel-scrollview-picker": "^2.0.6",
     "typescript": "~5.3.3",
     "victory-native": "^37.1.2",
-    "victory-shared-events": "^37.3.2"
+    "victory-shared-events": "^37.3.2",
+    "expo-build-properties": "~0.12.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

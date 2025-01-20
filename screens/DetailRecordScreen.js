@@ -163,20 +163,8 @@ export default function DetailRecordScreen({ navigation, route }) {
         summarizeText = totalText;
       }
 
-      // console.log("전송 데이터:", {
-      //   user_code: user_code,
-      //   date: date,
-      //   home: homeText,
-      //   school: schoolText,
-      //   hospital: hospitalText,
-      //   summary: summarizeText,
-      //   state: route.params.state,
-      //   checklist: route.params.symptomList,
-      //   parentlist: route.params.checkList,
-      // });
-
       // 줄글 저장
-      await axios.post(`http://${ipnumber}:8080/daily/post`, {
+      await axios.post(`${ipnumber}:8080/daily/post`, {
         user_code: user_code,
         date: date,
         home: homeText,
@@ -186,25 +174,8 @@ export default function DetailRecordScreen({ navigation, route }) {
         state: route.params.state,
       });
 
-      // 병렬로 요청 실행
-      // await Promise.all([
-      //   // 증상 체크리스트 저장
-      //   axios.post(`http://${ipnumber}:8080/sx/post`, {
-      //     user_code: user_code,
-      //     date: date,
-      //     checklist: route.params.symptomList,
-      //   }),
-
-      //   // 부모 체크리스트 저장
-      //   axios.post(`http://${ipnumber}:8080/prnt/post`, {
-      //     user_code: user_code,
-      //     date: date,
-      //     checklist: route.params.checkList,
-      //   }),
-      // ]);
-
       const postSymptomCheck = route.params.symptomList?.length
-        ? axios.post(`http://${ipnumber}:8080/sx/post`, {
+        ? axios.post(`${ipnumber}:8080/sx/post`, {
             user_code: user_code,
             date: date,
             checklist: route.params.symptomList,
@@ -212,7 +183,7 @@ export default function DetailRecordScreen({ navigation, route }) {
         : Promise.resolve(); // 빈 체크리스트인 경우 요청 생략
 
       const postParentCheck = route.params.checkList?.length
-        ? axios.post(`http://${ipnumber}:8080/prnt/post`, {
+        ? axios.post(`${ipnumber}:8080/prnt/post`, {
             user_code: user_code,
             date: date,
             checklist: route.params.checkList,
@@ -231,7 +202,7 @@ export default function DetailRecordScreen({ navigation, route }) {
       formData.append("user_code", user_code);
       formData.append("date", date);
 
-      const uploadImages = await fetch(`http://${ipnumber}:8080/image/post`, {
+      const uploadImages = await fetch(`${ipnumber}:8080/image/post`, {
         method: "POST",
         body: formData,
         headers: {

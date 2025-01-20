@@ -54,7 +54,7 @@ export default function VoiceModifyScreen({
   // 수정 코드
   const handleEdit = async () => {
     try {
-      await axios.put(`http://${ipnumber}:8080/record/edit`, {
+      await axios.put(`${ipnumber}:8080/record/edit`, {
         user_code: user_code,
         timestamp: voice.timestamp,
         location: voice.location,

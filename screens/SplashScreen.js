@@ -94,9 +94,8 @@ export default function SplashScreen({ route }) {
     const timer = setTimeout(async () => {
       await CheckUserState();
       // navigation.replace("Main", {
-      //   user_code: Number(savedUserCode),
+      //   user_code: 1003,
       //   ipnumber: ipnumber,
-      //   showTutorial: false,
       // });
     }, 2200);
 

@@ -24,7 +24,7 @@ export default function SymptomCheckParent({ route, navigation }) {
     async function load() {
       try {
         const response = await axios.get(
-          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+          `${ipnumber}:8080/userinfo/get/${user_code}`
         );
         setNickName(response.data.user_name);
       } catch (error) {

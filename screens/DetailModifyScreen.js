@@ -45,7 +45,7 @@ export default function DetailModifyScreen({ navigation, route }) {
     async function load() {
       try {
         const response = await axios.get(
-          `http://${ipnumber}:8080/daily/records/${user_code}/${date}`
+          `${ipnumber}:8080/daily/records/${user_code}/${date}`
         );
         setHomeText(response.data.home);
         setSchoolText(response.data.school);
@@ -54,7 +54,7 @@ export default function DetailModifyScreen({ navigation, route }) {
 
         // 이미지 로드
         const response_image = await axios.get(
-          `http://${ipnumber}:8080/image/show/${user_code}/${date}`
+          `${ipnumber}:8080/image/show/${user_code}/${date}`
         );
         if (response_image.data.length > 0) {
           console.log("서버 이미지 로드: ", response_image.data);
@@ -202,7 +202,7 @@ export default function DetailModifyScreen({ navigation, route }) {
       async function load() {
         try {
           const response = await axios.get(
-            `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+            `${ipnumber}:8080/record/list-up/${user_code}/${date}`
           );
           setVoiceList(response.data);
         } catch (e) {
@@ -237,7 +237,7 @@ export default function DetailModifyScreen({ navigation, route }) {
       });
 
       // 기록 수정
-      await axios.put(`http://${ipnumber}:8080/daily/records/edit`, {
+      await axios.put(`${ipnumber}:8080/daily/records/edit`, {
         user_code: user_code,
         date: date,
         home: homeText,
@@ -250,7 +250,7 @@ export default function DetailModifyScreen({ navigation, route }) {
       // 서버 이미지 삭제
       if (serverImages.length > 0) {
         response = await axios.delete(
-          `http://${ipnumber}:8080/image/delete/${user_code}/${date}`
+          `${ipnumber}:8080/image/delete/${user_code}/${date}`
         );
       }
 
@@ -267,7 +267,7 @@ export default function DetailModifyScreen({ navigation, route }) {
       formData.append("user_code", user_code);
       formData.append("date", date);
 
-      await fetch(`http://${ipnumber}:8080/image/post`, {
+      await fetch(`${ipnumber}:8080/image/post`, {
         method: "POST",
         body: formData,
         headers: {

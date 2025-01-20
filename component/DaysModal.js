@@ -80,7 +80,7 @@ export default function DaysModal({
 
     try {
       const response = await axios.get(
-        `http://${ipnumber}:8080/daily/period/${user_code}/${start}/${end}`
+        `${ipnumber}:8080/daily/period/${user_code}/${start}/${end}`
       );
 
       const newRegisteredData = new Array(7).fill(false);

@@ -190,7 +190,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
       const load = async () => {
         try {
           const rawVoice = await axios.get(
-            `http://${ipnumber}:8080/record/list/${user_code}/${timestamp}`
+            `${ipnumber}:8080/record/list/${user_code}/${timestamp}`
           );
           // console.log("음성녹음: ", rawVoice.data);
           if (rawVoice.data) {
@@ -239,7 +239,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
   const remove = async () => {
     try {
       await axios.delete(
-        `http://${ipnumber}:8080/record/delete/${user_code}/${timestamp}`
+        `${ipnumber}:8080/record/delete/${user_code}/${timestamp}`
       );
     } catch (error) {
       console.error("객체 수정 실패:", error);
@@ -250,9 +250,7 @@ export default function VoiceDetailScreen({ navigation, route }) {
   const showRecord = async () => {
     try {
       const record = await axios.get(
-        `http://${ipnumber}:8080/daily/records/${user_code}/${getYYYYMMDD(
-          timestamp
-        )}`
+        `${ipnumber}:8080/daily/records/${user_code}/${getYYYYMMDD(timestamp)}`
       );
 
       if (record.data) {

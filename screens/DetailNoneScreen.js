@@ -23,7 +23,7 @@ export default function DetailNoneScreen({ route, navigation }) {
     async function load() {
       try {
         const response = await axios.get(
-          `http://${ipnumber}:8080/record/list-up/${user_code}/${date}`
+          `${ipnumber}:8080/record/list-up/${user_code}/${date}`
         );
         console.log(response.data);
         setVoiceList(response.data);

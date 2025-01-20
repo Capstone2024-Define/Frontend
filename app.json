@@ -32,7 +32,17 @@
       "favicon": "./assets/favicon.png"
     },
     "platforms": ["ios", "android", "web"],
-    "plugins": ["expo-font"],
+    "plugins": [
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "fd9d78f2-cf86-4238-87f8-fbcba18bbadb"

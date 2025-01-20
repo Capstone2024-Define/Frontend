@@ -43,11 +43,16 @@ import BookmarkScreen from "./screens/Bookmark";
 import StartInfoScreen3 from "./screens/StartInfoScreen3";
 import PreparingGuide from "./screens/PreparingGuide";
 import PreparingInfo from "./screens/PreparingInfo"; // PreparingInfo 추가
-import { CHATGPT_API_KEY, GOOGLE_API_KEY, KAKAOLOGIN_API_KEY } from "@env";
+import {
+  CHATGPT_API_KEY,
+  GOOGLE_API_KEY,
+  KAKAOLOGIN_API_KEY,
+  API_KEY,
+} from "@env";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const ipnumber = "13.124.165.67";
+  const ipnumber = API_KEY;
   // 확인
   console.log(
     "CHATGPT_API_KEY:",

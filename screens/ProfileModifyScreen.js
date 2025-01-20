@@ -37,7 +37,7 @@ export default function ProfileModifyScreen({ navigation, route }) {
     async function load() {
       try {
         const { data } = await axios.get(
-          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+          `${ipnumber}:8080/userinfo/get/${user_code}`
         );
         const newBirth = data.birth.replace(/-/g, " / ");
 
@@ -153,7 +153,7 @@ export default function ProfileModifyScreen({ navigation, route }) {
     try {
       const newBirth = birth.replace(/\s\/\s/g, "-");
 
-      await axios.put(`http://${ipnumber}:8080/userinfo/edit`, {
+      await axios.put(`${ipnumber}:8080/userinfo/edit`, {
         user_code: user_code,
         user_name: nickName,
         child_name: name,

@@ -30,7 +30,7 @@ function InfoScreenDetail({ route }) {
   useEffect(() => {
     async function load() {
       try {
-        const { data } = await axios.get(`http://${ipnumber}:8080/info/show`);
+        const { data } = await axios.get(`${ipnumber}:8080/info/show`);
         setViewCount(data[key].views);
       } catch (error) {
         console.log("조회수 GET: ", error);
@@ -42,9 +42,7 @@ function InfoScreenDetail({ route }) {
   useEffect(() => {
     async function viewCountUp() {
       try {
-        await axios.put(
-          `http://${ipnumber}:8080/info/increase?info_index=${key + 1}`
-        );
+        await axios.put(`${ipnumber}:8080/info/increase?info_index=${key + 1}`);
       } catch (error) {
         console.log("조회수 PUT 에러 ", error);
       }

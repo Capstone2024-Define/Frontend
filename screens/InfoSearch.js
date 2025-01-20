@@ -41,7 +41,7 @@ function InfoSearch({ route }) {
       endDate.setDate(today.getDate() + (6 - dayOfWeek)); // 그 주의 토요일로 시작
 
       const response = await axios.get(
-        `http://${ipnumber}:8080/sx/week/${user_code}`,
+        `${ipnumber}:8080/sx/week/${user_code}`,
         {
           headers: {
             "Content-Type": "application/json",

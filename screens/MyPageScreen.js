@@ -70,12 +70,12 @@ export default function MyPageScreen({ navigation, route }) {
         try {
           // 유저이름 가져오기
           const response = await axios.get(
-            `http://${ipnumber}:8080/userinfo/get/${user_code}`
+            `${ipnumber}:8080/userinfo/get/${user_code}`
           );
           setNickName(response.data.user_name);
           // 연속 날짜 로드
           const response_consecutiveDays = await axios.get(
-            `http://${ipnumber}:8080/daily/consecutive/${user_code}`
+            `${ipnumber}:8080/daily/consecutive/${user_code}`
           );
           setConsecutiveDay(response_consecutiveDays.data);
         } catch (error) {
@@ -156,17 +156,14 @@ export default function MyPageScreen({ navigation, route }) {
   // 카카오 로그아웃
   const logoutUser = async () => {
     try {
-      const response = await axios.post(
-        `http://${ipnumber}:8080/Logout`,
-        null,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(`${ipnumber}:8080/Logout`, null, {
+        withCredentials: true,
+      });
 
       if (response.status === 200) {
         console.log("로그아웃 성공");
         navigation.replace("KakaoLogin", { ipnumber: ipnumber });
+        await AsyncStorage.setItem("state", "logout");
       } else {
         console.log("로그아웃 실패", response.data);
       }
@@ -397,7 +394,7 @@ export default function MyPageScreen({ navigation, route }) {
             로그아웃
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
             console.log("test");
@@ -411,7 +408,7 @@ export default function MyPageScreen({ navigation, route }) {
           <Text style={[styles.notificationText, { color: theme.grey400 }]}>
             테스트 페이지
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
       <DaysModal
         ipnumber={ipnumber}

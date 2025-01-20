@@ -66,9 +66,7 @@ function InfoSearchResult() {
 
       // 조회순
       try {
-        const { data } = await axios.get(
-          `http://${ipnumber}:8080/info/show/view`
-        );
+        const { data } = await axios.get(`${ipnumber}:8080/info/show/view`);
         console.log(data);
 
         const searchResultSet = new Set(searchResult);

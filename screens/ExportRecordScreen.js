@@ -17,19 +17,17 @@ import { useEffect, useState, useRef } from "react";
 import Header from "../component/Header";
 import { LinearGradient } from "expo-linear-gradient";
 import { theme } from "../colors/color";
-import Feather from "@expo/vector-icons/Feather";
 import { WithLocalSvg } from "react-native-svg/css";
 import CalendarImg from "../assets/export_calendar.svg";
-import { useLayoutEffect } from "react";
 import { Calendar } from "react-native-calendars";
 import Left from "../assets/chevron_left.svg";
 import Right from "../assets/chevron_right.svg";
 import Check from "../assets/start_check.svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 import * as FileSystem from "expo-file-system";
+import { IMAGE_URL } from "@env";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -103,17 +101,17 @@ const CalendarModal = ({
       const responseDates = [];
 
       const beforeResponse = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${beforeYearMonth}`
+        `${ipnumber}:8080/daily/state/${user_code}/${beforeYearMonth}`
       );
       responseDates.push(...beforeResponse.data);
 
       const response = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
+        `${ipnumber}:8080/daily/state/${user_code}/${yearMonth}`
       );
       responseDates.push(...response.data);
 
       const afterResponse = await axios.get(
-        `http://${ipnumber}:8080/daily/state/${user_code}/${afterYearMonth}`
+        `${ipnumber}:8080/daily/state/${user_code}/${afterYearMonth}`
       );
       responseDates.push(...afterResponse.data);
 
@@ -391,7 +389,7 @@ export default function ExportRecordScreen({ navigation, route }) {
 
   const getCheckList = async (date) => {
     const { data } = await axios.get(
-      `http://${ipnumber}:8080/sx/list/${user_code}/${date}`
+      `${ipnumber}:8080/sx/list/${user_code}/${date}`
     );
     console.log("체크리스트 데이터 ", data);
 
@@ -407,12 +405,12 @@ export default function ExportRecordScreen({ navigation, route }) {
 
   const textToPdf = async () => {
     const [response_user, response_record, response_image] = await Promise.all([
-      axios.get(`http://${ipnumber}:8080/userinfo/get/${user_code}`),
+      axios.get(`${ipnumber}:8080/userinfo/get/${user_code}`),
       axios.get(
-        `http://${ipnumber}:8080/daily/period/${user_code}/${startDate}/${endDate}`
+        `${ipnumber}:8080/daily/period/${user_code}/${startDate}/${endDate}`
       ),
       axios.get(
-        `http://${ipnumber}:8080/image/period/${user_code}/${startDate}/${endDate}`
+        `${ipnumber}:8080/image/period/${user_code}/${startDate}/${endDate}`
       ),
     ]);
     console.log(response_image.data);
@@ -535,7 +533,7 @@ export default function ExportRecordScreen({ navigation, route }) {
                         ? matchedImage.url
                             .map(
                               (imgUrl) =>
-                                `<img src="https://define-bucket.s3.ap-northeast-2.amazonaws.com/${imgUrl}" width="100" height="100" alt="이미지" style="border-radius: 8px; margin-right: 4px;"/>`
+                                `<img src="${IMAGE_URL}/${imgUrl}" width="100" height="100" alt="이미지" style="border-radius: 8px; margin-right: 4px;"/>`
                             )
                             .join("")
                         : "이미지없음";

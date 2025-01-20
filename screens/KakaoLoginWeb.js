@@ -3,7 +3,7 @@ import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-//import { KAKAOLOGIN_API_KEY } from "@env";
+import { KAKAOLOGIN_API_KEY } from "@env";
 
 const INJECTED_JAVASCRIPT = `
   (function() {
@@ -13,14 +13,13 @@ const INJECTED_JAVASCRIPT = `
   })();
   true;
 `;
-const KAKAOLOGIN_API_KEY = "5757072cc0c10be2da7715dedd4429d8";
 
 export default function KakaoLoginWeb({ navigation, route }) {
   const [currentState, setCurrentState] = useState(null);
   const [serverResponse, setServerResponse] = useState(null);
   const [isWebViewVisible, setIsWebViewVisible] = useState(true);
   const ipnumber = route.params.ipnumber;
-  const REDIRECT_URI = `http://${ipnumber}:8080/Login`;
+  const REDIRECT_URI = `${ipnumber}:8080/Login`;
 
   useEffect(() => {
     async function stateLoad() {
@@ -42,7 +41,7 @@ export default function KakaoLoginWeb({ navigation, route }) {
         setIsWebViewVisible(false);
 
         const response_exist_user_code = await axios.get(
-          `http://${ipnumber}:8080/exist?user_code=${serverResponse.userId}`
+          `${ipnumber}:8080/userinfo/exist?user_code=${serverResponse.userId}`
         );
         console.log(response_exist_user_code.data);
         if (currentState === "first") {
@@ -72,6 +71,7 @@ export default function KakaoLoginWeb({ navigation, route }) {
           } catch (error) {
             console.log("state 갱신 에러: ", error);
           }
+          // 발표용!!!!!!!!!!!
           navigation.replace("StartInfo", {
             ipnumber: ipnumber,
             user_code: serverResponse.userId,
@@ -100,6 +100,7 @@ export default function KakaoLoginWeb({ navigation, route }) {
           source={{
             uri: `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAOLOGIN_API_KEY}&redirect_uri=${REDIRECT_URI}`,
           }}
+          mixedContentMode="always"
           cacheEnabled={false}
           injectedJavaScript={INJECTED_JAVASCRIPT}
           javaScriptEnabled

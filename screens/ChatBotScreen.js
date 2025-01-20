@@ -15,12 +15,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../colors/color";
 import Header from "../component/Header";
 import axios from "axios";
-// import { CHATGPT_API_KEY } from "@env";
+import { CHATGPT_API_KEY } from "@env";
 
 const MODEL = "gpt-4o";
-const CHATGPT_API_KEY =
-  "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";
-
+const CHATGPT_API_KEY = CHATGPT_API_KEY;
 const ChatbotScreen = ({ navigation, route }) => {
   const { ipnumber, user_code } = route.params; // user_code와 ipnumber 가져오기
   const [nickName, setNickName] = useState("");
@@ -35,7 +33,7 @@ const ChatbotScreen = ({ navigation, route }) => {
     async function loadNickName() {
       try {
         const response = await axios.get(
-          `http://${ipnumber}:8080/userinfo/get/${user_code}`
+          `${ipnumber}:8080/userinfo/get/${user_code}`
         );
         setNickName(response.data.user_name);
       } catch (error) {
@@ -87,12 +85,12 @@ const ChatbotScreen = ({ navigation, route }) => {
   };
   // 미리 정의된 질문과 답변
   const predefinedAnswers = {
-    "현재 아이의 증상 상태가 궁금해":
-      "아이의 현재 상태는 '~~~~~~~~여기 수정하기'입니다. 이번 주는 아이의 주의 집중력, 과잉행동, 충동성을 체크해보는게 어떨까요?",
-    "아이와 대화하는 방법을 알려줘":
-      "아이와 대화할 때는 차분한 톤으로 이야기하고, 아이의 말을 잘 들어주는 것이 중요해요! ",
-    "ADHD 기록은 어떻게 하는게 좋을까?":
-      "ADHD 기록은 매일 아이의 행동을 간단히 기록하고, 특이한 점이 있으면 상세히 기록하는 것이 좋아요.",
+    // "현재 아이의 증상 상태가 궁금해":
+    //   "아이의 현재 상태는 '~~~~~~~~여기 수정하기'입니다. 이번 주는 아이의 주의 집중력, 과잉행동, 충동성을 체크해보는게 어떨까요?",
+    // "아이와 대화하는 방법을 알려줘":
+    //   "아이와 대화할 때는 차분한 톤으로 이야기하고, 아이의 말을 잘 들어주는 것이 중요해요! ",
+    // "ADHD 기록은 어떻게 하는게 좋을까?":
+    //   "ADHD 기록은 매일 아이의 행동을 간단히 기록하고, 특이한 점이 있으면 상세히 기록하는 것이 좋아요.",
     "아토목세틴에 대해서 알려줘":
       "아토목세틴은 노르에피네프린을 선택적으로 증가시키는 비중추신경 자극제예요. 보통 하루에 한 번 복용하지만, 하루 두 번 나누어 복용하면 반항적인 양상과 소화기계 부작용을 줄일 수 있다고 해요.아토목세틴의 부작용으로는 입마름, 식욕 감소, 복통, 구토, 소화불량 같은 위장 관련 증상이나 졸림이 있을 수 있어요. 하지만 대부분 약물 복용량을 조절하면 부작용이 사라지거나 시간이 지나면서 약해진다고 하니 너무 걱정하지 않으셔도 돼요. 😊",
   };
@@ -330,7 +328,7 @@ const ChatbotScreen = ({ navigation, route }) => {
                     fontFamily: "Pretendard-Regular",
                   }}
                 >
-                  {"현재 아이의 \n증상 상태가 궁금해"}
+                  {"현재 아이의\n증상 상태가 궁금해"}
                 </Text>
               </TouchableOpacity>
 
@@ -346,7 +344,7 @@ const ChatbotScreen = ({ navigation, route }) => {
                     fontFamily: "Pretendard-Regular",
                   }}
                 >
-                  {"아이와 대화하는 \n방법을 알려줘"}
+                  {"아이와 대화하는\n방법을 알려줘"}
                 </Text>
               </TouchableOpacity>
 
@@ -362,7 +360,42 @@ const ChatbotScreen = ({ navigation, route }) => {
                     fontFamily: "Pretendard-Regular",
                   }}
                 >
-                  {"ADHD 기록은 \n어떻게 하는게 좋을까?"}
+                  {"ADHD 기록은\n어떻게 하는게 좋을까?"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() =>
+                  sendMessage("ADHD 육아 기록은 어떻게 하는게 좋을까?")
+                }
+                style={styles.recommandTextContainer}
+              >
+                <Text
+                  style={{
+                    color: "#242424",
+                    fontSize: 14,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Regular",
+                  }}
+                >
+                  {"ADHD 육아 기록은\n어떻게 하는게 좋을까?"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  sendMessage("ADHD 아이가 흥분하면 어떻게 해야할까?")
+                }
+                style={styles.recommandTextContainer}
+              >
+                <Text
+                  style={{
+                    color: "#242424",
+                    fontSize: 14,
+                    lineHeight: 20,
+                    fontFamily: "Pretendard-Regular",
+                  }}
+                >
+                  {"ADHD 아이가 흥분하면\n어떻게 해야할까?"}
                 </Text>
               </TouchableOpacity>
             </View>
